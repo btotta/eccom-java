@@ -1,0 +1,64 @@
+== Method
+
+=== Arquitetura Geral
+
+A arquitetura do e-commerce será inicialmente monolítica, mas organizada em domínios para facilitar a manutenção e permitir uma futura transição para microserviços. Os principais domínios serão:
+
+1. Domínio de Usuários
+2. Domínio de Catálogo de Produtos
+3. Domínio de Carrinho de Compras
+4. Domínio de Gerenciamento de Pedidos
+5. Domínio de Autenticação e Autorização
+6. Domínio de Pagamento (preparado para futura implementação)
+
+=== Diagrama de Componentes
+
+[plantuml]
+@startuml
+package "Monolithic Application" {
+  [Auth Domain]
+  [User Domain]
+  [Product Catalog Domain]
+  [Cart Domain]
+  [Order Management Domain]
+  [Payment Domain]
+}
+
+[Web App] --> [Auth Domain] : Autenticação
+[Web App] --> [User Domain] : Gerenciamento de Usuários
+[Web App] --> [Product Catalog Domain] : Catálogo de Produtos
+[Web App] --> [Cart Domain] : Carrinho de Compras
+[Web App] --> [Order Management Domain] : Gerenciamento de Pedidos
+
+[Order Management Domain] --> [Payment Domain] : Processamento de Pagamentos
+
+@enduml
+
+=== Descrição dos Domínios
+
+1. **Domínio de Usuários**
+   - Funções: Cadastro, atualização e gerenciamento de contas de usuários.
+   - Banco de dados: Tabela de Usuários.
+
+2. **Domínio de Catálogo de Produtos**
+   - Funções: Adicionar, editar, remover e listar produtos.
+   - Banco de dados: Tabela de Produtos.
+
+3. **Domínio de Carrinho de Compras**
+   - Funções: Adicionar, remover e editar itens no carrinho.
+   - Banco de dados: Tabela de Carrinhos.
+
+4. **Domínio de Gerenciamento de Pedidos**
+   - Funções: Criar e gerenciar pedidos, atualizar status de pedidos.
+   - Banco de dados: Tabela de Pedidos.
+
+5. **Domínio de Autenticação e Autorização**
+   - Funções: Gerenciar login, logout e permissões de acesso.
+   - Banco de dados: Tabela de Sessões, Tabela de Permissões.
+
+6. **Domínio de Pagamento**
+   - Funções: Processamento de pagamentos (preparado para futura implementação).
+   - Banco de dados: Tabela de Transações.
+
+=== Esquema do Banco de Dados
+
