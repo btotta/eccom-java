@@ -1,6 +1,7 @@
 package com.tota.eccom.exceptions.handler;
 
 import com.tota.eccom.adapters.dto.exception.ErrorDetails;
+import com.tota.eccom.exceptions.auth.UnauthorizedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

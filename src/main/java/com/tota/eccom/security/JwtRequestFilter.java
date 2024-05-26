@@ -50,10 +50,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 log.warn("Unable to get JWT Token");
             } catch (ExpiredJwtException e) {
                 log.warn("JWT Token has expired");
+            } catch (Exception e) {
+                log.warn("JWT Token is invalid");
             }
 
-        } else {
-            log.warn("JWT Token cannot be empty");
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {

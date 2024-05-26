@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -24,7 +25,7 @@ public class ProductController {
 
     private final IProductDomain productDomain;
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     @Operation(summary = "Create a new product")
     public ResponseEntity<Product> createProduct(@RequestBody @Valid ProductCreate productCreateDTO) {
@@ -37,6 +38,7 @@ public class ProductController {
         return new ResponseEntity<>(productDomain.getProductById(id), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete product by id")
     public ResponseEntity<Void> deleteProductById(@PathVariable Long id) {
@@ -44,6 +46,7 @@ public class ProductController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     @Operation(summary = "Update product by id")
     public ResponseEntity<Product> updateProductById(@PathVariable Long id, @RequestBody @Valid ProductUpdate productUpdateDTO) {
@@ -65,6 +68,7 @@ public class ProductController {
         return ResponseEntity.ok(productDomain.getAllProductsPaginated(pageable, name, description, price, brand, category));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/price/{id}")
     @Operation(summary = "Add price to product")
     public ResponseEntity<Product> addPriceToProduct(@PathVariable Long id, @RequestBody @Valid ProductCreatePrice productCreatePriceDTO) {

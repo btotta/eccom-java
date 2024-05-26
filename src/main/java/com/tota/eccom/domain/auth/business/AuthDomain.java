@@ -56,7 +56,7 @@ public class AuthDomain implements IAuthDomain {
 
         return LoginResponse.builder()
                 .accessToken(accessToken)
-                .refreshToken(refreshRequest.getRefreshToken()) // Retornando o mesmo refresh token
+                .refreshToken(refreshRequest.getRefreshToken())
                 .build();
     }
 }
