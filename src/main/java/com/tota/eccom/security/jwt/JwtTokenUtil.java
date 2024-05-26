@@ -1,4 +1,4 @@
-package com.tota.eccom.security;
+package com.tota.eccom.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

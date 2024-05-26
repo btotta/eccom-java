@@ -6,9 +6,10 @@ import com.tota.eccom.domain.common.enums.Status;
 import com.tota.eccom.domain.user.IUserDomain;
 import com.tota.eccom.domain.user.model.User;
 import com.tota.eccom.domain.user.repository.UserRepository;
+import com.tota.eccom.exceptions.user.UserEmailExistsException;
 import com.tota.eccom.exceptions.user.UserNotFoundException;
-import com.tota.eccom.security.JwtTokenUtil;
-import com.tota.eccom.security.JwtUserDetailsService;
+import com.tota.eccom.security.jwt.JwtTokenUtil;
+import com.tota.eccom.security.jwt.JwtUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -28,7 +29,7 @@ public class UserDomain implements IUserDomain {
     public User createUser(UserCreate userCreateDTO) {
 
         if (getUserByEmail(userCreateDTO.getEmail()) != null) {
-            throw new IllegalArgumentException("User already exists with given email.");
+            throw new UserEmailExistsException("User already exists with given email.");
         }
 
         User user = userCreateDTO.toUser();
