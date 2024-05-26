@@ -6,7 +6,7 @@ import com.tota.eccom.adapters.dto.product.ProductUpdate;
 import com.tota.eccom.domain.common.enums.Status;
 import com.tota.eccom.domain.product.model.Product;
 import com.tota.eccom.domain.product.repository.ProductRepository;
-import com.tota.eccom.exceptions.product.ProductNotFound;
+import com.tota.eccom.exceptions.product.ProductNotFoundException;
 import org.junit.jupiter.api.*;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -229,7 +229,7 @@ class ProductDomainTest {
         @Test
         @DisplayName("When a product does not exist, then it should throw an exception")
         void deleteProductWithNonExistingProduct() {
-            assertThrows(ProductNotFound.class, () -> productDomain.deleteProductById(1L));
+            assertThrows(ProductNotFoundException.class, () -> productDomain.deleteProductById(1L));
         }
 
         @Test
@@ -256,7 +256,7 @@ class ProductDomainTest {
         @Test
         @DisplayName("When a product does not exist, then it should throw an exception")
         void getProductWithNonExistingProduct() {
-            assertThrows(ProductNotFound.class, () -> productDomain.getProductById(1L));
+            assertThrows(ProductNotFoundException.class, () -> productDomain.getProductById(1L));
         }
 
         @Test

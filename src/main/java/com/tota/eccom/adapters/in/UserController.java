@@ -9,39 +9,43 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping
 @RequiredArgsConstructor
 public class UserController {
 
     private final IUserDomain userDomain;
 
 
-    @PostMapping()
+    @PostMapping("/public/user")
     @Operation(summary = "Create a new user")
     public ResponseEntity<User> createUser(@RequestBody @Valid UserCreate userCreateDTO) {
         return new ResponseEntity<>(userDomain.createUser(userCreateDTO), HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
-    @Operation(summary = "Get user by id")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        return new ResponseEntity<>(userDomain.getUserById(id), HttpStatus.OK);
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/user")
+    @Operation(summary = "Get logged user")
+    public ResponseEntity<User> getUserById(@RequestHeader("Authorization") String token) {
+        return new ResponseEntity<>(userDomain.getUserLogged(token), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    @Operation(summary = "Delete user by id")
-    public ResponseEntity<Void> deleteUserById(@PathVariable Long id) {
-        userDomain.deleteUserById(id);
+    @PreAuthorize("hasRole('USER')")
+    @DeleteMapping("/user")
+    @Operation(summary = "Delete logged user")
+    public ResponseEntity<Void> deleteUserById(@RequestHeader("Authorization") String token) {
+        userDomain.deleteUserLogged(token);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PutMapping("/{id}")
-    @Operation(summary = "Update user by id")
-    public ResponseEntity<User> updateUserById(@PathVariable Long id, @RequestBody @Valid UserUpdate userUpdateDTO) {
-        return new ResponseEntity<>(userDomain.updateUserById(id, userUpdateDTO), HttpStatus.OK);
+    @PreAuthorize("hasRole('USER')")
+    @PutMapping("/user")
+    @Operation(summary = "Update logged user")
+    public ResponseEntity<User> updateUserById(@RequestHeader("Authorization") String token, @RequestBody @Valid UserUpdate userUpdateDTO) {
+        return new ResponseEntity<>(userDomain.updateUserLogged(token, userUpdateDTO), HttpStatus.OK);
     }
 
 }

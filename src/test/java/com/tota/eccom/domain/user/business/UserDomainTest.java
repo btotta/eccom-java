@@ -5,7 +5,7 @@ import com.tota.eccom.adapters.dto.user.UserUpdate;
 import com.tota.eccom.domain.common.enums.Status;
 import com.tota.eccom.domain.user.model.User;
 import com.tota.eccom.domain.user.repository.UserRepository;
-import com.tota.eccom.exceptions.user.UserNotFound;
+import com.tota.eccom.exceptions.user.UserNotFoundException;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -132,7 +132,7 @@ class UserDomainTest {
         @Test
         @DisplayName("Update user, should throw exception when user not found")
         void testUpdateUser_shouldThrowExceptionWhenUserNotFound() {
-            assertThrows(UserNotFound.class, () -> userDomain.updateUserById(1L, userUpdateDTO));
+            assertThrows(UserNotFoundException.class, () -> userDomain.updateUserById(1L, userUpdateDTO));
         }
 
         @Test
@@ -226,7 +226,7 @@ class UserDomainTest {
         @Test
         @DisplayName("Delete user, should throw exception when user not found")
         void testDeleteUser_shouldThrowExceptionWhenUserNotFound() {
-            assertThrows(UserNotFound.class, () -> userDomain.deleteUserById(1L));
+            assertThrows(UserNotFoundException.class, () -> userDomain.deleteUserById(1L));
         }
 
     }
@@ -251,7 +251,7 @@ class UserDomainTest {
         @Test
         @DisplayName("Get user, should throw exception when user not found")
         void testGetUser_shouldThrowExceptionWhenUserNotFound() {
-            assertThrows(UserNotFound.class, () -> userDomain.getUserById(1L));
+            assertThrows(UserNotFoundException.class, () -> userDomain.getUserById(1L));
         }
 
     }

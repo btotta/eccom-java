@@ -8,7 +8,7 @@ import com.tota.eccom.domain.product.IProductDomain;
 import com.tota.eccom.domain.product.model.Product;
 import com.tota.eccom.domain.product.repository.ProductRepository;
 import com.tota.eccom.domain.product.repository.spec.ProductSpecification;
-import com.tota.eccom.exceptions.product.ProductNotFound;
+import com.tota.eccom.exceptions.product.ProductNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -40,7 +40,7 @@ public class ProductDomain implements IProductDomain {
         log.info("Getting product by id: {}", id);
 
         return productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFound("Product not found with given id: {}" + id));
+                .orElseThrow(() -> new ProductNotFoundException("Product not found with given id: {}" + id));
     }
 
     @Override
