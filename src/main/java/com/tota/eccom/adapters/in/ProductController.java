@@ -17,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-
 @RestController
 @RequestMapping("/product")
 @RequiredArgsConstructor
@@ -25,17 +24,12 @@ public class ProductController {
 
     private final IProductDomain productDomain;
 
+    // Private routes
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     @Operation(summary = "Create a new product")
     public ResponseEntity<Product> createProduct(@RequestBody @Valid ProductCreate productCreateDTO) {
         return new ResponseEntity<>(productDomain.createProduct(productCreateDTO), HttpStatus.CREATED);
-    }
-
-    @GetMapping("/{id}")
-    @Operation(summary = "Get product by id")
-    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
-        return new ResponseEntity<>(productDomain.getProductById(id), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -53,7 +47,21 @@ public class ProductController {
         return new ResponseEntity<>(productDomain.updateProductById(id, productUpdateDTO), HttpStatus.OK);
     }
 
-    @GetMapping("/paginated")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/price/{id}")
+    @Operation(summary = "Add price to product")
+    public ResponseEntity<Product> addPriceToProduct(@PathVariable Long id, @RequestBody @Valid ProductCreatePrice productCreatePriceDTO) {
+        return new ResponseEntity<>(productDomain.addPriceToProduct(id, productCreatePriceDTO), HttpStatus.OK);
+    }
+
+    // Public routes
+    @GetMapping("/public/{id}")
+    @Operation(summary = "Get product by id")
+    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+        return new ResponseEntity<>(productDomain.getProductById(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/public/paginated")
     @PageableAsQueryParam
     @Operation(summary = "Get all products paginated")
     public ResponseEntity<Page<Product>> getAllProductsPaginated(
@@ -64,16 +72,6 @@ public class ProductController {
             @RequestParam(required = false) String brand,
             @RequestParam(required = false) String category
     ) {
-
         return ResponseEntity.ok(productDomain.getAllProductsPaginated(pageable, name, description, price, brand, category));
     }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/price/{id}")
-    @Operation(summary = "Add price to product")
-    public ResponseEntity<Product> addPriceToProduct(@PathVariable Long id, @RequestBody @Valid ProductCreatePrice productCreatePriceDTO) {
-        return new ResponseEntity<>(productDomain.addPriceToProduct(id, productCreatePriceDTO), HttpStatus.OK);
-    }
-
-
 }
