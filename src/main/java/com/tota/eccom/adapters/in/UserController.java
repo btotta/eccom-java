@@ -19,6 +19,7 @@ public class UserController {
 
     private final IUserDomain userDomain;
 
+    // User endpoints
 
     @PostMapping("/public/user")
     @Operation(summary = "Create a new user")
@@ -29,23 +30,48 @@ public class UserController {
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/user")
     @Operation(summary = "Get logged user")
-    public ResponseEntity<User> getUserById(@RequestHeader("Authorization") String token) {
-        return new ResponseEntity<>(userDomain.getUserLogged(token), HttpStatus.OK);
+    public ResponseEntity<User> getUserById() {
+        return new ResponseEntity<>(userDomain.getUserLogged(), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/user")
     @Operation(summary = "Delete logged user")
-    public ResponseEntity<Void> deleteUserById(@RequestHeader("Authorization") String token) {
-        userDomain.deleteUserLogged(token);
+    public ResponseEntity<Void> deleteUserById() {
+        userDomain.deleteUserLogged();
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PreAuthorize("hasRole('USER')")
     @PutMapping("/user")
     @Operation(summary = "Update logged user")
-    public ResponseEntity<User> updateUserById(@RequestHeader("Authorization") String token, @RequestBody @Valid UserUpdate userUpdateDTO) {
-        return new ResponseEntity<>(userDomain.updateUserLogged(token, userUpdateDTO), HttpStatus.OK);
+    public ResponseEntity<User> updateUserById(@RequestBody @Valid UserUpdate userUpdateDTO) {
+        return new ResponseEntity<>(userDomain.updateUserLogged(userUpdateDTO), HttpStatus.OK);
     }
+
+    // Admin endpoints to manage users
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/admin/user/{id}")
+    @Operation(summary = "Get user by id")
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+        return new ResponseEntity<>(userDomain.getUserById(id), HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/admin/user/{id}")
+    @Operation(summary = "Delete user by id")
+    public ResponseEntity<Void> deleteUserById(@PathVariable Long id) {
+        userDomain.deleteUserById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/admin/user/{id}")
+    @Operation(summary = "Update user by id")
+    public ResponseEntity<User> updateUserById(@PathVariable Long id, @RequestBody @Valid UserUpdate userUpdateDTO) {
+        return new ResponseEntity<>(userDomain.updateUserById(id, userUpdateDTO), HttpStatus.OK);
+    }
+
 
 }

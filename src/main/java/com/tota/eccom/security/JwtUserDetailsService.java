@@ -6,6 +6,7 @@ import com.tota.eccom.exceptions.user.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,6 +22,10 @@ public class JwtUserDetailsService implements UserDetailsService {
     @Autowired
     public JwtUserDetailsService(UserRepository userRepository) {
         this.userRepository = userRepository;
+    }
+
+    public static String getLoggedUserEmail() {
+        return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
     @Override

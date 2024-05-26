@@ -16,9 +16,9 @@ public interface IUserDomain {
 
     User updateUserById(Long id, UserUpdate userUpdateDTO);
 
-    User getUserLogged(String token);
+    User getUserLogged();
 
-    void deleteUserLogged(String token);
+    void deleteUserLogged();
 
-    User updateUserLogged(String token, UserUpdate userUpdateDTO);
+    User updateUserLogged(UserUpdate userUpdateDTO);
 }
