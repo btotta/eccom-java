@@ -8,6 +8,7 @@ import com.tota.eccom.domain.user.model.User;
 import com.tota.eccom.domain.user.repository.UserRepository;
 import com.tota.eccom.exceptions.user.UserNotFoundException;
 import com.tota.eccom.security.JwtTokenUtil;
+import com.tota.eccom.security.JwtUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -73,17 +74,15 @@ public class UserDomain implements IUserDomain {
     }
 
     @Override
-    public User getUserLogged(String token) {
+    public User getUserLogged() {
 
-        String email = jwtTokenUtil.getUsernameFromToken(token);
-
-        return getUserByEmail(email);
+        return getUserByEmail(JwtUserDetailsService.getLoggedUserEmail());
     }
 
     @Override
-    public void deleteUserLogged(String token) {
+    public void deleteUserLogged() {
 
-        User user = getUserLogged(token);
+        User user = getUserLogged();
 
         log.info("Deleting user: {}", user);
 
@@ -94,11 +93,11 @@ public class UserDomain implements IUserDomain {
     }
 
     @Override
-    public User updateUserLogged(String token, UserUpdate userUpdateDTO) {
+    public User updateUserLogged(UserUpdate userUpdateDTO) {
 
-        User user = getUserLogged(token);
+        User user = getUserLogged();
 
-        log.info("Updating user: {}", user);
+        log.info("Updating logged user: {}", user);
 
         userUpdateDTO.toUpdateUser(user);
 
