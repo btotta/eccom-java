@@ -15,4 +15,10 @@ public interface IUserDomain {
     void deleteUserById(Long id);
 
     User updateUserById(Long id, UserUpdate userUpdateDTO);
+
+    User getUserLogged(String token);
+
+    void deleteUserLogged(String token);
+
+    User updateUserLogged(String token, UserUpdate userUpdateDTO);
 }
