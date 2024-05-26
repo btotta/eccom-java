@@ -5,11 +5,13 @@ import com.tota.eccom.domain.product.model.ProductPrice;
 import lombok.Builder;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 @Builder
 public class ProductCreatePrice {
 
-    private Double price;
+    private BigDecimal price;
     private Integer quantity;
 
     public ProductPrice toProductPrice() {

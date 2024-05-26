@@ -2,12 +2,8 @@ package com.tota.eccom.domain.product.model;
 
 import com.tota.eccom.domain.common.enums.Status;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -15,15 +11,16 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "product",
-        indexes = {
-                @Index(name = "product_name_index", columnList = "name"),
-                @Index(name = "product_category_index", columnList = "category"),
-                @Index(name = "product_brand_index", columnList = "brand"),
-                @Index(name = "product_status_index", columnList = "status"),
-                @Index(name = "product_stock_index", columnList = "stock")
-        })
-@Data
+@Table(name = "product", indexes = {
+        @Index(name = "product_name_index", columnList = "name"),
+        @Index(name = "product_category_index", columnList = "category"),
+        @Index(name = "product_brand_index", columnList = "brand"),
+        @Index(name = "product_status_index", columnList = "status"),
+        @Index(name = "product_stock_index", columnList = "stock"),
+        @Index(name = "product_sku_index", columnList = "sku"),
+})
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -33,45 +30,42 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NotEmpty
+    @NotNull
     @Column(name = "name", nullable = false)
     private String name;
 
-    @NotEmpty
+    @NotNull
     @Column(name = "description", nullable = false)
     private String description;
 
     @Column(name = "stock")
     private Integer stock;
 
-    @NotEmpty
+    @NotNull
     @Column(name = "category", nullable = false)
     private String category;
 
-    @NotEmpty
-    @Column(name = "sku", nullable = false)
+    @NotNull
+    @Column(name = "sku", nullable = false, unique = true)
     private String sku;
 
-    @NotEmpty
+    @NotNull
     @Column(name = "brand", nullable = false)
     private String brand;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductPrice> prices;
 
-    @NotNull
     @CreationTimestamp
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @NotNull
     @UpdateTimestamp
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     @NotNull
-    @Column(name = "status")
     @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
     private Status status;
-
 }

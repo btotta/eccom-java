@@ -1,9 +1,9 @@
 package com.tota.eccom.adapters.dto.user;
 
-import com.tota.eccom.domain.common.enums.Role;
 import com.tota.eccom.domain.common.enums.Status;
 import com.tota.eccom.domain.common.utils.EmailValidationUtil;
 import com.tota.eccom.domain.common.utils.PasswordUtil;
+import com.tota.eccom.domain.user.enums.Role;
 import com.tota.eccom.domain.user.model.User;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
@@ -48,7 +48,7 @@ public class UserCreate {
                 .name(name)
                 .email(email)
                 .password(PasswordUtil.hashPassword(password))
-                .role(List.of(Role.USER))
+                .roles(List.of(Role.USER))
                 .status(Status.ACTIVE)
                 .build();
     }

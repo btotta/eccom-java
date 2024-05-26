@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.junit.Assert.assertThrows;
@@ -40,6 +41,11 @@ class ProductDomainTest {
         productCreateDTO = mockProductCreateDTO();
         productUpdateDTO = mockProductUpdateDTO();
 
+    }
+
+    @AfterEach
+    void tearDown() {
+        productRepository.deleteAll();
     }
 
     private ProductUpdate mockProductUpdateDTO() {
@@ -128,7 +134,7 @@ class ProductDomainTest {
             productCreateDTO.setPrices(List.of(
                     ProductCreatePrice.builder()
                             .quantity(1)
-                            .price(10.0)
+                            .price(new BigDecimal(100))
                             .build())
             );
 

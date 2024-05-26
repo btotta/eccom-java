@@ -11,7 +11,6 @@ import java.io.IOException;
 @Slf4j
 public class RequestLogger implements Filter {
 
-
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
@@ -23,12 +22,27 @@ public class RequestLogger implements Filter {
 
         long duration = System.currentTimeMillis() - startTime;
 
+        String remoteAddr = getClientIp(httpRequest);
+
         log.info("[{}] {}{} | IP: {} | Duration: {} ms",
                 httpRequest.getMethod(),
                 httpRequest.getRequestURI(),
                 httpRequest.getQueryString() != null ? "?" + httpRequest.getQueryString() : "",
-                request.getRemoteAddr(),
+                remoteAddr,
                 duration);
     }
 
+    private String getClientIp(HttpServletRequest request) {
+        String ipAddress = request.getHeader("X-Forwarded-For");
+        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = request.getHeader("X-Real-IP");
+        }
+        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = request.getRemoteAddr();
+        }
+        if (ipAddress != null && ipAddress.contains(",")) {
+            ipAddress = ipAddress.split(",")[0];
+        }
+        return ipAddress;
+    }
 }
