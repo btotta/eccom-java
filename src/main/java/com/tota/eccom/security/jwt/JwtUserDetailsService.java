@@ -1,4 +1,4 @@
-package com.tota.eccom.security;
+package com.tota.eccom.security.jwt;
 
 import com.tota.eccom.domain.user.model.User;
 import com.tota.eccom.domain.user.repository.UserRepository;

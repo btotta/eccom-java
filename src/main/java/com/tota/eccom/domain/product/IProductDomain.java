@@ -17,7 +17,6 @@ public interface IProductDomain {
 
     Product updateProductById(Long id, ProductUpdate productUpdateDTO);
 
-
     Product addPriceToProduct(Long id, ProductCreatePrice productCreatePriceDTO);
 
     Page<Product> getAllProductsPaginated(Pageable pageable, String name, String description, Double price, String brand, String category);

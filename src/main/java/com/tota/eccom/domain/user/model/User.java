@@ -1,8 +1,10 @@
 package com.tota.eccom.domain.user.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.tota.eccom.domain.user.enums.Role;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.tota.eccom.domain.common.enums.Status;
+import com.tota.eccom.domain.common.view.Views;
+import com.tota.eccom.domain.user.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -52,6 +54,7 @@ public class User {
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
+    @JsonView(Views.Internal.class)
     private List<Role> roles;
 
     @NotNull
