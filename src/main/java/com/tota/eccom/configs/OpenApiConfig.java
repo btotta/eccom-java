@@ -3,6 +3,7 @@ package com.tota.eccom.configs;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.servers.Server;
+import jakarta.servlet.ServletContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,12 +11,14 @@ import org.springframework.context.annotation.Configuration;
 public class OpenApiConfig {
 
     @Bean
-    public OpenAPI customOpenAPI() {
+    public OpenAPI customOpenAPI(ServletContext servletContext) {
         return new OpenAPI()
+                .addServersItem(new Server().url(servletContext.getContextPath()))
                 .info(new Info()
-                        .title("Eccom API")
-                        .version("1.0")
-                        .description("API for Eccom Application"))
-                .addServersItem(new Server().url("https://eccom-api.tottadev.com.br"));
+                        .title("Eccom - This is a project for a sample e-commerce")
+                        .version("1.0.0")
+                        .description("This project is a sample e-commerce project")
+                        .termsOfService("http://swagger.io/terms/"));
+
     }
 }
