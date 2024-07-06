@@ -111,8 +111,6 @@ public class UserController {
         return new ResponseEntity<>(UserRespDTO.fromUser(userDomain.updateUserById(id, userUpdateDTO)), HttpStatus.OK);
     }
 
-
-    // User role routes
     @GetMapping("/role/list")
     @Operation(summary = "Get all user roles", description = "Fetches all user roles.")
     @ApiResponses(value = {
@@ -149,7 +147,6 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-
     @GetMapping("/role/{id}")
     @Operation(summary = "Get user role by id", description = "Fetches the details of a user role by their ID.")
     @ApiResponses(value = {
@@ -161,7 +158,6 @@ public class UserController {
     public ResponseEntity<UserRoleRespDTO> getUserRoleById(@Parameter(description = "ID of the user role to be fetched") @PathVariable Long id) {
         return new ResponseEntity<>(UserRoleRespDTO.fromUserRole(userDomain.getUserRoleById(id)), HttpStatus.OK);
     }
-
 
     @PostMapping("/role/{id}/user/{userId}")
     @Operation(summary = "Associate user role to user", description = "Associates a user role to a user.")
