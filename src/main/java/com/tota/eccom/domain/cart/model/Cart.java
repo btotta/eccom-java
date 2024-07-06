@@ -1,5 +1,7 @@
 package com.tota.eccom.domain.cart.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.tota.eccom.domain.common.enums.Status;
 import com.tota.eccom.domain.user.model.User;
 import jakarta.persistence.*;
@@ -27,9 +29,11 @@ public class Cart {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     private User user;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<CartItem> items;
 
     @CreationTimestamp

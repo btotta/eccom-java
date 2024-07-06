@@ -37,6 +37,7 @@ public class ProductCreate {
         return Product.builder()
                 .name(name)
                 .description(description)
+                .urlName(name.toLowerCase().replace(" ", "_"))
                 .stock(stock)
                 .category(category)
                 .sku(sku)

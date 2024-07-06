@@ -1,5 +1,6 @@
 package com.tota.eccom.domain.cart.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.tota.eccom.domain.product.model.Product;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -26,6 +27,7 @@ public class CartItem {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id", nullable = false)
+    @JsonBackReference
     private Cart cart;
 
     @NotNull

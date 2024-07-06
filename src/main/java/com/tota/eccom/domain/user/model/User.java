@@ -2,7 +2,6 @@ package com.tota.eccom.domain.user.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tota.eccom.domain.common.enums.Status;
-import com.tota.eccom.domain.user.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -13,7 +12,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users", indexes = {
@@ -48,11 +48,13 @@ public class User {
     @JsonIgnore
     private String password;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "role")
-    @Enumerated(EnumType.STRING)
-    private List<Role> roles;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<UserRole> roles;
 
     @NotNull
     @Enumerated(EnumType.STRING)

@@ -33,6 +33,46 @@ public class ProductController {
 
     private final IProductDomain productDomain;
 
+    // Public routes
+    @GetMapping("/public/{id}")
+    @Operation(
+            summary = "Get product by id",
+            description = "Retrieves the product with the specified ID."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Product retrieved successfully", content = @Content(schema = @Schema(implementation = Product.class))),
+            @ApiResponse(responseCode = "404", description = "Product not found", content = @Content(schema = @Schema(implementation = ErrorDetails.class)))
+    })
+    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+        return new ResponseEntity<>(productDomain.getProductById(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/public/paginated")
+    @PageableAsQueryParam
+    @Operation(
+            summary = "Get all products paginated",
+            description = "Retrieves a paginated list of products based on the provided filters."
+    )
+    @Parameter(name = "name", description = "Filter products by name", example = "Product1")
+    @Parameter(name = "description", description = "Filter products by description", example = "A great product")
+    @Parameter(name = "price", description = "Filter products by price", example = "19.99")
+    @Parameter(name = "brand", description = "Filter products by brand", example = "BrandX")
+    @Parameter(name = "category", description = "Filter products by category", example = "Electronics")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Products retrieved successfully", content = @Content(schema = @Schema(implementation = Page.class)))
+    })
+    public ResponseEntity<Page<Product>> getAllProductsPaginated(
+            @PageableDefault(size = 10, page = 0) Pageable pageable,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String description,
+            @RequestParam(required = false) Double price,
+            @RequestParam(required = false) String brand,
+            @RequestParam(required = false) String category
+    ) {
+        return ResponseEntity.ok(productDomain.getAllProductsPaginated(pageable, name, description, price, brand, category));
+    }
+
+
     // Private routes
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
@@ -101,42 +141,21 @@ public class ProductController {
         return new ResponseEntity<>(productDomain.addPriceToProduct(id, productCreatePriceDTO), HttpStatus.OK);
     }
 
-    // Public routes
-    @GetMapping("/public/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{id}/price/{priceId}")
     @Operation(
-            summary = "Get product by id",
-            description = "Retrieves the product with the specified ID."
+            summary = "Delete price from product",
+            description = "Deletes the price from the product with the specified ID.",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Product retrieved successfully", content = @Content(schema = @Schema(implementation = Product.class))),
-            @ApiResponse(responseCode = "404", description = "Product not found", content = @Content(schema = @Schema(implementation = ErrorDetails.class)))
+            @ApiResponse(responseCode = "204", description = "Price deleted successfully", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Product not found", content = @Content(schema = @Schema(implementation = ErrorDetails.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ErrorDetails.class)))
     })
-    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
-        return new ResponseEntity<>(productDomain.getProductById(id), HttpStatus.OK);
+    public ResponseEntity<Void> deletePriceFromProduct(@PathVariable Long id, @PathVariable Long priceId) {
+        productDomain.deletePriceFromProduct(id, priceId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping("/public/paginated")
-    @PageableAsQueryParam
-    @Operation(
-            summary = "Get all products paginated",
-            description = "Retrieves a paginated list of products based on the provided filters."
-    )
-    @Parameter(name = "name", description = "Filter products by name", example = "Product1")
-    @Parameter(name = "description", description = "Filter products by description", example = "A great product")
-    @Parameter(name = "price", description = "Filter products by price", example = "19.99")
-    @Parameter(name = "brand", description = "Filter products by brand", example = "BrandX")
-    @Parameter(name = "category", description = "Filter products by category", example = "Electronics")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Products retrieved successfully", content = @Content(schema = @Schema(implementation = Page.class)))
-    })
-    public ResponseEntity<Page<Product>> getAllProductsPaginated(
-            @PageableDefault(size = 10, page = 0) Pageable pageable,
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) String description,
-            @RequestParam(required = false) Double price,
-            @RequestParam(required = false) String brand,
-            @RequestParam(required = false) String category
-    ) {
-        return ResponseEntity.ok(productDomain.getAllProductsPaginated(pageable, name, description, price, brand, category));
-    }
 }

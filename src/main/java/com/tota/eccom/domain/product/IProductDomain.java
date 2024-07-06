@@ -7,6 +7,8 @@ import com.tota.eccom.domain.product.model.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.math.BigDecimal;
+
 
 public interface IProductDomain {
     Product createProduct(ProductCreate productCreateDTO);
@@ -20,4 +22,8 @@ public interface IProductDomain {
     Product addPriceToProduct(Long id, ProductCreatePrice productCreatePriceDTO);
 
     Page<Product> getAllProductsPaginated(Pageable pageable, String name, String description, Double price, String brand, String category);
+
+    void deletePriceFromProduct(Long id, Long idPrice);
+
+    BigDecimal getProductBestPrice(Long id, Integer quantity);
 }

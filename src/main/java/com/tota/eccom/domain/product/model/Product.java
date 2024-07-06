@@ -35,6 +35,10 @@ public class Product {
     private String name;
 
     @NotNull
+    @Column(name = "url_name", nullable = false)
+    private String urlName;
+
+    @NotNull
     @Column(name = "description", nullable = false)
     private String description;
 

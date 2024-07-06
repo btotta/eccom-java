@@ -1,6 +1,6 @@
 package com.tota.eccom.adapters.in;
 
-import com.tota.eccom.adapters.dto.health.HealthResponse;
+import com.tota.eccom.adapters.dto.health.HealthResp;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -32,11 +32,11 @@ public class HealthController {
     @GetMapping("/health")
     @Operation(summary = "Health Check")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Service is running", content = @Content(schema = @Schema(implementation = HealthResponse.class)))
+            @ApiResponse(responseCode = "200", description = "Service is running", content = @Content(schema = @Schema(implementation = HealthResp.class)))
     })
-    public ResponseEntity<HealthResponse> healthCheck() {
+    public ResponseEntity<HealthResp> healthCheck() {
 
-        return new ResponseEntity<>(HealthResponse.builder()
+        return new ResponseEntity<>(HealthResp.builder()
                 .status("UP")
                 .message("Service is running")
                 .timestamp(LocalDateTime.now())
