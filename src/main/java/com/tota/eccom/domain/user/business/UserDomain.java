@@ -13,8 +13,6 @@ import com.tota.eccom.exceptions.user.UserAlreadyHasRoleException;
 import com.tota.eccom.exceptions.user.UserEmailExistsException;
 import com.tota.eccom.exceptions.user.UserNotFoundException;
 import com.tota.eccom.exceptions.user.UserRoleNotFoundException;
-import com.tota.eccom.security.jwt.JwtTokenUtil;
-import com.tota.eccom.security.jwt.JwtUserDetailsService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +29,6 @@ public class UserDomain implements IUserDomain {
 
     private final UserRoleRepository userRoleRepository;
     private final UserRepository userRepository;
-    private final JwtTokenUtil jwtTokenUtil;
 
     @Transactional
     @Override
@@ -95,7 +92,7 @@ public class UserDomain implements IUserDomain {
     @Override
     public User getUserLogged() {
 
-        return getUserByEmail(JwtUserDetailsService.getLoggedUserEmail());
+        return userRepository.findById(1L).orElseThrow(() -> new UserNotFoundException("User not found with id: 1"));
     }
 
     @Transactional

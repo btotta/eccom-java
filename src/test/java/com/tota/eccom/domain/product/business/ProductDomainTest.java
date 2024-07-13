@@ -5,18 +5,13 @@ import com.tota.eccom.adapters.dto.product.ProductCreatePrice;
 import com.tota.eccom.adapters.dto.product.ProductUpdate;
 import com.tota.eccom.domain.common.enums.Status;
 import com.tota.eccom.domain.product.model.Product;
-import com.tota.eccom.domain.product.model.ProductPrice;
 import com.tota.eccom.domain.product.repository.ProductRepository;
 import com.tota.eccom.exceptions.product.ProductNotFoundException;
-import com.tota.eccom.security.jwt.JwtTokenUtil;
 import org.junit.jupiter.api.*;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -26,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataJpaTest
-@Import({ProductDomain.class, JwtTokenUtil.class})
+@Import({ProductDomain.class})
 class ProductDomainTest {
 
     @Autowired
@@ -34,9 +29,6 @@ class ProductDomainTest {
 
     @Autowired
     ProductDomain productDomain;
-
-    @Autowired
-    JwtTokenUtil jwtTokenUtil;
 
     private ProductCreate productCreateDTO;
     private ProductUpdate productUpdateDTO;

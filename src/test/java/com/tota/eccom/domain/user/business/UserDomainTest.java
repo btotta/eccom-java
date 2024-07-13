@@ -11,7 +11,6 @@ import com.tota.eccom.exceptions.user.UserAlreadyHasRoleException;
 import com.tota.eccom.exceptions.user.UserEmailExistsException;
 import com.tota.eccom.exceptions.user.UserNotFoundException;
 import com.tota.eccom.exceptions.user.UserRoleNotFoundException;
-import com.tota.eccom.security.jwt.JwtTokenUtil;
 import org.junit.jupiter.api.*;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataJpaTest
-@Import({UserDomain.class, JwtTokenUtil.class})
+@Import({UserDomain.class}  )
 class UserDomainTest {
 
     @Autowired
@@ -37,9 +36,6 @@ class UserDomainTest {
 
     @Autowired
     private UserDomain userDomain;
-
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
 
 
     @BeforeEach

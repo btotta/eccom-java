@@ -54,7 +54,7 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private Set<UserRole> roles;
+    private Set<UserRole> roles = new HashSet<>();
 
     @NotNull
     @Enumerated(EnumType.STRING)
