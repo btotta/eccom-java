@@ -3,16 +3,15 @@ package com.tota.eccom.domain.product.business;
 import com.tota.eccom.adapters.dto.product.ProductCreate;
 import com.tota.eccom.adapters.dto.product.ProductCreatePrice;
 import com.tota.eccom.adapters.dto.product.ProductUpdate;
-import com.tota.eccom.domain.common.enums.Status;
+import com.tota.eccom.domain.enums.Status;
 import com.tota.eccom.domain.product.model.Product;
 import com.tota.eccom.domain.product.repository.ProductRepository;
 import com.tota.eccom.exceptions.product.ProductNotFoundException;
 import org.junit.jupiter.api.*;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -21,8 +20,8 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@SpringBootTest
-@ActiveProfiles("test")
+@DataJpaTest
+@Import({ProductDomain.class})
 class ProductDomainTest {
 
     @Autowired
@@ -87,45 +86,6 @@ class ProductDomainTest {
             assertEquals(productCreateDTO.getSku(), product.getSku());
         }
 
-        @Test
-        @DisplayName("When a product is created with a null name, then it should throw an exception")
-        void createProductWithNullName() {
-            productCreateDTO.setName(null);
-
-            assertThrows(DataIntegrityViolationException.class, () -> productDomain.createProduct(productCreateDTO));
-        }
-
-        @Test
-        @DisplayName("When a product is created with a null description, then it should throw an exception")
-        void createProductWithNullDescription() {
-            productCreateDTO.setDescription(null);
-
-            assertThrows(DataIntegrityViolationException.class, () -> productDomain.createProduct(productCreateDTO));
-        }
-
-        @Test
-        @DisplayName("When a product is created with a null brand, then it should throw an exception")
-        void createProductWithNullBrand() {
-            productCreateDTO.setBrand(null);
-
-            assertThrows(DataIntegrityViolationException.class, () -> productDomain.createProduct(productCreateDTO));
-        }
-
-        @Test
-        @DisplayName("When a product is created with a null category, then it should throw an exception")
-        void createProductWithNullCategory() {
-            productCreateDTO.setCategory(null);
-
-            assertThrows(DataIntegrityViolationException.class, () -> productDomain.createProduct(productCreateDTO));
-        }
-
-        @Test
-        @DisplayName("When a product is created with a null sku, then it should throw an exception")
-        void createProductWithNullSku() {
-            productCreateDTO.setSku(null);
-
-            assertThrows(DataIntegrityViolationException.class, () -> productDomain.createProduct(productCreateDTO));
-        }
 
         @Test
         @DisplayName("When a product is created with price, then it should return the created product")

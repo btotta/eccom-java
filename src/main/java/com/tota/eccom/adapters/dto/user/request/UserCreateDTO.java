@@ -1,9 +1,8 @@
-package com.tota.eccom.adapters.dto.user;
+package com.tota.eccom.adapters.dto.user.request;
 
-import com.tota.eccom.domain.common.enums.Status;
-import com.tota.eccom.domain.common.utils.EmailValidationUtil;
-import com.tota.eccom.domain.common.utils.PasswordUtil;
-import com.tota.eccom.domain.user.enums.Role;
+import com.tota.eccom.domain.enums.Status;
+import com.tota.eccom.util.EmailValidationUtil;
+import com.tota.eccom.util.PasswordUtil;
 import com.tota.eccom.domain.user.model.User;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
@@ -11,13 +10,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.HashSet;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Data
-public class UserCreate {
+public class UserCreateDTO {
 
     @NotEmpty(message = "Name is required")
     private String name;
@@ -48,7 +47,7 @@ public class UserCreate {
                 .name(name)
                 .email(email)
                 .password(PasswordUtil.hashPassword(password))
-                .roles(List.of(Role.USER))
+                .roles(new HashSet<>())
                 .status(Status.ACTIVE)
                 .build();
     }

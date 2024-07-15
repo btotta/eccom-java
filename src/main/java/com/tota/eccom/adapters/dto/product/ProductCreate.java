@@ -1,6 +1,6 @@
 package com.tota.eccom.adapters.dto.product;
 
-import com.tota.eccom.domain.common.enums.Status;
+import com.tota.eccom.domain.enums.Status;
 import com.tota.eccom.domain.product.model.Product;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
@@ -37,6 +37,7 @@ public class ProductCreate {
         return Product.builder()
                 .name(name)
                 .description(description)
+                .urlName(name.toLowerCase().replace(" ", "_"))
                 .stock(stock)
                 .category(category)
                 .sku(sku)

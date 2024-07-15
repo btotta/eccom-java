@@ -15,24 +15,29 @@ public class ProductUpdate {
     private String sku;
 
     public void updateProduct(Product product) {
-        if (product.getName() != null) {
-            this.name = product.getName();
+        if (!isBlank(this.name)) {
+            product.setName(product.getName().trim());
+            product.setUrlName(product.getName().toLowerCase().replace(" ", "_"));
         }
 
-        if (product.getDescription() != null) {
-            this.description = product.getDescription();
+        if (!isBlank(this.description)) {
+            product.setDescription(product.getDescription().trim());
         }
 
-        if (product.getCategory() != null) {
-            this.category = product.getCategory();
+        if (!isBlank(this.category)) {
+            product.setCategory(product.getCategory().trim());
         }
 
-        if (product.getBrand() != null) {
-            this.brand = product.getBrand();
+        if (!isBlank(this.brand)) {
+            product.setBrand(product.getBrand().trim());
         }
 
-        if (product.getSku() != null) {
-            this.sku = product.getSku();
+        if (!isBlank(this.sku)) {
+            product.setSku(product.getSku().trim());
         }
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.isBlank();
     }
 }

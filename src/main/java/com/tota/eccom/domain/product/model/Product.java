@@ -1,6 +1,6 @@
 package com.tota.eccom.domain.product.model;
 
-import com.tota.eccom.domain.common.enums.Status;
+import com.tota.eccom.domain.enums.Status;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -33,6 +33,10 @@ public class Product {
     @NotNull
     @Column(name = "name", nullable = false)
     private String name;
+
+    @NotNull
+    @Column(name = "url_name", nullable = false)
+    private String urlName;
 
     @NotNull
     @Column(name = "description", nullable = false)

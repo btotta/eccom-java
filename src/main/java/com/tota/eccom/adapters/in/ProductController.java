@@ -1,6 +1,5 @@
 package com.tota.eccom.adapters.in;
 
-import com.tota.eccom.adapters.dto.exception.ErrorDetails;
 import com.tota.eccom.adapters.dto.product.ProductCreate;
 import com.tota.eccom.adapters.dto.product.ProductCreatePrice;
 import com.tota.eccom.adapters.dto.product.ProductUpdate;
@@ -8,8 +7,6 @@ import com.tota.eccom.domain.product.IProductDomain;
 import com.tota.eccom.domain.product.model.Product;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -22,7 +19,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -33,83 +29,14 @@ public class ProductController {
 
     private final IProductDomain productDomain;
 
-    // Private routes
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping
-    @Operation(
-            summary = "Create a new product",
-            description = "Creates a new product with the provided details.",
-            security = @SecurityRequirement(name = "bearerAuth")
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Product created successfully", content = @Content(schema = @Schema(implementation = Product.class))),
-            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content(schema = @Schema(implementation = ErrorDetails.class))),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ErrorDetails.class)))
-    })
-    public ResponseEntity<Product> createProduct(@RequestBody @Valid ProductCreate productCreateDTO) {
-        return new ResponseEntity<>(productDomain.createProduct(productCreateDTO), HttpStatus.CREATED);
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{id}")
-    @Operation(
-            summary = "Delete product by id",
-            description = "Deletes the product with the specified ID.",
-            security = @SecurityRequirement(name = "bearerAuth")
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Product deleted successfully", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Product not found", content = @Content(schema = @Schema(implementation = ErrorDetails.class))),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ErrorDetails.class)))
-    })
-    public ResponseEntity<Void> deleteProductById(@PathVariable Long id) {
-        productDomain.deleteProductById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/{id}")
-    @Operation(
-            summary = "Update product by id",
-            description = "Updates the product with the specified ID using the provided details.",
-            security = @SecurityRequirement(name = "bearerAuth")
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Product updated successfully", content = @Content(schema = @Schema(implementation = Product.class))),
-            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content(schema = @Schema(implementation = ErrorDetails.class))),
-            @ApiResponse(responseCode = "404", description = "Product not found", content = @Content(schema = @Schema(implementation = ErrorDetails.class))),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ErrorDetails.class)))
-    })
-    public ResponseEntity<Product> updateProductById(@PathVariable Long id, @RequestBody @Valid ProductUpdate productUpdateDTO) {
-        return new ResponseEntity<>(productDomain.updateProductById(id, productUpdateDTO), HttpStatus.OK);
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/price/{id}")
-    @Operation(
-            summary = "Add price to product",
-            description = "Adds a price to the product with the specified ID.",
-            security = @SecurityRequirement(name = "bearerAuth")
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Price added successfully", content = @Content(schema = @Schema(implementation = Product.class))),
-            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content(schema = @Schema(implementation = ErrorDetails.class))),
-            @ApiResponse(responseCode = "404", description = "Product not found", content = @Content(schema = @Schema(implementation = ErrorDetails.class))),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ErrorDetails.class)))
-    })
-    public ResponseEntity<Product> addPriceToProduct(@PathVariable Long id, @RequestBody @Valid ProductCreatePrice productCreatePriceDTO) {
-        return new ResponseEntity<>(productDomain.addPriceToProduct(id, productCreatePriceDTO), HttpStatus.OK);
-    }
-
-    // Public routes
     @GetMapping("/public/{id}")
     @Operation(
             summary = "Get product by id",
             description = "Retrieves the product with the specified ID."
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Product retrieved successfully", content = @Content(schema = @Schema(implementation = Product.class))),
-            @ApiResponse(responseCode = "404", description = "Product not found", content = @Content(schema = @Schema(implementation = ErrorDetails.class)))
+            @ApiResponse(responseCode = "200", description = "Product retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Product not found")
     })
     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
         return new ResponseEntity<>(productDomain.getProductById(id), HttpStatus.OK);
@@ -127,7 +54,7 @@ public class ProductController {
     @Parameter(name = "brand", description = "Filter products by brand", example = "BrandX")
     @Parameter(name = "category", description = "Filter products by category", example = "Electronics")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Products retrieved successfully", content = @Content(schema = @Schema(implementation = Page.class)))
+            @ApiResponse(responseCode = "200", description = "Products retrieved successfully")
     })
     public ResponseEntity<Page<Product>> getAllProductsPaginated(
             @PageableDefault(size = 10, page = 0) Pageable pageable,
@@ -139,4 +66,83 @@ public class ProductController {
     ) {
         return ResponseEntity.ok(productDomain.getAllProductsPaginated(pageable, name, description, price, brand, category));
     }
+
+
+    @PostMapping
+    @Operation(
+            summary = "Create a new product",
+            description = "Creates a new product with the provided details.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Product created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
+    public ResponseEntity<Product> createProduct(@RequestBody @Valid ProductCreate productCreateDTO) {
+        return new ResponseEntity<>(productDomain.createProduct(productCreateDTO), HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(
+            summary = "Delete product by id",
+            description = "Deletes the product with the specified ID.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Product deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Product not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
+    public ResponseEntity<Void> deleteProductById(@PathVariable Long id) {
+        productDomain.deleteProductById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping("/{id}")
+    @Operation(
+            summary = "Update product by id",
+            description = "Updates the product with the specified ID using the provided details.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Product updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "404", description = "Product not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
+    public ResponseEntity<Product> updateProductById(@PathVariable Long id, @RequestBody @Valid ProductUpdate productUpdateDTO) {
+        return new ResponseEntity<>(productDomain.updateProductById(id, productUpdateDTO), HttpStatus.OK);
+    }
+
+    @PostMapping("/price/{id}")
+    @Operation(
+            summary = "Add price to product",
+            description = "Adds a price to the product with the specified ID."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Price added successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "404", description = "Product not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
+    public ResponseEntity<Product> addPriceToProduct(@PathVariable Long id, @RequestBody @Valid ProductCreatePrice productCreatePriceDTO) {
+        return new ResponseEntity<>(productDomain.addPriceToProduct(id, productCreatePriceDTO), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}/price/{priceId}")
+    @Operation(
+            summary = "Delete price from product",
+            description = "Deletes the price from the product with the specified ID."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Price deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Product not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
+    public ResponseEntity<Void> deletePriceFromProduct(@PathVariable Long id, @PathVariable Long priceId) {
+        productDomain.deletePriceFromProduct(id, priceId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
 }

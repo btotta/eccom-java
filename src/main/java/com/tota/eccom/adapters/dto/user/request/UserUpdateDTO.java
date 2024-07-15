@@ -1,6 +1,6 @@
-package com.tota.eccom.adapters.dto.user;
+package com.tota.eccom.adapters.dto.user.request;
 
-import com.tota.eccom.domain.common.utils.EmailValidationUtil;
+import com.tota.eccom.util.EmailValidationUtil;
 import com.tota.eccom.domain.user.model.User;
 import lombok.Builder;
 import lombok.Data;
@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 
 @Data
 @Builder
-public class UserUpdate {
+public class UserUpdateDTO {
 
     private String name;
     private String email;
@@ -34,4 +34,6 @@ public class UserUpdate {
         }
 
     }
+
+
 }

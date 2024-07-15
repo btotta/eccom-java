@@ -1,4 +1,4 @@
-package com.tota.eccom.adapters.dto.auth;
+package com.tota.eccom.adapters.dto.user.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,10 +7,9 @@ import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 @Builder
-public class LoginResponse {
+@Data
+public class UserLoginRespDTO {
 
-    private String accessToken;
-    private String refreshToken;
+    private String token;
 }

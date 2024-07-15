@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-public class HealthResponse {
+public class HealthResp {
 
     private String status;
     private String message;

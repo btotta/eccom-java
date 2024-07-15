@@ -1,4 +1,4 @@
-package com.tota.eccom.domain.common.enums;
+package com.tota.eccom.domain.enums;
 
 import lombok.Getter;
 

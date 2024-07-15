@@ -1,6 +1,5 @@
-package com.tota.eccom.adapters.dto.auth;
+package com.tota.eccom.adapters.dto.user.request;
 
-import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,13 +7,12 @@ import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 @Builder
-public class LoginRequest {
+@Data
+public class UserLoginDTO {
 
-    @NotEmpty(message = "Email is required")
+
     private String email;
-    @NotEmpty(message = "Password is required")
     private String password;
 
 }
