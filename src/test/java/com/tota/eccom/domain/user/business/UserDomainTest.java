@@ -1,7 +1,9 @@
 package com.tota.eccom.domain.user.business;
 
 import com.tota.eccom.adapters.dto.user.request.UserCreateDTO;
+import com.tota.eccom.adapters.dto.user.request.UserLoginDTO;
 import com.tota.eccom.adapters.dto.user.request.UserUpdateDTO;
+import com.tota.eccom.adapters.dto.user.response.UserLoginRespDTO;
 import com.tota.eccom.domain.enums.Status;
 import com.tota.eccom.domain.user.model.Role;
 import com.tota.eccom.domain.user.model.User;
@@ -11,12 +13,14 @@ import com.tota.eccom.exceptions.user.UserAlreadyHasRoleException;
 import com.tota.eccom.exceptions.user.UserEmailExistsException;
 import com.tota.eccom.exceptions.user.UserNotFoundException;
 import com.tota.eccom.exceptions.user.UserRoleNotFoundException;
+import com.tota.eccom.util.InvalidJwtTokenUtil;
 import com.tota.eccom.util.JwtTokenUtil;
 import com.tota.eccom.util.SecurityUtil;
 import org.junit.jupiter.api.*;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 
 import java.util.List;
@@ -25,6 +29,7 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.when;
 
 @DataJpaTest
 @Import({UserDomain.class, JwtTokenUtil.class, SecurityUtil.class})
@@ -42,11 +47,17 @@ class UserDomainTest {
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
+    @MockBean
+    private SecurityUtil securityUtil;
+
+    @MockBean
+    private InvalidJwtTokenUtil invalidJwtTokenUtil;
+
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-
+        jwtTokenUtil.setSecret("myRasfasafas1fsfasf13afase13alSe123crasfasfeta13sfasfJwasftasfSasecfasf133131ret");
         persistRoles();
     }
 
@@ -343,4 +354,186 @@ class UserDomainTest {
         }
 
     }
+
+    @Nested
+    @DisplayName("Get Logged User")
+    class GetLoggedUserTest {
+
+        @Test
+        @DisplayName("Get logged user, should return logged user successfully")
+        void testGetLoggedUser_shouldReturnLoggedUserSuccessfully() {
+
+            User savedUser = userDomain.createUser(mockUserCreateDTO());
+
+            when(securityUtil.getCurrentUsername()).thenReturn(savedUser.getEmail());
+
+            User foundUser = userDomain.getUserLogged();
+
+            assertNotNull(foundUser.getId());
+            assertEquals(savedUser.getId(), foundUser.getId());
+            assertEquals(savedUser.getName(), foundUser.getName());
+            assertEquals(savedUser.getEmail(), foundUser.getEmail());
+        }
+
+        @Test
+        @DisplayName("Get logged user, should throw exception when user not logged")
+        void testGetLoggedUser_shouldThrowExceptionWhenUserNotLogged() {
+            assertThrows(UserNotFoundException.class, () -> userDomain.getUserLogged());
+        }
+
+        @Test
+        @DisplayName("Get logged user, should throw exception when user not found")
+        void testGetLoggedUser_shouldThrowExceptionWhenUserNotFound() {
+            when(securityUtil.getCurrentUsername()).thenReturn("test@example.com");
+            assertThrows(UserNotFoundException.class, () -> userDomain.getUserLogged());
+        }
+
+    }
+
+    @Nested
+    @DisplayName("Delete Logged User")
+    class DeleteLoggedUserTest {
+
+        @Test
+        @DisplayName("Delete logged user, should delete logged user successfully")
+        void testDeleteLoggedUser_shouldDeleteLoggedUserSuccessfully() {
+
+            User savedUser = userDomain.createUser(mockUserCreateDTO());
+
+            when(securityUtil.getCurrentUsername()).thenReturn(savedUser.getEmail());
+
+            userDomain.deleteUserLogged();
+
+            User deletedUser = userRepository.findByEmail(savedUser.getEmail());
+
+            assertNotNull(deletedUser);
+            assertEquals(Status.DELETED, deletedUser.getStatus());
+        }
+
+        @Test
+        @DisplayName("Delete logged user, should throw exception when user not logged")
+        void testDeleteLoggedUser_shouldThrowExceptionWhenUserNotLogged() {
+            assertThrows(UserNotFoundException.class, () -> userDomain.deleteUserLogged());
+        }
+
+        @Test
+        @DisplayName("Delete logged user, should throw exception when user not found")
+        void testDeleteLoggedUser_shouldThrowExceptionWhenUserNotFound() {
+            when(securityUtil.getCurrentUsername()).thenReturn("test@example.com");
+            assertThrows(UserNotFoundException.class, () -> userDomain.deleteUserLogged());
+        }
+
+    }
+
+    @Nested
+    @DisplayName("Update Logged User")
+    class UpdateLoggedUserTest {
+
+        @Test
+        @DisplayName("Update logged user, should update logged user successfully")
+        void testUpdateLoggedUser_shouldUpdateLoggedUserSuccessfully() {
+
+            User savedUser = userDomain.createUser(mockUserCreateDTO());
+
+            when(securityUtil.getCurrentUsername()).thenReturn(savedUser.getEmail());
+
+            UserUpdateDTO updateDTO = mockUserUpdateDTO();
+            updateDTO.setName("Test User");
+
+            User updatedUser = userDomain.updateUserLogged(updateDTO);
+
+            assertNotNull(updatedUser.getId());
+            assertEquals(updateDTO.getName(), updatedUser.getName());
+            assertEquals(updateDTO.getEmail(), updatedUser.getEmail());
+        }
+
+        @Test
+        @DisplayName("Update logged user, should throw exception when user not logged")
+        void testUpdateLoggedUser_shouldThrowExceptionWhenUserNotLogged() {
+            assertThrows(UserNotFoundException.class, () -> userDomain.updateUserLogged(mockUserUpdateDTO()));
+        }
+
+        @Test
+        @DisplayName("Update logged user, should throw exception when user not found")
+        void testUpdateLoggedUser_shouldThrowExceptionWhenUserNotFound() {
+            when(securityUtil.getCurrentUsername()).thenReturn("test@example.com");
+            assertThrows(UserNotFoundException.class, () -> userDomain.updateUserLogged(mockUserUpdateDTO()));
+        }
+
+    }
+
+    @Nested
+    @DisplayName("Login User")
+    class LoginUserTest {
+
+        @Test
+        @DisplayName("Login user, should login user successfully")
+        void testLoginUser_shouldLoginUserSuccessfully() {
+
+            userDomain.createUser(mockUserCreateDTO());
+
+            UserLoginDTO loginDTO = new UserLoginDTO();
+            loginDTO.setEmail(mockUserCreateDTO().getEmail());
+            loginDTO.setPassword(mockUserCreateDTO().getPassword());
+
+            UserLoginRespDTO loginRespDTO = userDomain.loginUser(loginDTO);
+
+            assertNotNull(loginRespDTO.getToken());
+        }
+
+        @Test
+        @DisplayName("Login user, should throw exception when user not found")
+        void testLoginUser_shouldThrowExceptionWhenUserNotFound() {
+            UserLoginDTO loginDTO = new UserLoginDTO();
+            loginDTO.setEmail("test@example.com");
+            loginDTO.setPassword("v*cb592K6shz@5gr");
+
+            assertThrows(UserNotFoundException.class, () -> userDomain.loginUser(loginDTO));
+        }
+
+        @Test
+        @DisplayName("Login user, should throw exception when password is invalid")
+        void testLoginUser_shouldThrowExceptionWhenPasswordIsInvalid() {
+            UserLoginDTO loginDTO = new UserLoginDTO();
+            loginDTO.setEmail(mockUserCreateDTO().getEmail());
+            loginDTO.setPassword("password");
+
+            assertThrows(UserNotFoundException.class, () -> userDomain.loginUser(loginDTO));
+        }
+
+        @Test
+        @DisplayName("Login user, should throw exception when email is invalid")
+        void testLoginUser_shouldThrowExceptionWhenEmailIsInvalid() {
+            UserLoginDTO loginDTO = new UserLoginDTO();
+            loginDTO.setEmail("invalid-email");
+            loginDTO.setPassword(mockUserCreateDTO().getPassword());
+
+            assertThrows(UserNotFoundException.class, () -> userDomain.loginUser(loginDTO));
+        }
+
+    }
+
+    @Nested
+    @DisplayName("Logout User")
+    class LogoutUserTest {
+
+        @Test
+        @DisplayName("Logout user, should logout user successfully")
+        void testLogoutUser_shouldLogoutUserSuccessfully() {
+
+            User savedUser = userDomain.createUser(mockUserCreateDTO());
+            String token = jwtTokenUtil.generateToken(savedUser);
+
+            when(securityUtil.getCurrentUsername()).thenReturn(savedUser.getEmail());
+            when(securityUtil.getCurrentJwtToken()).thenReturn(token);
+
+            userDomain.logoutUser();
+
+            assertTrue(InvalidJwtTokenUtil.isTokenInvalid(token));
+        }
+
+
+    }
+
+
 }
