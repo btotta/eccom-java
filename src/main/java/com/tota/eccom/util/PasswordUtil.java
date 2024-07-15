@@ -1,4 +1,4 @@
-package com.tota.eccom.domain.common.utils;
+package com.tota.eccom.util;
 
 import jakarta.validation.constraints.NotEmpty;
 import org.apache.commons.lang3.StringUtils;

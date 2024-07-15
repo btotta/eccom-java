@@ -1,10 +1,12 @@
 package com.tota.eccom.domain.user;
 
 import com.tota.eccom.adapters.dto.user.request.UserCreateDTO;
+import com.tota.eccom.adapters.dto.user.request.UserLoginDTO;
 import com.tota.eccom.adapters.dto.user.request.UserRoleCreateDTO;
 import com.tota.eccom.adapters.dto.user.request.UserUpdateDTO;
+import com.tota.eccom.adapters.dto.user.response.UserLoginRespDTO;
+import com.tota.eccom.domain.user.model.Role;
 import com.tota.eccom.domain.user.model.User;
-import com.tota.eccom.domain.user.model.UserRole;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -26,13 +28,17 @@ public interface IUserDomain {
 
     User updateUserLogged(UserUpdateDTO userUpdateDTO);
 
-    List<UserRole> getAllUserRoles();
+    List<Role> getAllUserRoles();
 
-    UserRole createUserRole(UserRoleCreateDTO userRoleCreateDTO);
+    Role createUserRole(UserRoleCreateDTO userRoleCreateDTO);
 
     void deleteUserRoleById(Long id);
 
-    UserRole getUserRoleById(Long id);
+    Role getUserRoleById(Long id);
 
     User associateUserRole(Long userId, Long id);
+
+    UserLoginRespDTO loginUser(UserLoginDTO userLoginDTO);
+
+    void logoutUser(String authorization);
 }

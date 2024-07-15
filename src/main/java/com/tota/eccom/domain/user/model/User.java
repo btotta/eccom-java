@@ -54,7 +54,7 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private Set<UserRole> roles = new HashSet<>();
+    private Set<Role> roles = new HashSet<>();
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -68,4 +68,15 @@ public class User {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @PrePersist
+    public void prePersist() {
+        this.setCreatedAt(LocalDateTime.now());
+        this.setUpdatedAt(LocalDateTime.now());
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.setUpdatedAt(LocalDateTime.now());
+    }
 }

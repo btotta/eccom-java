@@ -1,13 +1,12 @@
 package com.tota.eccom.adapters.dto.user.response;
 
 import com.tota.eccom.domain.common.enums.Status;
+import com.tota.eccom.domain.user.model.Role;
 import com.tota.eccom.domain.user.model.User;
-import com.tota.eccom.domain.user.model.UserRole;
 import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 
 @Data
@@ -17,7 +16,7 @@ public class UserRespDTO {
     private Long id;
     private String name;
     private String email;
-    private Set<UserRole> roles;
+    private Set<Role> roles;
     private Status status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

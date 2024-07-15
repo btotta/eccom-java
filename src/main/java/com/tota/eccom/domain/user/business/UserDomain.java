@@ -1,21 +1,27 @@
 package com.tota.eccom.domain.user.business;
 
 import com.tota.eccom.adapters.dto.user.request.UserCreateDTO;
+import com.tota.eccom.adapters.dto.user.request.UserLoginDTO;
 import com.tota.eccom.adapters.dto.user.request.UserRoleCreateDTO;
 import com.tota.eccom.adapters.dto.user.request.UserUpdateDTO;
+import com.tota.eccom.adapters.dto.user.response.UserLoginRespDTO;
 import com.tota.eccom.domain.common.enums.Status;
 import com.tota.eccom.domain.user.IUserDomain;
+import com.tota.eccom.domain.user.model.Role;
 import com.tota.eccom.domain.user.model.User;
-import com.tota.eccom.domain.user.model.UserRole;
 import com.tota.eccom.domain.user.repository.UserRepository;
 import com.tota.eccom.domain.user.repository.UserRoleRepository;
 import com.tota.eccom.exceptions.user.UserAlreadyHasRoleException;
 import com.tota.eccom.exceptions.user.UserEmailExistsException;
 import com.tota.eccom.exceptions.user.UserNotFoundException;
 import com.tota.eccom.exceptions.user.UserRoleNotFoundException;
+import com.tota.eccom.util.InvalidJwtTokenUtil;
+import com.tota.eccom.util.JwtTokenUtil;
+import com.tota.eccom.util.PasswordUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -29,6 +35,7 @@ public class UserDomain implements IUserDomain {
 
     private final UserRoleRepository userRoleRepository;
     private final UserRepository userRepository;
+    private final JwtTokenUtil jwtTokenUtil;
 
     @Transactional
     @Override
@@ -38,7 +45,7 @@ public class UserDomain implements IUserDomain {
             throw new UserEmailExistsException("User already exists with given email.");
         }
 
-        UserRole userRole = getUserRoleByName("USER");
+        Role userRole = getUserRole();
 
         User user = userCreateDTO.toUser();
         user.getRoles().add(userRole);
@@ -123,34 +130,40 @@ public class UserDomain implements IUserDomain {
     }
 
     @Override
-    public List<UserRole> getAllUserRoles() {
+    public List<Role> getAllUserRoles() {
 
         return userRoleRepository.findAllActive();
     }
 
     @Override
-    public UserRole createUserRole(UserRoleCreateDTO userRoleCreateDTO) {
-        UserRole userRole = userRoleCreateDTO.toUserRole();
+    public Role createUserRole(UserRoleCreateDTO userRoleCreateDTO) {
+        Role userRole = userRoleCreateDTO.toUserRole();
 
         return userRoleRepository.save(userRole);
     }
 
     @Override
-    public UserRole getUserRoleById(Long id) {
+    public Role getUserRoleById(Long id) {
         return userRoleRepository.findById(id)
                 .orElseThrow(() -> new UserRoleNotFoundException("User role not found with given id: {}" + id));
     }
 
 
-    public UserRole getUserRoleByName(String name) {
-        return userRoleRepository.findByName(name)
-                .orElseThrow(() -> new UserRoleNotFoundException("User role not found with given name: {}" + name));
+    public Role getUserRole() {
+        return userRoleRepository.findByName("USER")
+                .orElseThrow(() -> new UserRoleNotFoundException("User role not found with given name: {}" + "USER"));
+    }
+
+
+    public Role getAdminRole() {
+        return userRoleRepository.findByName("ADMIN")
+                .orElseThrow(() -> new UserRoleNotFoundException("User role not found with given name: {}" + "ADMIN"));
     }
 
     @Transactional
     @Override
     public void deleteUserRoleById(Long id) {
-        UserRole userRole = getUserRoleById(id);
+        Role userRole = getUserRoleById(id);
 
         userRoleRepository.delete(userRole);
     }
@@ -159,13 +172,13 @@ public class UserDomain implements IUserDomain {
     @Override
     public User associateUserRole(Long userId, Long roleId) {
         User user = getUserById(userId);
-        UserRole userRole = getUserRoleById(roleId);
+        Role userRole = getUserRoleById(roleId);
 
         if (user.getRoles().contains(userRole)) {
             throw new UserAlreadyHasRoleException("User already has role");
         }
 
-        Set<UserRole> roles = user.getRoles();
+        Set<Role> roles = user.getRoles();
 
         roles.add(userRole);
 
@@ -173,6 +186,39 @@ public class UserDomain implements IUserDomain {
 
         userRepository.save(user);
         return user;
+    }
+
+    @Override
+    public UserLoginRespDTO loginUser(UserLoginDTO userLoginDTO) {
+
+        User user = userRepository.findByEmail(userLoginDTO.getEmail());
+
+        if (user == null || !PasswordUtil.validatePassword(userLoginDTO.getPassword(), user.getPassword())) {
+            throw new UserNotFoundException("User not found with given email and password");
+        }
+
+        String token = jwtTokenUtil.generateToken(user);
+
+        return UserLoginRespDTO.builder()
+                .token(token)
+                .build();
+
+    }
+
+    @Override
+    public void logoutUser(String authorization) {
+
+        if (authorization == null || StringUtils.trimToEmpty(authorization).isEmpty()) {
+            return;
+        }
+
+        User user = userRepository.findByEmail(jwtTokenUtil.getUsernameFromToken(authorization.replace("Bearer ", "")));
+
+        if (user == null) {
+            throw new UserNotFoundException("User not found");
+        }
+
+        InvalidJwtTokenUtil.addToken(authorization);
     }
 
 }

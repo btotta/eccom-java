@@ -1,8 +1,8 @@
 package com.tota.eccom.adapters.dto.user.request;
 
 import com.tota.eccom.domain.common.enums.Status;
-import com.tota.eccom.domain.common.utils.EmailValidationUtil;
-import com.tota.eccom.domain.common.utils.PasswordUtil;
+import com.tota.eccom.util.EmailValidationUtil;
+import com.tota.eccom.util.PasswordUtil;
 import com.tota.eccom.domain.user.model.User;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;

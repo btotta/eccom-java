@@ -1,4 +1,4 @@
-package com.tota.eccom.domain.common.utils;
+package com.tota.eccom.util;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

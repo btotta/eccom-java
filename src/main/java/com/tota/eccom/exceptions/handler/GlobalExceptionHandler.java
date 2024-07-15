@@ -4,6 +4,7 @@ import com.tota.eccom.adapters.dto.exception.ErrorDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -25,6 +26,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public final ResponseEntity<ErrorDetails> handleIllegalArgumentExceptions(IllegalArgumentException ex, WebRequest request) {
         return buildErrorResponse(ex, request, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public final ResponseEntity<ErrorDetails> handleAccessDeniedExceptions(AccessDeniedException ex, WebRequest request) {
+        return buildErrorResponse(ex, request, HttpStatus.FORBIDDEN);
     }
 
     private ResponseEntity<ErrorDetails> buildErrorResponse(Exception ex, WebRequest request, HttpStatus httpStatus) {

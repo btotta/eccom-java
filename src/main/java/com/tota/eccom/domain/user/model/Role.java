@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserRole {
+public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,4 +46,15 @@ public class UserRole {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private Status status;
+
+    @PrePersist
+    public void prePersist() {
+        this.setCreatedAt(LocalDateTime.now());
+        this.setUpdatedAt(LocalDateTime.now());
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.setUpdatedAt(LocalDateTime.now());
+    }
 }

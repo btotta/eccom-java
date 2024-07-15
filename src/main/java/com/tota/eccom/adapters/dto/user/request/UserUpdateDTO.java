@@ -1,6 +1,6 @@
 package com.tota.eccom.adapters.dto.user.request;
 
-import com.tota.eccom.domain.common.utils.EmailValidationUtil;
+import com.tota.eccom.util.EmailValidationUtil;
 import com.tota.eccom.domain.user.model.User;
 import lombok.Builder;
 import lombok.Data;
