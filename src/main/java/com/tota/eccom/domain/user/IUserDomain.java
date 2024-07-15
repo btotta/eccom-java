@@ -36,9 +36,13 @@ public interface IUserDomain {
 
     Role getUserRoleById(Long id);
 
+    Role getUserRole();
+
+    Role getAdminRole();
+
     User associateUserRole(Long userId, Long id);
 
     UserLoginRespDTO loginUser(UserLoginDTO userLoginDTO);
 
-    void logoutUser(String authorization);
+    void logoutUser();
 }

@@ -156,12 +156,14 @@ public class UserDomain implements IUserDomain {
                 .orElseThrow(() -> new UserRoleNotFoundException("User role not found with given id: " + id));
     }
 
-    private Role getUserRole() {
+    @Override
+    public Role getUserRole() {
         return userRoleRepository.findByName("USER")
                 .orElseThrow(() -> new UserRoleNotFoundException("User role not found with given name: USER"));
     }
 
-    private Role getAdminRole() {
+    @Override
+    public Role getAdminRole() {
         return userRoleRepository.findByName("ADMIN")
                 .orElseThrow(() -> new UserRoleNotFoundException("User role not found with given name: ADMIN"));
     }
@@ -205,12 +207,14 @@ public class UserDomain implements IUserDomain {
     }
 
     @Override
-    public void logoutUser(String authorization) {
-        if (authorization == null || StringUtils.trimToEmpty(authorization).isEmpty()) {
+    public void logoutUser() {
+
+        String token = securityUtil.getCurrentJwtToken();
+
+        if (token == null) {
             return;
         }
 
-        String token = authorization.replace("Bearer ", "");
         User user = userRepository.findByEmail(jwtTokenUtil.getUsernameFromToken(token));
 
         if (user == null) {

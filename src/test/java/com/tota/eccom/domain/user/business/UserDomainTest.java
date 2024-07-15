@@ -3,14 +3,16 @@ package com.tota.eccom.domain.user.business;
 import com.tota.eccom.adapters.dto.user.request.UserCreateDTO;
 import com.tota.eccom.adapters.dto.user.request.UserUpdateDTO;
 import com.tota.eccom.domain.enums.Status;
+import com.tota.eccom.domain.user.model.Role;
 import com.tota.eccom.domain.user.model.User;
-import com.tota.eccom.domain.user.model.UserRole;
 import com.tota.eccom.domain.user.repository.UserRepository;
 import com.tota.eccom.domain.user.repository.UserRoleRepository;
 import com.tota.eccom.exceptions.user.UserAlreadyHasRoleException;
 import com.tota.eccom.exceptions.user.UserEmailExistsException;
 import com.tota.eccom.exceptions.user.UserNotFoundException;
 import com.tota.eccom.exceptions.user.UserRoleNotFoundException;
+import com.tota.eccom.util.JwtTokenUtil;
+import com.tota.eccom.util.SecurityUtil;
 import org.junit.jupiter.api.*;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataJpaTest
-@Import({UserDomain.class}  )
+@Import({UserDomain.class, JwtTokenUtil.class, SecurityUtil.class})
 class UserDomainTest {
 
     @Autowired
@@ -36,6 +38,9 @@ class UserDomainTest {
 
     @Autowired
     private UserDomain userDomain;
+
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
 
     @BeforeEach
@@ -67,12 +72,12 @@ class UserDomainTest {
     }
 
     private void persistRoles() {
-        UserRole userRole = UserRole.builder()
+        Role userRole = Role.builder()
                 .name("USER")
                 .status(Status.ACTIVE)
                 .build();
 
-        UserRole adminRole = UserRole.builder()
+        Role adminRole = Role.builder()
                 .name("ADMIN")
                 .status(Status.ACTIVE)
                 .build();
@@ -143,7 +148,7 @@ class UserDomainTest {
         @Test
         @DisplayName("Create user, should already have role")
         void testCreateUser_shouldAlreadyHaveRole() {
-            UserRole userRole = userDomain.getUserRoleByName("USER");
+            Role userRole = userDomain.getUserRole();
             User user = userDomain.createUser(mockUserCreateDTO());
 
             assertEquals(userRole, user.getRoles().iterator().next());
@@ -307,7 +312,7 @@ class UserDomainTest {
         void testAssociateUserRole_shouldReturnUserSuccessfully() {
 
             User savedUser = userDomain.createUser(mockUserCreateDTO());
-            UserRole userRole = userDomain.getUserRoleByName("ADMIN");
+            Role userRole = userDomain.getAdminRole();
 
             User updatedUser = userDomain.associateUserRole(savedUser.getId(), userRole.getId());
 
@@ -332,7 +337,7 @@ class UserDomainTest {
         @DisplayName("Associate user role, should throw exception when user already has role")
         void testAssociateUserRole_shouldThrowExceptionWhenUserAlreadyHasRole() {
             User savedUser = userDomain.createUser(mockUserCreateDTO());
-            UserRole userRole = userDomain.getUserRoleByName("USER");
+            Role userRole = userDomain.getUserRole();
 
             assertThrows(UserAlreadyHasRoleException.class, () -> userDomain.associateUserRole(savedUser.getId(), userRole.getId()));
         }

@@ -212,8 +212,8 @@ public class UserController {
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    public ResponseEntity<Void> logoutUser(@RequestHeader(name = "Authorization", required = false) String authorization) {
-        userDomain.logoutUser(authorization);
+    public ResponseEntity<Void> logoutUser() {
+        userDomain.logoutUser();
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
