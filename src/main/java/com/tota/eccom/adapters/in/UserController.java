@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -44,7 +45,7 @@ public class UserController {
     }
 
     @GetMapping
-    @Operation(summary = "Get logged user", description = "Fetches the details of the logged-in user.")
+    @Operation(summary = "Get logged user", description = "Fetches the details of the logged-in user.", security = @SecurityRequirement(name = "Authorization"))
     @PreAuthorize("hasRole('USER')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully fetched user details"),
@@ -56,7 +57,7 @@ public class UserController {
     }
 
     @PutMapping
-    @Operation(summary = "Update logged user", description = "Updates the details of the logged-in user.")
+    @Operation(summary = "Update logged user", description = "Updates the details of the logged-in user.", security = @SecurityRequirement(name = "Authorization"))
     @PreAuthorize("hasRole('USER')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User updated successfully"),
@@ -69,7 +70,7 @@ public class UserController {
     }
 
     @DeleteMapping
-    @Operation(summary = "Delete logged user", description = "Deletes the logged-in user's account.")
+    @Operation(summary = "Delete logged user", description = "Deletes the logged-in user's account.", security = @SecurityRequirement(name = "Authorization"))
     @PreAuthorize("hasRole('USER')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "User deleted successfully"),
@@ -84,7 +85,7 @@ public class UserController {
     // User by Admin Operations
 
     @GetMapping("/admin/{id}")
-    @Operation(summary = "Get user by id", description = "Fetches the details of a user by their ID.")
+    @Operation(summary = "Get user by id", description = "Fetches the details of a user by their ID.", security = @SecurityRequirement(name = "Authorization"))
     @PreAuthorize("hasRole('ADMIN')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully fetched user details"),
@@ -97,7 +98,7 @@ public class UserController {
     }
 
     @PutMapping("/admin/{id}")
-    @Operation(summary = "Update user by id", description = "Updates the details of a user by their ID.")
+    @Operation(summary = "Update user by id", description = "Updates the details of a user by their ID.", security = @SecurityRequirement(name = "Authorization"))
     @PreAuthorize("hasRole('ADMIN')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User updated successfully"),
@@ -111,7 +112,7 @@ public class UserController {
     }
 
     @DeleteMapping("/admin/{id}")
-    @Operation(summary = "Delete user by id", description = "Deletes a user by their ID.")
+    @Operation(summary = "Delete user by id", description = "Deletes a user by their ID.", security = @SecurityRequirement(name = "Authorization"))
     @PreAuthorize("hasRole('ADMIN')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "User deleted successfully"),
@@ -127,7 +128,7 @@ public class UserController {
     // Role Operations
 
     @GetMapping("/role/list")
-    @Operation(summary = "Get all user roles", description = "Fetches all user roles.")
+    @Operation(summary = "Get all user roles", description = "Fetches all user roles.", security = @SecurityRequirement(name = "Authorization"))
     @PreAuthorize("hasRole('ADMIN')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully fetched user roles"),
@@ -139,7 +140,7 @@ public class UserController {
     }
 
     @PostMapping("/role")
-    @Operation(summary = "Create a new user role", description = "Creates a new user role.")
+    @Operation(summary = "Create a new user role", description = "Creates a new user role.", security = @SecurityRequirement(name = "Authorization"))
     @PreAuthorize("hasRole('ADMIN')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "User role created successfully"),
@@ -152,7 +153,7 @@ public class UserController {
     }
 
     @GetMapping("/role/{id}")
-    @Operation(summary = "Get user role by id", description = "Fetches the details of a user role by their ID.")
+    @Operation(summary = "Get user role by id", description = "Fetches the details of a user role by their ID.", security = @SecurityRequirement(name = "Authorization"))
     @PreAuthorize("hasRole('ADMIN')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully fetched user role details"),
@@ -165,7 +166,7 @@ public class UserController {
     }
 
     @DeleteMapping("/role/{id}")
-    @Operation(summary = "Delete user role by id", description = "Deletes a user role by their ID.")
+    @Operation(summary = "Delete user role by id", description = "Deletes a user role by their ID.", security = @SecurityRequirement(name = "Authorization"))
     @PreAuthorize("hasRole('ADMIN')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "User role deleted successfully"),
@@ -179,7 +180,7 @@ public class UserController {
     }
 
     @PostMapping("/role/{id}/user/{userId}")
-    @Operation(summary = "Associate user role to user", description = "Associates a user role to a user.")
+    @Operation(summary = "Associate user role to user", description = "Associates a user role to a user.", security = @SecurityRequirement(name = "Authorization"))
     @PreAuthorize("hasRole('ADMIN')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "User role associated successfully"),
@@ -206,7 +207,7 @@ public class UserController {
     }
 
     @PostMapping("/logout")
-    @Operation(summary = "Logout user", description = "Logs out the user.")
+    @Operation(summary = "Logout user", description = "Logs out the user.", security = @SecurityRequirement(name = "Authorization"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "User logged out successfully"),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
