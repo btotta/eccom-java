@@ -2,7 +2,7 @@ package com.tota.eccom.domain.cart.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.tota.eccom.domain.common.enums.Status;
+import com.tota.eccom.domain.enums.Status;
 import com.tota.eccom.domain.user.model.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

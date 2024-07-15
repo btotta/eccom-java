@@ -8,7 +8,7 @@ import com.tota.eccom.domain.cart.model.CartItem;
 import com.tota.eccom.domain.cart.repository.CartItemRepository;
 import com.tota.eccom.domain.cart.repository.CartRepository;
 import com.tota.eccom.domain.cart.repository.spec.CartSpecification;
-import com.tota.eccom.domain.common.enums.Status;
+import com.tota.eccom.domain.enums.Status;
 import com.tota.eccom.domain.product.IProductDomain;
 import com.tota.eccom.domain.user.IUserDomain;
 import com.tota.eccom.domain.user.model.User;

@@ -3,7 +3,7 @@ package com.tota.eccom.domain.product.business;
 import com.tota.eccom.adapters.dto.product.ProductCreate;
 import com.tota.eccom.adapters.dto.product.ProductCreatePrice;
 import com.tota.eccom.adapters.dto.product.ProductUpdate;
-import com.tota.eccom.domain.common.enums.Status;
+import com.tota.eccom.domain.enums.Status;
 import com.tota.eccom.domain.product.model.Product;
 import com.tota.eccom.domain.product.repository.ProductRepository;
 import com.tota.eccom.exceptions.product.ProductNotFoundException;

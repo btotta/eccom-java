@@ -5,7 +5,7 @@ import com.tota.eccom.adapters.dto.user.request.UserLoginDTO;
 import com.tota.eccom.adapters.dto.user.request.UserRoleCreateDTO;
 import com.tota.eccom.adapters.dto.user.request.UserUpdateDTO;
 import com.tota.eccom.adapters.dto.user.response.UserLoginRespDTO;
-import com.tota.eccom.domain.common.enums.Status;
+import com.tota.eccom.domain.enums.Status;
 import com.tota.eccom.domain.user.IUserDomain;
 import com.tota.eccom.domain.user.model.Role;
 import com.tota.eccom.domain.user.model.User;
@@ -18,6 +18,7 @@ import com.tota.eccom.exceptions.user.UserRoleNotFoundException;
 import com.tota.eccom.util.InvalidJwtTokenUtil;
 import com.tota.eccom.util.JwtTokenUtil;
 import com.tota.eccom.util.PasswordUtil;
+import com.tota.eccom.util.SecurityUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +27,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -36,11 +36,11 @@ public class UserDomain implements IUserDomain {
     private final UserRoleRepository userRoleRepository;
     private final UserRepository userRepository;
     private final JwtTokenUtil jwtTokenUtil;
+    private final SecurityUtil securityUtil;
 
     @Transactional
     @Override
     public User createUser(UserCreateDTO userCreateDTO) {
-
         if (getUserByEmail(userCreateDTO.getEmail()) != null) {
             throw new UserEmailExistsException("User already exists with given email.");
         }
@@ -61,15 +61,14 @@ public class UserDomain implements IUserDomain {
 
     @Override
     public User getUserById(Long id) {
-
         return userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found with given id: {}" + id));
+                .orElseThrow(() -> new UserNotFoundException("User not found with given id: " + id));
     }
 
     @Transactional
     @Override
     public void deleteUserById(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
+        User user = getUserById(id);
 
         log.info("Deleting user by id: {}", id);
 
@@ -99,13 +98,24 @@ public class UserDomain implements IUserDomain {
     @Override
     public User getUserLogged() {
 
-        return userRepository.findById(1L).orElseThrow(() -> new UserNotFoundException("User not found with id: 1"));
+        String username = securityUtil.getCurrentUsername();
+
+        if (username == null) {
+            throw new UserNotFoundException("User not logged");
+        }
+
+        User user = userRepository.findByEmail(username);
+
+        if (user == null) {
+            throw new UserNotFoundException("User not found");
+        }
+
+        return user;
     }
 
     @Transactional
     @Override
     public void deleteUserLogged() {
-
         User user = getUserLogged();
 
         log.info("Deleting user: {}", user);
@@ -119,7 +129,6 @@ public class UserDomain implements IUserDomain {
     @Transactional
     @Override
     public User updateUserLogged(UserUpdateDTO userUpdateDTO) {
-
         User user = getUserLogged();
 
         log.info("Updating logged user: {}", user);
@@ -131,40 +140,36 @@ public class UserDomain implements IUserDomain {
 
     @Override
     public List<Role> getAllUserRoles() {
-
         return userRoleRepository.findAllActive();
     }
 
+    @Transactional
     @Override
     public Role createUserRole(UserRoleCreateDTO userRoleCreateDTO) {
         Role userRole = userRoleCreateDTO.toUserRole();
-
         return userRoleRepository.save(userRole);
     }
 
     @Override
     public Role getUserRoleById(Long id) {
         return userRoleRepository.findById(id)
-                .orElseThrow(() -> new UserRoleNotFoundException("User role not found with given id: {}" + id));
+                .orElseThrow(() -> new UserRoleNotFoundException("User role not found with given id: " + id));
     }
 
-
-    public Role getUserRole() {
+    private Role getUserRole() {
         return userRoleRepository.findByName("USER")
-                .orElseThrow(() -> new UserRoleNotFoundException("User role not found with given name: {}" + "USER"));
+                .orElseThrow(() -> new UserRoleNotFoundException("User role not found with given name: USER"));
     }
 
-
-    public Role getAdminRole() {
+    private Role getAdminRole() {
         return userRoleRepository.findByName("ADMIN")
-                .orElseThrow(() -> new UserRoleNotFoundException("User role not found with given name: {}" + "ADMIN"));
+                .orElseThrow(() -> new UserRoleNotFoundException("User role not found with given name: ADMIN"));
     }
 
     @Transactional
     @Override
     public void deleteUserRoleById(Long id) {
         Role userRole = getUserRoleById(id);
-
         userRoleRepository.delete(userRole);
     }
 
@@ -178,11 +183,7 @@ public class UserDomain implements IUserDomain {
             throw new UserAlreadyHasRoleException("User already has role");
         }
 
-        Set<Role> roles = user.getRoles();
-
-        roles.add(userRole);
-
-        user.setRoles(roles);
+        user.getRoles().add(userRole);
 
         userRepository.save(user);
         return user;
@@ -190,7 +191,6 @@ public class UserDomain implements IUserDomain {
 
     @Override
     public UserLoginRespDTO loginUser(UserLoginDTO userLoginDTO) {
-
         User user = userRepository.findByEmail(userLoginDTO.getEmail());
 
         if (user == null || !PasswordUtil.validatePassword(userLoginDTO.getPassword(), user.getPassword())) {
@@ -202,23 +202,21 @@ public class UserDomain implements IUserDomain {
         return UserLoginRespDTO.builder()
                 .token(token)
                 .build();
-
     }
 
     @Override
     public void logoutUser(String authorization) {
-
         if (authorization == null || StringUtils.trimToEmpty(authorization).isEmpty()) {
             return;
         }
 
-        User user = userRepository.findByEmail(jwtTokenUtil.getUsernameFromToken(authorization.replace("Bearer ", "")));
+        String token = authorization.replace("Bearer ", "");
+        User user = userRepository.findByEmail(jwtTokenUtil.getUsernameFromToken(token));
 
         if (user == null) {
             throw new UserNotFoundException("User not found");
         }
 
-        InvalidJwtTokenUtil.addToken(authorization);
+        InvalidJwtTokenUtil.addToken(token);
     }
-
 }

@@ -2,7 +2,7 @@ package com.tota.eccom.domain.user.business;
 
 import com.tota.eccom.adapters.dto.user.request.UserCreateDTO;
 import com.tota.eccom.adapters.dto.user.request.UserUpdateDTO;
-import com.tota.eccom.domain.common.enums.Status;
+import com.tota.eccom.domain.enums.Status;
 import com.tota.eccom.domain.user.model.User;
 import com.tota.eccom.domain.user.model.UserRole;
 import com.tota.eccom.domain.user.repository.UserRepository;
