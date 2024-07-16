@@ -2,12 +2,10 @@ package com.tota.eccom.adapters.in;
 
 import com.tota.eccom.adapters.dto.user.request.UserCreateDTO;
 import com.tota.eccom.adapters.dto.user.request.UserLoginDTO;
-import com.tota.eccom.adapters.dto.user.request.UserRoleCreateDTO;
 import com.tota.eccom.adapters.dto.user.request.UserUpdateDTO;
 import com.tota.eccom.adapters.dto.user.response.UserLoginRespDTO;
 import com.tota.eccom.adapters.dto.user.response.UserRespDTO;
-import com.tota.eccom.adapters.dto.user.response.UserRoleRespDTO;
-import com.tota.eccom.domain.user.IUserDomain;
+import com.tota.eccom.domain.user.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -21,15 +19,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
 @Tag(name = "User", description = "Endpoints for user management")
 public class UserController {
 
-    private final IUserDomain userDomain;
+    private final IUserService userDomain;
 
     // User Operations
 
@@ -123,73 +119,6 @@ public class UserController {
     public ResponseEntity<Void> deleteUserById(@Parameter(description = "ID of the user to be deleted") @PathVariable Long id) {
         userDomain.deleteUserById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    // Role Operations
-
-    @GetMapping("/role/list")
-    @Operation(summary = "Get all user roles", description = "Fetches all user roles.", security = @SecurityRequirement(name = "Authorization"))
-    @PreAuthorize("hasRole('ADMIN')")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully fetched user roles"),
-            @ApiResponse(responseCode = "403", description = "Forbidden"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    public ResponseEntity<List<UserRoleRespDTO>> getAllUserRoles() {
-        return new ResponseEntity<>(UserRoleRespDTO.fromUserRoles(userDomain.getAllUserRoles()), HttpStatus.OK);
-    }
-
-    @PostMapping("/role")
-    @Operation(summary = "Create a new user role", description = "Creates a new user role.", security = @SecurityRequirement(name = "Authorization"))
-    @PreAuthorize("hasRole('ADMIN')")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "User role created successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid input"),
-            @ApiResponse(responseCode = "403", description = "Forbidden"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    public ResponseEntity<UserRoleRespDTO> createUserRole(@RequestBody @Valid UserRoleCreateDTO userRoleCreateDTO) {
-        return new ResponseEntity<>(UserRoleRespDTO.fromUserRole(userDomain.createUserRole(userRoleCreateDTO)), HttpStatus.CREATED);
-    }
-
-    @GetMapping("/role/{id}")
-    @Operation(summary = "Get user role by id", description = "Fetches the details of a user role by their ID.", security = @SecurityRequirement(name = "Authorization"))
-    @PreAuthorize("hasRole('ADMIN')")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully fetched user role details"),
-            @ApiResponse(responseCode = "403", description = "Forbidden"),
-            @ApiResponse(responseCode = "404", description = "User role not found"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    public ResponseEntity<UserRoleRespDTO> getUserRoleById(@Parameter(description = "ID of the user role to be fetched") @PathVariable Long id) {
-        return new ResponseEntity<>(UserRoleRespDTO.fromUserRole(userDomain.getUserRoleById(id)), HttpStatus.OK);
-    }
-
-    @DeleteMapping("/role/{id}")
-    @Operation(summary = "Delete user role by id", description = "Deletes a user role by their ID.", security = @SecurityRequirement(name = "Authorization"))
-    @PreAuthorize("hasRole('ADMIN')")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "User role deleted successfully"),
-            @ApiResponse(responseCode = "403", description = "Forbidden"),
-            @ApiResponse(responseCode = "404", description = "User role not found"),
-            @ApiResponse(responseCode = "500", description = "Internal server error"),
-    })
-    public ResponseEntity<Void> deleteUserRoleById(@Parameter(description = "ID of the user role to be deleted") @PathVariable Long id) {
-        userDomain.deleteUserRoleById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    @PostMapping("/role/{id}/user/{userId}")
-    @Operation(summary = "Associate user role to user", description = "Associates a user role to a user.", security = @SecurityRequirement(name = "Authorization"))
-    @PreAuthorize("hasRole('ADMIN')")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "User role associated successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid input"),
-            @ApiResponse(responseCode = "403", description = "Forbidden"),
-            @ApiResponse(responseCode = "404", description = "User role or user not found"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")})
-    public ResponseEntity<UserRespDTO> associateUserRoleToUser(@Parameter(description = "ID of the user role to be associated") @PathVariable Long id, @Parameter(description = "ID of the user to be associated") @PathVariable Long userId) {
-        return new ResponseEntity<>(UserRespDTO.fromUser(userDomain.associateUserRole(userId, id)), HttpStatus.CREATED);
     }
 
     // Login and Logout Operations

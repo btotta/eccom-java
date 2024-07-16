@@ -7,12 +7,10 @@ import com.tota.eccom.adapters.dto.user.response.UserLoginRespDTO;
 import com.tota.eccom.domain.enums.Status;
 import com.tota.eccom.domain.user.model.Role;
 import com.tota.eccom.domain.user.model.User;
+import com.tota.eccom.domain.user.repository.RoleRepository;
 import com.tota.eccom.domain.user.repository.UserRepository;
-import com.tota.eccom.domain.user.repository.UserRoleRepository;
-import com.tota.eccom.exceptions.user.UserAlreadyHasRoleException;
 import com.tota.eccom.exceptions.user.UserEmailExistsException;
 import com.tota.eccom.exceptions.user.UserNotFoundException;
-import com.tota.eccom.exceptions.user.UserRoleNotFoundException;
 import com.tota.eccom.util.InvalidJwtTokenUtil;
 import com.tota.eccom.util.JwtTokenUtil;
 import com.tota.eccom.util.SecurityUtil;
@@ -32,17 +30,17 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 @DataJpaTest
-@Import({UserDomain.class, JwtTokenUtil.class, SecurityUtil.class})
-class UserDomainTest {
+@Import({UserService.class, JwtTokenUtil.class, SecurityUtil.class})
+class UserServiceTest {
 
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
-    private UserRoleRepository userRoleRepository;
+    private RoleRepository roleRepository;
 
     @Autowired
-    private UserDomain userDomain;
+    private UserService userDomain;
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
@@ -93,7 +91,7 @@ class UserDomainTest {
                 .status(Status.ACTIVE)
                 .build();
 
-        userRoleRepository.saveAll(List.of(userRole, adminRole));
+        roleRepository.saveAll(List.of(userRole, adminRole));
     }
 
     @Nested
@@ -313,47 +311,6 @@ class UserDomainTest {
 
     }
 
-
-    @Nested
-    @DisplayName("Associate User Role")
-    class AssociateUserRoleTest {
-
-        @Test
-        @DisplayName("Associate user role, should return user successfully")
-        void testAssociateUserRole_shouldReturnUserSuccessfully() {
-
-            User savedUser = userDomain.createUser(mockUserCreateDTO());
-            Role userRole = userDomain.getAdminRole();
-
-            User updatedUser = userDomain.associateUserRole(savedUser.getId(), userRole.getId());
-
-            assertNotNull(updatedUser.getId());
-            assertTrue(updatedUser.getRoles().contains(userRole));
-        }
-
-        @Test
-        @DisplayName("Associate user role, should throw exception when user not found")
-        void testAssociateUserRole_shouldThrowExceptionWhenUserNotFound() {
-            assertThrows(UserNotFoundException.class, () -> userDomain.associateUserRole(1L, 1L));
-        }
-
-        @Test
-        @DisplayName("Associate user role, should throw exception when role not found")
-        void testAssociateUserRole_shouldThrowExceptionWhenRoleNotFound() {
-            User savedUser = userDomain.createUser(mockUserCreateDTO());
-            assertThrows(UserRoleNotFoundException.class, () -> userDomain.associateUserRole(savedUser.getId(), 0L));
-        }
-
-        @Test
-        @DisplayName("Associate user role, should throw exception when user already has role")
-        void testAssociateUserRole_shouldThrowExceptionWhenUserAlreadyHasRole() {
-            User savedUser = userDomain.createUser(mockUserCreateDTO());
-            Role userRole = userDomain.getUserRole();
-
-            assertThrows(UserAlreadyHasRoleException.class, () -> userDomain.associateUserRole(savedUser.getId(), userRole.getId()));
-        }
-
-    }
 
     @Nested
     @DisplayName("Get Logged User")

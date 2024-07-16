@@ -10,7 +10,7 @@ import com.tota.eccom.domain.cart.repository.CartRepository;
 import com.tota.eccom.domain.cart.repository.spec.CartSpecification;
 import com.tota.eccom.domain.enums.Status;
 import com.tota.eccom.domain.product.IProductDomain;
-import com.tota.eccom.domain.user.IUserDomain;
+import com.tota.eccom.domain.user.IUserService;
 import com.tota.eccom.domain.user.model.User;
 import com.tota.eccom.exceptions.cart.CartNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class CartDomain implements ICartDomain {
 
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
-    private final IUserDomain userDomain;
+    private final IUserService userDomain;
     private final IProductDomain productDomain;
 
 
