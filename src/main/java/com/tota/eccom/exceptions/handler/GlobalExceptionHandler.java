@@ -37,7 +37,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorDetails errorDetails = ErrorDetails.builder()
                 .timestamp(LocalDateTime.now())
                 .message(ex.getMessage())
-                .details(request.getDescription(false))
+                .details(request.getDescription(false).replace("uri=", ""))
                 .build();
 
         log.error("Error: {}", errorDetails);

@@ -6,7 +6,7 @@ import com.tota.eccom.domain.user.model.User;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Set;
 
 @Data
@@ -18,8 +18,8 @@ public class UserRespDTO {
     private String email;
     private Set<Role> roles;
     private Status status;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Date createdAt;
+    private Date updatedAt;
 
 
     public static UserRespDTO fromUser(User user) {

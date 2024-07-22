@@ -2,16 +2,14 @@ package com.tota.eccom.domain.user.business;
 
 import com.tota.eccom.adapters.dto.user.request.UserCreateDTO;
 import com.tota.eccom.adapters.dto.user.request.UserLoginDTO;
-import com.tota.eccom.adapters.dto.user.request.UserRoleCreateDTO;
 import com.tota.eccom.adapters.dto.user.request.UserUpdateDTO;
 import com.tota.eccom.adapters.dto.user.response.UserLoginRespDTO;
 import com.tota.eccom.domain.enums.Status;
-import com.tota.eccom.domain.user.IUserDomain;
+import com.tota.eccom.domain.user.IUserService;
 import com.tota.eccom.domain.user.model.Role;
 import com.tota.eccom.domain.user.model.User;
+import com.tota.eccom.domain.user.repository.RoleRepository;
 import com.tota.eccom.domain.user.repository.UserRepository;
-import com.tota.eccom.domain.user.repository.UserRoleRepository;
-import com.tota.eccom.exceptions.user.UserAlreadyHasRoleException;
 import com.tota.eccom.exceptions.user.UserEmailExistsException;
 import com.tota.eccom.exceptions.user.UserNotFoundException;
 import com.tota.eccom.exceptions.user.UserRoleNotFoundException;
@@ -24,15 +22,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class UserDomain implements IUserDomain {
+public class UserService implements IUserService {
 
-    private final UserRoleRepository userRoleRepository;
+    private final RoleRepository roleRepository;
     private final UserRepository userRepository;
     private final JwtTokenUtil jwtTokenUtil;
     private final SecurityUtil securityUtil;
@@ -72,7 +67,6 @@ public class UserDomain implements IUserDomain {
         log.info("Deleting user by id: {}", id);
 
         user.setStatus(Status.DELETED);
-        user.setUpdatedAt(LocalDateTime.now());
 
         userRepository.save(user);
     }
@@ -120,7 +114,6 @@ public class UserDomain implements IUserDomain {
         log.info("Deleting user: {}", user);
 
         user.setStatus(Status.DELETED);
-        user.setUpdatedAt(LocalDateTime.now());
 
         userRepository.save(user);
     }
@@ -138,56 +131,15 @@ public class UserDomain implements IUserDomain {
     }
 
     @Override
-    public List<Role> getAllUserRoles() {
-        return userRoleRepository.findAllActive();
-    }
-
-    @Transactional
-    @Override
-    public Role createUserRole(UserRoleCreateDTO userRoleCreateDTO) {
-        Role userRole = userRoleCreateDTO.toUserRole();
-        return userRoleRepository.save(userRole);
-    }
-
-    @Override
-    public Role getUserRoleById(Long id) {
-        return userRoleRepository.findById(id)
-                .orElseThrow(() -> new UserRoleNotFoundException("User role not found with given id: " + id));
-    }
-
-    @Override
     public Role getUserRole() {
-        return userRoleRepository.findByName("USER")
+        return roleRepository.findByName("USER")
                 .orElseThrow(() -> new UserRoleNotFoundException("User role not found with given name: USER"));
     }
 
     @Override
     public Role getAdminRole() {
-        return userRoleRepository.findByName("ADMIN")
+        return roleRepository.findByName("ADMIN")
                 .orElseThrow(() -> new UserRoleNotFoundException("User role not found with given name: ADMIN"));
-    }
-
-    @Transactional
-    @Override
-    public void deleteUserRoleById(Long id) {
-        Role userRole = getUserRoleById(id);
-        userRoleRepository.delete(userRole);
-    }
-
-    @Transactional
-    @Override
-    public User associateUserRole(Long userId, Long roleId) {
-        User user = getUserById(userId);
-        Role userRole = getUserRoleById(roleId);
-
-        if (user.getRoles().contains(userRole)) {
-            throw new UserAlreadyHasRoleException("User already has role");
-        }
-
-        user.getRoles().add(userRole);
-
-        userRepository.save(user);
-        return user;
     }
 
     @Override

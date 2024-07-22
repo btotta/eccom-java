@@ -1,40 +1,35 @@
 package com.tota.eccom.domain.product.model;
 
+
 import jakarta.persistence.*;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
-@Table(name = "product_price", indexes = {
+@Table(name = "product_stock", indexes = {
 
 })
+@Data
+@NoArgsConstructor
 @Getter
 @Setter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class ProductPrice {
+public class ProductStock {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NotNull
-    @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than zero")
-    @Digits(integer = 10, fraction = 2, message = "Price format is invalid")
-    @Column(name = "price", nullable = false, precision = 10, scale = 2)
-    private BigDecimal price;
-
-    @NotNull
-    @Column(name = "quantity", nullable = false)
+    @Column(nullable = false)
     private Integer quantity;
+
+    @Column(nullable = false)
+    private Integer reservedQuantity;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
@@ -56,6 +51,5 @@ public class ProductPrice {
     public void preUpdate() {
         this.setUpdatedAt(new Date());
     }
-
 
 }

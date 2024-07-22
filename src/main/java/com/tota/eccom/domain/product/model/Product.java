@@ -2,27 +2,36 @@ package com.tota.eccom.domain.product.model;
 
 import com.tota.eccom.domain.enums.Status;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+@Data
+@NoArgsConstructor
 @Entity
 @Table(name = "product", indexes = {
-        @Index(name = "product_name_index", columnList = "name"),
-        @Index(name = "product_category_index", columnList = "category"),
-        @Index(name = "product_brand_index", columnList = "brand"),
-        @Index(name = "product_status_index", columnList = "status"),
-        @Index(name = "product_stock_index", columnList = "stock"),
-        @Index(name = "product_sku_index", columnList = "sku"),
+        @Index(name = "idx_product_sku", columnList = "sku", unique = true),
+        @Index(name = "idx_product_family_code", columnList = "familyCode"),
+        @Index(name = "idx_product_material_group", columnList = "materialGroup"),
+        @Index(name = "idx_product_created_at", columnList = "createdAt"),
+        @Index(name = "idx_product_updated_at", columnList = "updatedAt"),
+        @Index(name = "idx_product_type", columnList = "packageType"),
+        @Index(name = "idx_product_conversion_factor", columnList = "conversionFactor"),
+        @Index(name = "idx_product_height", columnList = "height"),
+        @Index(name = "idx_product_width", columnList = "width"),
+        @Index(name = "idx_product_length", columnList = "length"),
+        @Index(name = "idx_product_gross_weight", columnList = "grossWeight"),
+        @Index(name = "idx_product_wholesale_quantity", columnList = "wholesaleQuantity"),
+        @Index(name = "idx_product_pallet_ballast_height", columnList = "palletBallastHeight")
 })
-@Getter
-@Setter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class Product {
 
@@ -30,46 +39,81 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NotNull
-    @Column(name = "name", nullable = false)
+    @Column(nullable = false)
     private String name;
 
-    @NotNull
-    @Column(name = "url_name", nullable = false)
-    private String urlName;
+    @Column(nullable = false)
+    private String slug;
 
-    @NotNull
-    @Column(name = "description", nullable = false)
+    @Column(nullable = false)
     private String description;
 
-    @Column(name = "stock")
-    private Integer stock;
-
-    @NotNull
-    @Column(name = "category", nullable = false)
-    private String category;
-
-    @NotNull
-    @Column(name = "sku", nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private String sku;
 
-    @NotNull
-    @Column(name = "brand", nullable = false)
-    private String brand;
+    private String familyCode;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProductPrice> prices;
+    @Column
+    private String materialGroup;
+
+    @Column(nullable = false)
+    private String packageType;
+
+    @Column
+    private Double conversionFactor;
+
+    @Column
+    private Double height;
+
+    @Column
+    private Double width;
+
+    @Column
+    private Double length;
+
+    @Column
+    private Double grossWeight;
+
+    @Column
+    private Integer wholesaleQuantity;
+
+    @Column
+    private String palletBallastHeight;
+
+    @Column
+    private String ean;
+
+    @Column
+    private Integer lockCode;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status status;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name = "product_id")
+    private List<ProductPrice> productPrices = new ArrayList<>();
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name = "product_id")
+    private ProductStock productStock;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private Date createdAt;
 
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
+    private Date updatedAt;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private Status status;
+    @PrePersist
+    public void prePersist() {
+        this.setCreatedAt(new Date());
+        this.setUpdatedAt(new Date());
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.setUpdatedAt(new Date());
+    }
 }

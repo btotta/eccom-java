@@ -1,24 +1,18 @@
 package com.tota.eccom.domain.product.business;
 
-import com.tota.eccom.adapters.dto.product.ProductCreate;
-import com.tota.eccom.adapters.dto.product.ProductCreatePrice;
-import com.tota.eccom.adapters.dto.product.ProductUpdate;
+import com.tota.eccom.adapters.dto.product.request.ProductDTO;
+import com.tota.eccom.adapters.dto.product.request.ProductPriceDTO;
+import com.tota.eccom.adapters.dto.product.request.ProductStockDTO;
 import com.tota.eccom.domain.enums.Status;
 import com.tota.eccom.domain.product.IProductDomain;
 import com.tota.eccom.domain.product.model.Product;
-import com.tota.eccom.domain.product.model.ProductPrice;
 import com.tota.eccom.domain.product.repository.ProductRepository;
-import com.tota.eccom.domain.product.repository.spec.ProductSpecification;
+import com.tota.eccom.exceptions.product.ProductAlreadyExistsException;
 import com.tota.eccom.exceptions.product.ProductNotFoundException;
+import com.tota.eccom.exceptions.product.ProductPriceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Component
 @Slf4j
@@ -29,8 +23,13 @@ public class ProductDomain implements IProductDomain {
 
 
     @Override
-    public Product createProduct(ProductCreate productCreateDTO) {
-        Product product = productCreateDTO.toProduct();
+    public Product createProduct(ProductDTO productDTO) {
+
+        if (findProductBySKU(productDTO.getSku()) != null) {
+            throw new ProductAlreadyExistsException("Product already exists with given plu: " + productDTO.getSku());
+        }
+
+        Product product = productDTO.toProduct();
 
         log.info("Creating product: {}", product);
 
@@ -39,82 +38,85 @@ public class ProductDomain implements IProductDomain {
 
     @Override
     public Product getProductById(Long id) {
-
-        log.info("Getting product by id: {}", id);
-
-        return productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found with given id: {}" + id));
+        return productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("Product not found with given id: " + id));
     }
 
     @Override
     public void deleteProductById(Long id) {
-
         Product product = getProductById(id);
 
         log.info("Deleting product by id: {}", id);
 
         product.setStatus(Status.DELETED);
-        product.setCreatedAt(LocalDateTime.now());
 
         productRepository.save(product);
     }
 
     @Override
-    public Product updateProductById(Long id, ProductUpdate productUpdateDTO) {
+    public Product updateProductById(Long id, ProductDTO productDTO) {
+        Product product = getProductById(id);
+
+        Product updatedProduct = productDTO.toUpdatedProduct(product);
+
+        log.info("Updating product: {}", updatedProduct);
+
+        return productRepository.save(updatedProduct);
+    }
+
+    @Override
+    public Product patchProductById(Long id, ProductDTO productDTO) {
 
         Product product = getProductById(id);
 
-        log.info("Updating product: {}", product);
+        Product updatedProduct = productDTO.toPatchedProduct(product);
 
-        productUpdateDTO.updateProduct(product);
+        log.info("Patching product: {}", updatedProduct);
+
+        return productRepository.save(updatedProduct);
+    }
+
+    @Override
+    public Product addProductPriceToProduct(Long id, ProductPriceDTO productPriceDTO) {
+
+        Product product = getProductById(id);
+
+        productPriceDTO.addProductPriceToProduct(product);
+
+        log.info("Adding product price to product: {}", product);
 
         return productRepository.save(product);
     }
 
     @Override
-    public Page<Product> getAllProductsPaginated(Pageable pageable, String name, String description, Double price, String brand, String category) {
-
-        return productRepository.findAll(ProductSpecification.filterProducts(name, description, price, brand, category), pageable);
-    }
-
-    @Override
-    public void deletePriceFromProduct(Long id, Long idPrice) {
+    public void deleteProductPriceFromProduct(Long id, Long priceId) {
 
         Product product = getProductById(id);
 
-        log.info("Deleting price from product: {}", product);
+        log.info("Deleting product price id {} from product: {}", priceId, product);
 
-        if (Objects.nonNull(product.getPrices()) && product.getPrices().removeIf(productPrice -> productPrice.getId().equals(idPrice))) {
-            productRepository.save(product);
-        } else {
-            throw new ProductNotFoundException("Price not found with given id: {}" + idPrice);
+        if (product.getProductPrices().stream().noneMatch(pp -> pp.getId().equals(priceId))) {
+            throw new ProductPriceNotFoundException(String.format("Product price with id %s not found", priceId));
         }
+
+        product.getProductPrices().removeIf(pp -> pp.getId().equals(priceId));
+
+        productRepository.save(product);
     }
 
     @Override
-    public BigDecimal getProductBestPrice(Long id, Integer quantity) {
+    public Product addProductStockToProduct(Long id, ProductStockDTO productStockDTO) {
 
         Product product = getProductById(id);
 
-        log.info("Getting best price for product: {}", product);
+        productStockDTO.addProductStockToProduct(product);
 
-        return product.getPrices().stream()
-                .filter(productPrice -> productPrice.getQuantity() <= quantity)
-                .map(ProductPrice::getPrice)
-                .min(BigDecimal::compareTo)
-                .orElse(BigDecimal.ZERO);
-    }
-
-    @Override
-    public Product addPriceToProduct(Long id, ProductCreatePrice productCreatePriceDTO) {
-
-        Product product = getProductById(id);
-
-        log.info("Adding price to product: {}", product);
-
-        product.getPrices().add(productCreatePriceDTO.toProductPrice());
+        log.info("Adding product stock to product: {}", product);
 
         return productRepository.save(product);
+    }
+
+    private Product findProductBySKU(String sku) {
+        return productRepository.findBySku(sku).orElse(null);
     }
 
 
