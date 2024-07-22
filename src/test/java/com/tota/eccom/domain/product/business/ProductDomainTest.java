@@ -14,6 +14,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import java.math.BigDecimal;
 
@@ -250,9 +252,11 @@ class ProductDomainTest {
         @Test
         @DisplayName("Update product by id, should update product successfully")
         void testUpdateProductById_shouldUpdateProductSuccessfully() {
-
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
             ProductDTO productDTO = getMockProductCreate();
+            productDTO.setStatus(Status.INACTIVE);
+
+            Product createdProduct = productDomain.createProduct(productDTO);
+
             productDTO.setName("Test updated product");
 
             Product updatedProduct = productDomain.updateProductById(createdProduct.getId(), productDTO);
@@ -640,6 +644,80 @@ class ProductDomainTest {
             assertEquals(productStockDTO.getQuantity(), addedProductStock.getProductStock().getQuantity());
         }
 
+    }
+
+
+    @Nested
+    @DisplayName("Get Product by Slug")
+    class GetProductBySlugTest {
+
+        @Test
+        @DisplayName("Get product by slug, should return product successfully")
+        void testGetProductBySlug_shouldReturnProductSuccessfully() {
+
+            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+
+            Product foundProduct = productDomain.getProductBySlug(createdProduct.getSlug());
+
+            assertNotNull(foundProduct.getId());
+            assertEquals(createdProduct.getId(), foundProduct.getId());
+        }
+
+        @Test
+        @DisplayName("Get product by slug, should throw exception when product not found")
+        void testGetProductBySlug_shouldThrowExceptionWhenProductNotFound() {
+            assertThrows(ProductNotFoundException.class, () -> productDomain.getProductBySlug("test-slug"));
+        }
+    }
+
+    @Nested
+    @DisplayName("Search Products by Term")
+    class SearchProductsByTermTest {
+
+        @Test
+        @DisplayName("Search products by term, should return products successfully")
+        void testSearchProductsByTerm_shouldReturnProductsSuccessfully() {
+
+            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            productDomain.addProductPriceToProduct(createdProduct.getId(), getMockProductPriceCreate());
+            productDomain.addProductStockToProduct(createdProduct.getId(), getMockProductStockCreate());
+
+            Page<Product> foundProducts = productDomain.searchProductsByTerm(getMockProductCreate().getName(), PageRequest.of(0, 10));
+
+            assertNotNull(foundProducts.getContent());
+            assertEquals(1, foundProducts.getContent().size());
+            assertEquals(createdProduct.getId(), foundProducts.getContent().get(0).getId());
+        }
+
+        @Test
+        @DisplayName("Search products by term, should not return deleted products")
+        void testSearchProductsByTerm_shouldNotReturnDeletedProducts() {
+            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            productDomain.addProductPriceToProduct(createdProduct.getId(), getMockProductPriceCreate());
+            productDomain.addProductStockToProduct(createdProduct.getId(), getMockProductStockCreate());
+            productDomain.deleteProductById(createdProduct.getId());
+
+            Page<Product> foundProducts = productDomain.searchProductsByTerm(getMockProductCreate().getName(), PageRequest.of(0, 10));
+
+            assertNotNull(foundProducts.getContent());
+            assertEquals(0, foundProducts.getContent().size());
+        }
+
+        @Test
+        @DisplayName("Search products by term, should not return inactive products")
+        void testSearchProductsByTerm_shouldNotReturnInactiveProducts() {
+            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            productDomain.addProductPriceToProduct(createdProduct.getId(), getMockProductPriceCreate());
+            productDomain.addProductStockToProduct(createdProduct.getId(), getMockProductStockCreate());
+            ProductDTO productDTO = getMockProductCreate();
+            productDTO.setStatus(Status.INACTIVE);
+            productDomain.updateProductById(createdProduct.getId(), productDTO);
+
+            Page<Product> foundProducts = productDomain.searchProductsByTerm(getMockProductCreate().getName(), PageRequest.of(0, 10));
+
+            assertNotNull(foundProducts.getContent());
+            assertEquals(0, foundProducts.getContent().size());
+        }
     }
 
 }

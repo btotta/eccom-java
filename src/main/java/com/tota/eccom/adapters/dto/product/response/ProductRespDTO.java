@@ -36,6 +36,7 @@ public class ProductRespDTO {
     private Date createdAt;
     private Date updatedAt;
     private List<ProductPriceRespDTO> productPrices;
+    private ProductStockRespDTO productStock;
 
 
     public ProductRespDTO(Product p) {
@@ -60,6 +61,7 @@ public class ProductRespDTO {
         this.createdAt = p.getCreatedAt();
         this.updatedAt = p.getUpdatedAt();
         this.productPrices = p.getProductPrices().stream().map(ProductPriceRespDTO::new).toList();
+        this.productStock = new ProductStockRespDTO(p.getProductStock());
     }
 
 }

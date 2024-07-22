@@ -73,7 +73,7 @@ public class ProductDTO {
         product.setPalletBallastHeight(palletBallastHeight);
         product.setEan(ean);
         product.setLockCode(lockCode);
-        product.setStatus(Status.ACTIVE);
+        product.setStatus(status);
 
         return product;
     }

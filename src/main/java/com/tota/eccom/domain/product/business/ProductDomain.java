@@ -7,11 +7,15 @@ import com.tota.eccom.domain.enums.Status;
 import com.tota.eccom.domain.product.IProductDomain;
 import com.tota.eccom.domain.product.model.Product;
 import com.tota.eccom.domain.product.repository.ProductRepository;
+import com.tota.eccom.domain.product.repository.spec.ProductSpecification;
 import com.tota.eccom.exceptions.product.ProductAlreadyExistsException;
 import com.tota.eccom.exceptions.product.ProductNotFoundException;
 import com.tota.eccom.exceptions.product.ProductPriceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -113,6 +117,24 @@ public class ProductDomain implements IProductDomain {
         log.info("Adding product stock to product: {}", product);
 
         return productRepository.save(product);
+    }
+
+    @Override
+    public Product getProductBySlug(String slug) {
+
+        log.info("Getting product by slug: {}", slug);
+
+        return productRepository.findBySlug(slug).orElseThrow(() -> new ProductNotFoundException("Product not found with given slug: " + slug));
+    }
+
+    @Override
+    public Page<Product> searchProductsByTerm(String term, Pageable pageable) {
+
+        log.info("Searching products by term: {}", term);
+
+        Specification<Product> specification = ProductSpecification.searchProductsByTerm(term);
+
+        return productRepository.findAll(specification, pageable);
     }
 
     private Product findProductBySKU(String sku) {
