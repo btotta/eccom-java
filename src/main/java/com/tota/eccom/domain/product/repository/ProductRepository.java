@@ -10,5 +10,10 @@ import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
-    Optional<Product> findByPlu(String plu);
+
+    Optional<Product> findBySku(String sku);
+
+    Optional<Product> findBySlug(String slug);
+
+
 }

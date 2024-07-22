@@ -1,14 +1,15 @@
 package com.tota.eccom.domain.product.business;
 
-import com.tota.eccom.adapters.dto.product.ProductCreate;
-import com.tota.eccom.adapters.dto.product.ProductCreateProductPackage;
+import com.tota.eccom.adapters.dto.product.request.ProductDTO;
+import com.tota.eccom.adapters.dto.product.request.ProductPriceDTO;
+import com.tota.eccom.adapters.dto.product.request.ProductStockDTO;
 import com.tota.eccom.domain.enums.Status;
 import com.tota.eccom.domain.product.IProductDomain;
 import com.tota.eccom.domain.product.model.Product;
-import com.tota.eccom.domain.product.model.ProductPackage;
 import com.tota.eccom.domain.product.repository.ProductRepository;
 import com.tota.eccom.exceptions.product.ProductAlreadyExistsException;
 import com.tota.eccom.exceptions.product.ProductNotFoundException;
+import com.tota.eccom.exceptions.product.ProductPriceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -22,21 +23,17 @@ public class ProductDomain implements IProductDomain {
 
 
     @Override
-    public Product createProduct(ProductCreate productCreateDTO) {
+    public Product createProduct(ProductDTO productDTO) {
 
-        if (findProductByPLU(productCreateDTO.getPlu()) != null) {
-            throw new ProductAlreadyExistsException("Product already exists with given plu: " + productCreateDTO.getPlu());
+        if (findProductBySKU(productDTO.getSku()) != null) {
+            throw new ProductAlreadyExistsException("Product already exists with given plu: " + productDTO.getSku());
         }
 
-        Product product = productCreateDTO.toProduct();
+        Product product = productDTO.toProduct();
 
         log.info("Creating product: {}", product);
 
         return productRepository.save(product);
-    }
-
-    private Product findProductByPLU(String plu) {
-        return productRepository.findByPlu(plu).orElse(null);
     }
 
     @Override
@@ -45,56 +42,7 @@ public class ProductDomain implements IProductDomain {
     }
 
     @Override
-    public Product addProductPackageToProduct(Long id, ProductCreateProductPackage productCreateProductPackage) {
-
-        Product product = getProductById(id);
-
-        ProductPackage productPackage = productCreateProductPackage.toProductPackage();
-
-        if (product.getProductPackages().stream().anyMatch(pp -> pp.getId().equals(productPackage.getId()))) {
-            throw new ProductAlreadyExistsException(String.format("Product package with type %s already exists with given id: %s", productPackage.getType(), productPackage.getId()));
-        }
-
-        product.getProductPackages().add(productPackage);
-
-        log.info("Adding product package to product: {}", product);
-
-        return productRepository.save(product);
-    }
-
-    @Override
-    public void deleteProductPackageFromProduct(Long id, Long packageId) {
-
-        Product product = getProductById(id);
-
-        log.info("Deleting product package id {} from product: {}", packageId, product);
-
-        if (product.getProductPackages().stream().noneMatch(pp -> pp.getId().equals(packageId))) {
-            throw new ProductNotFoundException(String.format("Product package with id %s not found", packageId));
-        }
-
-        product.getProductPackages().removeIf(pp -> pp.getId().equals(packageId));
-
-        productRepository.save(product);
-    }
-
-    @Override
-    public Product getProductByPLU(String plu) {
-
-        log.info("Getting product by plu: {}", plu);
-
-        Product product = findProductByPLU(plu);
-
-        if (product == null) {
-            throw new ProductNotFoundException("Product not found with given plu: " + plu);
-        }
-
-        return product;
-    }
-
-    @Override
     public void deleteProductById(Long id) {
-
         Product product = getProductById(id);
 
         log.info("Deleting product by id: {}", id);
@@ -102,6 +50,73 @@ public class ProductDomain implements IProductDomain {
         product.setStatus(Status.DELETED);
 
         productRepository.save(product);
+    }
+
+    @Override
+    public Product updateProductById(Long id, ProductDTO productDTO) {
+        Product product = getProductById(id);
+
+        Product updatedProduct = productDTO.toUpdatedProduct(product);
+
+        log.info("Updating product: {}", updatedProduct);
+
+        return productRepository.save(updatedProduct);
+    }
+
+    @Override
+    public Product patchProductById(Long id, ProductDTO productDTO) {
+
+        Product product = getProductById(id);
+
+        Product updatedProduct = productDTO.toPatchedProduct(product);
+
+        log.info("Patching product: {}", updatedProduct);
+
+        return productRepository.save(updatedProduct);
+    }
+
+    @Override
+    public Product addProductPriceToProduct(Long id, ProductPriceDTO productPriceDTO) {
+
+        Product product = getProductById(id);
+
+        productPriceDTO.addProductPriceToProduct(product);
+
+        log.info("Adding product price to product: {}", product);
+
+        return productRepository.save(product);
+    }
+
+    @Override
+    public void deleteProductPriceFromProduct(Long id, Long priceId) {
+
+        Product product = getProductById(id);
+
+        log.info("Deleting product price id {} from product: {}", priceId, product);
+
+        if (product.getProductPrices().stream().noneMatch(pp -> pp.getId().equals(priceId))) {
+            throw new ProductPriceNotFoundException(String.format("Product price with id %s not found", priceId));
+        }
+
+        product.getProductPrices().removeIf(pp -> pp.getId().equals(priceId));
+
+        productRepository.save(product);
+    }
+
+    @Override
+    public Product addProductStockToProduct(Long id, ProductStockDTO productStockDTO) {
+
+        Product product = getProductById(id);
+
+        productStockDTO.addProductStockToProduct(product);
+
+        log.info("Adding product stock to product: {}", product);
+
+        return productRepository.save(product);
+    }
+
+    private Product findProductBySKU(String sku) {
+        return productRepository.findBySku(sku).orElse(null);
     }
 
 

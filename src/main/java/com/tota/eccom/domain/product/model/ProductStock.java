@@ -2,10 +2,7 @@ package com.tota.eccom.domain.product.model;
 
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -13,17 +10,14 @@ import java.util.Date;
 
 @Entity
 @Table(name = "product_stock", indexes = {
-        @Index(name = "idx_product_stock_product_id", columnList = "product_id"),
-        @Index(name = "idx_product_stock_quantity", columnList = "quantity"),
-        @Index(name = "idx_product_stock_compromised_quantity", columnList = "compromised_quantity"),
-        @Index(name = "idx_product_stock_available_quantity", columnList = "available_quantity"),
-        @Index(name = "idx_product_stock_reserved_quantity", columnList = "reserved_quantity"),
-        @Index(name = "idx_product_stock_reserved_quantity_to_date", columnList = "reserved_quantity_to_date"),
+
 })
 @Data
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
 public class ProductStock {
 
 

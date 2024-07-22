@@ -17,13 +17,19 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "product", indexes = {
-        @Index(name = "idx_product_plu", columnList = "plu", unique = true),
+        @Index(name = "idx_product_sku", columnList = "sku", unique = true),
         @Index(name = "idx_product_family_code", columnList = "familyCode"),
         @Index(name = "idx_product_material_group", columnList = "materialGroup"),
-        @Index(name = "idx_product_package_default", columnList = "packageDefault"),
-        @Index(name = "idx_product_lock_code", columnList = "lockCode"),
         @Index(name = "idx_product_created_at", columnList = "createdAt"),
-        @Index(name = "idx_product_updated_at", columnList = "updatedAt")
+        @Index(name = "idx_product_updated_at", columnList = "updatedAt"),
+        @Index(name = "idx_product_type", columnList = "packageType"),
+        @Index(name = "idx_product_conversion_factor", columnList = "conversionFactor"),
+        @Index(name = "idx_product_height", columnList = "height"),
+        @Index(name = "idx_product_width", columnList = "width"),
+        @Index(name = "idx_product_length", columnList = "length"),
+        @Index(name = "idx_product_gross_weight", columnList = "grossWeight"),
+        @Index(name = "idx_product_wholesale_quantity", columnList = "wholesaleQuantity"),
+        @Index(name = "idx_product_pallet_ballast_height", columnList = "palletBallastHeight")
 })
 @Builder
 @AllArgsConstructor
@@ -36,17 +42,46 @@ public class Product {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, unique = true)
-    private String plu;
+    @Column(nullable = false)
+    private String slug;
 
     @Column(nullable = false)
+    private String description;
+
+    @Column(nullable = false, unique = true)
+    private String sku;
+
     private String familyCode;
 
     @Column
     private String materialGroup;
 
+    @Column(nullable = false)
+    private String packageType;
+
     @Column
-    private String packageDefault;
+    private Double conversionFactor;
+
+    @Column
+    private Double height;
+
+    @Column
+    private Double width;
+
+    @Column
+    private Double length;
+
+    @Column
+    private Double grossWeight;
+
+    @Column
+    private Integer wholesaleQuantity;
+
+    @Column
+    private String palletBallastHeight;
+
+    @Column
+    private String ean;
 
     @Column
     private Integer lockCode;
@@ -57,7 +92,11 @@ public class Product {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "product_id")
-    private List<ProductPackage> productPackages = new ArrayList<>();
+    private List<ProductPrice> productPrices = new ArrayList<>();
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name = "product_id")
+    private ProductStock productStock;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

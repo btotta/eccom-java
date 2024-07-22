@@ -1,27 +1,26 @@
 package com.tota.eccom.domain.product;
 
-import com.tota.eccom.adapters.dto.product.ProductCreate;
-import com.tota.eccom.adapters.dto.product.ProductCreatePrice;
-import com.tota.eccom.adapters.dto.product.ProductCreateProductPackage;
-import com.tota.eccom.adapters.dto.product.ProductUpdate;
+import com.tota.eccom.adapters.dto.product.request.ProductDTO;
+import com.tota.eccom.adapters.dto.product.request.ProductPriceDTO;
+import com.tota.eccom.adapters.dto.product.request.ProductStockDTO;
 import com.tota.eccom.domain.product.model.Product;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
-import java.math.BigDecimal;
 
 
 public interface IProductDomain {
 
-    Product createProduct(ProductCreate productCreateDTO);
-
-    Product getProductByPLU(String plu);
-
-    void deleteProductById(Long id);
+    Product createProduct(ProductDTO productDTO);
 
     Product getProductById(Long id);
 
-    Product addProductPackageToProduct(Long id, ProductCreateProductPackage productCreateProductPackage);
+    void deleteProductById(Long id);
 
-    void deleteProductPackageFromProduct(Long id, Long packageId);
+    Product updateProductById(Long id, ProductDTO productDTO);
+
+    Product patchProductById(Long id, ProductDTO productDTO);
+
+    Product addProductPriceToProduct(Long id, ProductPriceDTO productPriceDTO);
+
+    void deleteProductPriceFromProduct(Long id, Long priceId);
+
+    Product addProductStockToProduct(Long id, ProductStockDTO productStockDTO);
 }

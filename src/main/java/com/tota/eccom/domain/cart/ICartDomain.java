@@ -8,7 +8,5 @@ import org.springframework.stereotype.Component;
 @Component
 public interface ICartDomain {
 
-    Cart getCartByLoggedUser();
 
-    Cart addProductToCart(Long cartId, CartAddItemsReq cartAddItemsReq);
 }

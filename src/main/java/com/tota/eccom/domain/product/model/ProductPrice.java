@@ -13,9 +13,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "product_price", indexes = {
-        @Index(name = "product_price_price_index", columnList = "price"),
-        @Index(name = "product_price_quantity_index", columnList = "quantity"),
-        @Index(name = "product_price_price_quantity_index", columnList = "price,quantity")
+
 })
 @Getter
 @Setter

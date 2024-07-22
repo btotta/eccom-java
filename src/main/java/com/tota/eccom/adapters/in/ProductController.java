@@ -1,23 +1,17 @@
 package com.tota.eccom.adapters.in;
 
-import com.tota.eccom.adapters.dto.product.ProductCreate;
-import com.tota.eccom.adapters.dto.product.ProductCreatePrice;
-import com.tota.eccom.adapters.dto.product.ProductCreateProductPackage;
-import com.tota.eccom.adapters.dto.product.ProductUpdate;
+import com.tota.eccom.adapters.dto.product.request.ProductDTO;
+import com.tota.eccom.adapters.dto.product.request.ProductPriceDTO;
+import com.tota.eccom.adapters.dto.product.request.ProductStockDTO;
 import com.tota.eccom.domain.product.IProductDomain;
 import com.tota.eccom.domain.product.model.Product;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springdoc.core.converters.models.PageableAsQueryParam;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,7 +25,7 @@ public class ProductController {
 
     private final IProductDomain productDomain;
 
-
+    // Product Admin Operations
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(
@@ -44,32 +38,17 @@ public class ProductController {
             @ApiResponse(responseCode = "400", description = "Invalid input"),
             @ApiResponse(responseCode = "401", description = "Unauthorized")
     })
-    public ResponseEntity<Product> createProduct(@RequestBody @Valid ProductCreate productCreateDTO) {
-        return new ResponseEntity<>(productDomain.createProduct(productCreateDTO), HttpStatus.CREATED);
-    }
-
-    @GetMapping("/{plu}")
-    @Operation(
-            summary = "Get product by plu",
-            description = "Retrieves the product with the specified plu."
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Product retrieved successfully"),
-            @ApiResponse(responseCode = "404", description = "Product not found")
-    })
-    public ResponseEntity<Product> getProductByPlu(@PathVariable String plu) {
-        return new ResponseEntity<>(productDomain.getProductByPLU(plu), HttpStatus.OK);
+    public ResponseEntity<Product> createProduct(@RequestBody @Valid ProductDTO productDTO) {
+        return new ResponseEntity<>(productDomain.createProduct(productDTO), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(
             summary = "Get product by id",
-            description = "Retrieves the product with the specified ID."
+            description = "Retrieves the product with the specified ID.",
+            security = @SecurityRequirement(name = "Authorization")
     )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Product retrieved successfully"),
-            @ApiResponse(responseCode = "404", description = "Product not found")
-    })
     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
         return new ResponseEntity<>(productDomain.getProductById(id), HttpStatus.OK);
     }
@@ -91,41 +70,93 @@ public class ProductController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PostMapping("/{id}")
+    @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(
-            summary = "Add product package to product",
-            description = "Adds a product package to the product with the specified ID.",
+            summary = "Update product by id",
+            description = "Updates the product with the specified ID.",
             security = @SecurityRequirement(name = "Authorization")
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Product package added successfully"),
+            @ApiResponse(responseCode = "200", description = "Product updated successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid input"),
             @ApiResponse(responseCode = "404", description = "Product not found"),
             @ApiResponse(responseCode = "401", description = "Unauthorized")
     })
-    public ResponseEntity<Product> addProductPackageToProduct(@PathVariable Long id, @RequestBody @Valid ProductCreateProductPackage productCreateProductPackage) {
-        return new ResponseEntity<>(productDomain.addProductPackageToProduct(id, productCreateProductPackage), HttpStatus.CREATED);
+    public ResponseEntity<Product> updateProductById(@PathVariable Long id, @RequestBody @Valid ProductDTO productDTO) {
+        return new ResponseEntity<>(productDomain.updateProductById(id, productDTO), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}/package/{packageId}")
+    @PatchMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(
-            summary = "Delete product package from product",
-            description = "Deletes the product package from the product with the specified ID.",
+            summary = "Update product by id",
+            description = "Updates the product with the specified ID.",
             security = @SecurityRequirement(name = "Authorization")
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Product package deleted successfully"),
+            @ApiResponse(responseCode = "200", description = "Product updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
             @ApiResponse(responseCode = "404", description = "Product not found"),
             @ApiResponse(responseCode = "401", description = "Unauthorized")
     })
-    public ResponseEntity<Void> deleteProductPackageFromProduct(@PathVariable Long id, @PathVariable Long packageId) {
-        productDomain.deleteProductPackageFromProduct(id, packageId);
+    public ResponseEntity<Product> patchProductById(@PathVariable Long id, @RequestBody @Valid ProductDTO productDTO) {
+        return new ResponseEntity<>(productDomain.patchProductById(id, productDTO), HttpStatus.OK);
+    }
+
+
+    //Product Price Admin Operations
+    @PostMapping("/{id}/price")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(
+            summary = "Add product price to product",
+            description = "Adds a product price to the product with the specified ID.",
+            security = @SecurityRequirement(name = "Authorization")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Product price added successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "404", description = "Product not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
+    public ResponseEntity<Product> addProductPriceToProduct(@PathVariable Long id, @RequestBody @Valid ProductPriceDTO productPriceDTO) {
+        return new ResponseEntity<>(productDomain.addProductPriceToProduct(id, productPriceDTO), HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/{id}/price/{priceId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(
+            summary = "Delete product price from product",
+            description = "Deletes the product price from the product with the specified ID.",
+            security = @SecurityRequirement(name = "Authorization")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Product price deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Product not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
+    public ResponseEntity<Void> deleteProductPriceFromProduct(@PathVariable Long id, @PathVariable Long priceId) {
+        productDomain.deleteProductPriceFromProduct(id, priceId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 
-
+    //Product Stock Admin Operations
+    @PostMapping("/{id}/stock")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(
+            summary = "Add product stock to product",
+            description = "Adds a product stock to the product with the specified ID.",
+            security = @SecurityRequirement(name = "Authorization")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Product stock added successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "404", description = "Product not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
+    public ResponseEntity<Product> addProductStockToProduct(@PathVariable Long id, @RequestBody @Valid ProductStockDTO productStockDTO) {
+        return new ResponseEntity<>(productDomain.addProductStockToProduct(id, productStockDTO), HttpStatus.CREATED);
+    }
 
 }
