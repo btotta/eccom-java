@@ -2,6 +2,7 @@ package com.tota.eccom.domain.product;
 
 import com.tota.eccom.adapters.dto.product.ProductCreate;
 import com.tota.eccom.adapters.dto.product.ProductCreatePrice;
+import com.tota.eccom.adapters.dto.product.ProductCreateProductPackage;
 import com.tota.eccom.adapters.dto.product.ProductUpdate;
 import com.tota.eccom.domain.product.model.Product;
 import org.springframework.data.domain.Page;
@@ -11,19 +12,16 @@ import java.math.BigDecimal;
 
 
 public interface IProductDomain {
+
     Product createProduct(ProductCreate productCreateDTO);
 
-    Product getProductById(Long id);
+    Product getProductByPLU(String plu);
 
     void deleteProductById(Long id);
 
-    Product updateProductById(Long id, ProductUpdate productUpdateDTO);
+    Product getProductById(Long id);
 
-    Product addPriceToProduct(Long id, ProductCreatePrice productCreatePriceDTO);
+    Product addProductPackageToProduct(Long id, ProductCreateProductPackage productCreateProductPackage);
 
-    Page<Product> getAllProductsPaginated(Pageable pageable, String name, String description, Double price, String brand, String category);
-
-    void deletePriceFromProduct(Long id, Long idPrice);
-
-    BigDecimal getProductBestPrice(Long id, Integer quantity);
+    void deleteProductPackageFromProduct(Long id, Long packageId);
 }

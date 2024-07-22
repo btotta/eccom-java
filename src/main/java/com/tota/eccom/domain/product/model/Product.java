@@ -2,27 +2,30 @@ package com.tota.eccom.domain.product.model;
 
 import com.tota.eccom.domain.enums.Status;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+@Data
+@NoArgsConstructor
 @Entity
 @Table(name = "product", indexes = {
-        @Index(name = "product_name_index", columnList = "name"),
-        @Index(name = "product_category_index", columnList = "category"),
-        @Index(name = "product_brand_index", columnList = "brand"),
-        @Index(name = "product_status_index", columnList = "status"),
-        @Index(name = "product_stock_index", columnList = "stock"),
-        @Index(name = "product_sku_index", columnList = "sku"),
+        @Index(name = "idx_product_plu", columnList = "plu", unique = true),
+        @Index(name = "idx_product_family_code", columnList = "familyCode"),
+        @Index(name = "idx_product_material_group", columnList = "materialGroup"),
+        @Index(name = "idx_product_package_default", columnList = "packageDefault"),
+        @Index(name = "idx_product_lock_code", columnList = "lockCode"),
+        @Index(name = "idx_product_created_at", columnList = "createdAt"),
+        @Index(name = "idx_product_updated_at", columnList = "updatedAt")
 })
-@Getter
-@Setter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class Product {
 
@@ -30,46 +33,48 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NotNull
-    @Column(name = "name", nullable = false)
+    @Column(nullable = false)
     private String name;
 
-    @NotNull
-    @Column(name = "url_name", nullable = false)
-    private String urlName;
+    @Column(nullable = false, unique = true)
+    private String plu;
 
-    @NotNull
-    @Column(name = "description", nullable = false)
-    private String description;
+    @Column(nullable = false)
+    private String familyCode;
 
-    @Column(name = "stock")
-    private Integer stock;
+    @Column
+    private String materialGroup;
 
-    @NotNull
-    @Column(name = "category", nullable = false)
-    private String category;
+    @Column
+    private String packageDefault;
 
-    @NotNull
-    @Column(name = "sku", nullable = false, unique = true)
-    private String sku;
+    @Column
+    private Integer lockCode;
 
-    @NotNull
-    @Column(name = "brand", nullable = false)
-    private String brand;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status status;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProductPrice> prices;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name = "product_id")
+    private List<ProductPackage> productPackages = new ArrayList<>();
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private Date createdAt;
 
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
+    private Date updatedAt;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private Status status;
+    @PrePersist
+    public void prePersist() {
+        this.setCreatedAt(new Date());
+        this.setUpdatedAt(new Date());
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.setUpdatedAt(new Date());
+    }
 }

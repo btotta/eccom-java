@@ -12,6 +12,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -63,20 +64,20 @@ public class User {
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private Date createdAt;
 
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
+    private Date updatedAt;
 
     @PrePersist
     public void prePersist() {
-        this.setCreatedAt(LocalDateTime.now());
-        this.setUpdatedAt(LocalDateTime.now());
+        this.setCreatedAt(new Date());
+        this.setUpdatedAt(new Date());
     }
 
     @PreUpdate
     public void preUpdate() {
-        this.setUpdatedAt(LocalDateTime.now());
+        this.setUpdatedAt(new Date());
     }
 }

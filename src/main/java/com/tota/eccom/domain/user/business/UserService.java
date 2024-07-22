@@ -22,8 +22,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -69,7 +67,6 @@ public class UserService implements IUserService {
         log.info("Deleting user by id: {}", id);
 
         user.setStatus(Status.DELETED);
-        user.setUpdatedAt(LocalDateTime.now());
 
         userRepository.save(user);
     }
@@ -117,7 +114,6 @@ public class UserService implements IUserService {
         log.info("Deleting user: {}", user);
 
         user.setStatus(Status.DELETED);
-        user.setUpdatedAt(LocalDateTime.now());
 
         userRepository.save(user);
     }
