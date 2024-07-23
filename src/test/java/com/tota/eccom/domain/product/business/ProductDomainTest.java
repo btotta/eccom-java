@@ -5,10 +5,12 @@ import com.tota.eccom.adapters.dto.product.request.ProductPriceDTO;
 import com.tota.eccom.adapters.dto.product.request.ProductStockDTO;
 import com.tota.eccom.domain.enums.Status;
 import com.tota.eccom.domain.product.model.Product;
+import com.tota.eccom.domain.product.model.ProductCategory;
+import com.tota.eccom.domain.product.repository.ProductCategoryRepository;
 import com.tota.eccom.domain.product.repository.ProductRepository;
-import com.tota.eccom.exceptions.product.ProductAlreadyExistsException;
-import com.tota.eccom.exceptions.product.ProductNotFoundException;
-import com.tota.eccom.exceptions.product.ProductPriceNotFoundException;
+import com.tota.eccom.exceptions.generic.ResourceAlreadyExistsException;
+import com.tota.eccom.exceptions.generic.ResourceNotFoundException;
+import com.tota.eccom.util.SlugUtil;
 import org.junit.jupiter.api.*;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,9 @@ class ProductDomainTest {
 
     @Autowired
     ProductRepository productRepository;
+
+    @Autowired
+    ProductCategoryRepository productCategoryRepository;
 
     @Autowired
     ProductDomain productDomain;
@@ -59,9 +64,7 @@ class ProductDomainTest {
                 .length(1.0)
                 .grossWeight(1.0)
                 .wholesaleQuantity(1)
-                .palletBallastHeight("TEST-PALLET-BALLAST-HEIGHT")
                 .ean("TEST-EAN")
-                .lockCode(1)
                 .build();
     }
 
@@ -75,6 +78,15 @@ class ProductDomainTest {
     private ProductStockDTO getMockProductStockCreate() {
         return ProductStockDTO.builder()
                 .quantity(1)
+                .build();
+    }
+
+    private ProductCategory getMockProductCategoryCreate() {
+        return ProductCategory.builder()
+                .name("Test Category")
+                .description("Test Category Description")
+                .slug(SlugUtil.makeSlug("Test Category"))
+                .status(Status.ACTIVE)
                 .build();
     }
 
@@ -101,9 +113,7 @@ class ProductDomainTest {
             assertEquals(getMockProductCreate().getLength(), createdProduct.getLength());
             assertEquals(getMockProductCreate().getGrossWeight(), createdProduct.getGrossWeight());
             assertEquals(getMockProductCreate().getWholesaleQuantity(), createdProduct.getWholesaleQuantity());
-            assertEquals(getMockProductCreate().getPalletBallastHeight(), createdProduct.getPalletBallastHeight());
             assertEquals(getMockProductCreate().getEan(), createdProduct.getEan());
-            assertEquals(getMockProductCreate().getLockCode(), createdProduct.getLockCode());
             assertEquals(Status.ACTIVE, createdProduct.getStatus());
             assertNotNull(createdProduct.getCreatedAt());
             assertNotNull(createdProduct.getUpdatedAt());
@@ -192,10 +202,9 @@ class ProductDomainTest {
 
             productDomain.createProduct(productDTO);
 
-            assertThrows(ProductAlreadyExistsException.class, () -> productDomain.createProduct(productDTO));
+            assertThrows(ResourceAlreadyExistsException.class, () -> productDomain.createProduct(productDTO));
         }
     }
-
 
     @Nested
     @DisplayName("Get Product by Id")
@@ -216,7 +225,7 @@ class ProductDomainTest {
         @Test
         @DisplayName("Get product by id, should throw exception when product not found")
         void testGetProductById_shouldThrowExceptionWhenProductNotFound() {
-            assertThrows(ProductNotFoundException.class, () -> productDomain.getProductById(1L));
+            assertThrows(ResourceNotFoundException.class, () -> productDomain.getProductById(1L));
         }
     }
 
@@ -240,7 +249,7 @@ class ProductDomainTest {
         @Test
         @DisplayName("Delete product by id, should throw exception when product not found")
         void testDeleteProductById_shouldThrowExceptionWhenProductNotFound() {
-            assertThrows(ProductNotFoundException.class, () -> productDomain.deleteProductById(1L));
+            assertThrows(ResourceNotFoundException.class, () -> productDomain.deleteProductById(1L));
         }
 
     }
@@ -269,7 +278,7 @@ class ProductDomainTest {
         @Test
         @DisplayName("Update product by id, should throw exception when product not found")
         void testUpdateProductById_shouldThrowExceptionWhenProductNotFound() {
-            assertThrows(ProductNotFoundException.class, () -> productDomain.updateProductById(1L, getMockProductCreate()));
+            assertThrows(ResourceNotFoundException.class, () -> productDomain.updateProductById(1L, getMockProductCreate()));
         }
 
         @Test
@@ -364,7 +373,7 @@ class ProductDomainTest {
         @Test
         @DisplayName("Patch product by id, should throw exception when product not found")
         void testPatchProductById_shouldThrowExceptionWhenProductNotFound() {
-            assertThrows(ProductNotFoundException.class, () -> productDomain.patchProductById(1L, getMockProductCreate()));
+            assertThrows(ResourceNotFoundException.class, () -> productDomain.patchProductById(1L, getMockProductCreate()));
         }
 
         @Test
@@ -486,7 +495,7 @@ class ProductDomainTest {
         @Test
         @DisplayName("Add product price to product, should throw exception when product not found")
         void testAddProductPriceToProductById_shouldThrowExceptionWhenProductNotFound() {
-            assertThrows(ProductNotFoundException.class, () -> productDomain.addProductPriceToProduct(1L, getMockProductPriceCreate()));
+            assertThrows(ResourceNotFoundException.class, () -> productDomain.addProductPriceToProduct(1L, getMockProductPriceCreate()));
         }
 
         @Test
@@ -542,7 +551,6 @@ class ProductDomainTest {
         }
     }
 
-
     @Nested
     @DisplayName("Delete Product Price from Product by Id")
     class DeleteProductPriceFromProductByIdTest {
@@ -568,7 +576,7 @@ class ProductDomainTest {
         @Test
         @DisplayName("Delete product price from product, should throw exception when product not found")
         void testDeleteProductPriceFromProductById_shouldThrowExceptionWhenProductNotFound() {
-            assertThrows(ProductNotFoundException.class, () -> productDomain.deleteProductPriceFromProduct(1L, 1L));
+            assertThrows(ResourceNotFoundException.class, () -> productDomain.deleteProductPriceFromProduct(1L, 1L));
         }
 
         @Test
@@ -580,10 +588,9 @@ class ProductDomainTest {
 
             productDomain.addProductPriceToProduct(createdProduct.getId(), productPriceDTO);
 
-            assertThrows(ProductPriceNotFoundException.class, () -> productDomain.deleteProductPriceFromProduct(createdProduct.getId(), 2L));
+            assertThrows(ResourceNotFoundException.class, () -> productDomain.deleteProductPriceFromProduct(createdProduct.getId(), 2L));
         }
     }
-
 
     @Nested
     @DisplayName("Add Product Stock to Product by Id")
@@ -606,7 +613,7 @@ class ProductDomainTest {
         @Test
         @DisplayName("Add product stock to product, should throw exception when product not found")
         void testAddProductStockToProductById_shouldThrowExceptionWhenProductNotFound() {
-            assertThrows(ProductNotFoundException.class, () -> productDomain.addProductStockToProduct(1L, getMockProductStockCreate()));
+            assertThrows(ResourceNotFoundException.class, () -> productDomain.addProductStockToProduct(1L, getMockProductStockCreate()));
         }
 
         @Test
@@ -646,7 +653,6 @@ class ProductDomainTest {
 
     }
 
-
     @Nested
     @DisplayName("Get Product by Slug")
     class GetProductBySlugTest {
@@ -666,7 +672,7 @@ class ProductDomainTest {
         @Test
         @DisplayName("Get product by slug, should throw exception when product not found")
         void testGetProductBySlug_shouldThrowExceptionWhenProductNotFound() {
-            assertThrows(ProductNotFoundException.class, () -> productDomain.getProductBySlug("test-slug"));
+            assertThrows(ResourceNotFoundException.class, () -> productDomain.getProductBySlug("test-slug"));
         }
     }
 
@@ -718,6 +724,78 @@ class ProductDomainTest {
             assertNotNull(foundProducts.getContent());
             assertEquals(0, foundProducts.getContent().size());
         }
+
+        @Test
+        @DisplayName("Search products by term, should not return products without price")
+        void testSearchProductsByTerm_shouldNotReturnProductsWithoutPrice() {
+            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            productDomain.addProductStockToProduct(createdProduct.getId(), getMockProductStockCreate());
+
+            Page<Product> foundProducts = productDomain.searchProductsByTerm(getMockProductCreate().getName(), PageRequest.of(0, 10));
+
+            assertNotNull(foundProducts.getContent());
+            assertEquals(0, foundProducts.getContent().size());
+        }
+
+        @Test
+        @DisplayName("Search products by term, should not return products without stock")
+        void testSearchProductsByTerm_shouldNotReturnProductsWithoutStock() {
+            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            productDomain.addProductPriceToProduct(createdProduct.getId(), getMockProductPriceCreate());
+
+            Page<Product> foundProducts = productDomain.searchProductsByTerm(getMockProductCreate().getName(), PageRequest.of(0, 10));
+
+            assertNotNull(foundProducts.getContent());
+            assertEquals(0, foundProducts.getContent().size());
+        }
     }
+
+    @Nested
+    @DisplayName("Add Product Category to Product by Id")
+    class AddProductCategoryToProductByIdTest {
+
+        @Test
+        @DisplayName("Add product category to product, should add product category successfully")
+        void testAddProductCategoryToProductById_shouldAddProductCategorySuccessfully() {
+
+            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            ProductCategory productCategory = productCategoryRepository.save(getMockProductCategoryCreate());
+
+            productDomain.addProductCategoryToProduct(createdProduct.getId(), productCategory.getId());
+
+            assertNotNull(createdProduct.getId());
+            assertEquals(1, createdProduct.getProductCategories().size());
+            assertEquals(productCategory.getId(), createdProduct.getProductCategories().iterator().next().getId());
+        }
+
+        @Test
+        @DisplayName("Add product category to product, should throw exception when product not found")
+        void testAddProductCategoryToProductById_shouldThrowExceptionWhenProductNotFound() {
+
+            ProductCategory productCategory = productCategoryRepository.save(getMockProductCategoryCreate());
+
+            assertThrows(ResourceNotFoundException.class, () -> productDomain.addProductCategoryToProduct(1L, productCategory.getId()));
+        }
+
+        @Test
+        @DisplayName("Add product category to product, should throw exception when category not found")
+        void testAddProductCategoryToProductById_shouldThrowExceptionWhenCategoryNotFound() {
+            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            assertThrows(ResourceNotFoundException.class, () -> productDomain.addProductCategoryToProduct(createdProduct.getId(), 1L));
+        }
+
+        @Test
+        @DisplayName("Add product category to product, should throw exception when product already has category")
+        void testAddProductCategoryToProductById_shouldThrowExceptionWhenProductAlreadyHasCategory() {
+            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            ProductCategory productCategory = productCategoryRepository.save(getMockProductCategoryCreate());
+
+            productDomain.addProductCategoryToProduct(createdProduct.getId(), productCategory.getId());
+
+            assertThrows(ResourceAlreadyExistsException.class, () -> productDomain.addProductCategoryToProduct(createdProduct.getId(), productCategory.getId()));
+        }
+
+    }
+
 
 }

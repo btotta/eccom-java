@@ -163,6 +163,24 @@ public class ProductController {
         return new ResponseEntity<>(new ProductRespDTO(productDomain.addProductStockToProduct(id, productStockDTO)), HttpStatus.CREATED);
     }
 
+    // Product n Category Operations
+    @PostMapping("/{id}/category/{categoryId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(
+            summary = "Add product category to product",
+            description = "Adds a product category to the product with the specified ID.",
+            security = @SecurityRequirement(name = "Authorization")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Product category added successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "404", description = "Product not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
+    public ResponseEntity<ProductRespDTO> addProductCategoryToProduct(@PathVariable Long id, @PathVariable Long categoryId) {
+        return new ResponseEntity<>(new ProductRespDTO(productDomain.addProductCategoryToProduct(id, categoryId)), HttpStatus.CREATED);
+    }
+
 
     // Product Public Store Operations
 
@@ -191,7 +209,7 @@ public class ProductController {
     @PageableAsQueryParam
     public ResponseEntity<Page<ProductRespDTO>> searchProductsByTerm(
             @PathVariable String term,
-            @PageableDefault(size = 10, page = 0) Pageable pageable
+            @PageableDefault(size = 20, page = 0) Pageable pageable
     ) {
         return new ResponseEntity<>(productDomain.searchProductsByTerm(term, pageable).map(ProductRespDTO::new), HttpStatus.OK);
     }

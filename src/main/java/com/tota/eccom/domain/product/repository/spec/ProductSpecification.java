@@ -5,7 +5,6 @@ import com.tota.eccom.domain.product.model.ProductPrice;
 import com.tota.eccom.domain.product.model.ProductStock;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 
 public class ProductSpecification {
@@ -15,8 +14,8 @@ public class ProductSpecification {
 
     public static Specification<Product> searchProductsByTerm(String term) {
 
-        return Specification.where(hasName(term))
-                .or(hasDescription(term))
+        return Specification.where(onName(term))
+                .or(onDescription(term))
                 .and(notDeleted())
                 .and(notInactive())
                 .and(hasPrice())
@@ -31,26 +30,20 @@ public class ProductSpecification {
         };
     }
 
-    private static Specification<Product> hasName(String name) {
+    private static Specification<Product> onName(String term) {
         return (root, query, criteriaBuilder) -> {
-            if (StringUtils.isBlank(name)) {
-                return criteriaBuilder.conjunction();
-            }
             return criteriaBuilder.like(
                     criteriaBuilder.lower(root.get("name")),
-                    "%" + name.toLowerCase() + "%"
+                    "%" + term.toLowerCase() + "%"
             );
         };
     }
 
-    private static Specification<Product> hasDescription(String description) {
+    private static Specification<Product> onDescription(String term) {
         return (root, query, criteriaBuilder) -> {
-            if (StringUtils.isBlank(description)) {
-                return criteriaBuilder.conjunction();
-            }
             return criteriaBuilder.like(
                     criteriaBuilder.lower(root.get("description")),
-                    "%" + description.toLowerCase() + "%"
+                    "%" + term.toLowerCase() + "%"
             );
         };
     }

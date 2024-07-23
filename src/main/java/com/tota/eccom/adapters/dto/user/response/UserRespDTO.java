@@ -3,14 +3,18 @@ package com.tota.eccom.adapters.dto.user.response;
 import com.tota.eccom.domain.enums.Status;
 import com.tota.eccom.domain.user.model.Role;
 import com.tota.eccom.domain.user.model.User;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.Set;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserRespDTO {
 
     private Long id;
@@ -22,17 +26,16 @@ public class UserRespDTO {
     private Date updatedAt;
 
 
-    public static UserRespDTO fromUser(User user) {
+    public UserRespDTO(User user) {
 
-        return UserRespDTO.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .email(user.getEmail())
-                .roles(user.getRoles())
-                .status(user.getStatus())
-                .createdAt(user.getCreatedAt())
-                .updatedAt(user.getUpdatedAt())
-                .build();
+        this.id = user.getId();
+        this.name = user.getName();
+        this.email = user.getEmail();
+        this.roles = user.getRoles();
+        this.status = user.getStatus();
+        this.createdAt = user.getCreatedAt();
+        this.updatedAt = user.getUpdatedAt();
+
     }
 
 }

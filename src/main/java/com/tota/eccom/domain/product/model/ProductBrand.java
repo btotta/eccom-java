@@ -1,5 +1,6 @@
 package com.tota.eccom.domain.product.model;
 
+import com.tota.eccom.domain.enums.Status;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -8,29 +9,36 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.util.Date;
 
 @Entity
-@Table(name = "product_stock", indexes = {
-        @Index(name = "idx_product_stock_quantity", columnList = "quantity"),
-        @Index(name = "idx_product_stock_reserved_quantity", columnList = "reservedQuantity"),
-        @Index(name = "idx_product_stock_created_at", columnList = "createdAt"),
-        @Index(name = "idx_product_stock_updated_at", columnList = "updatedAt"),
+@Table(name = "product_brand", indexes = {
+        @Index(name = "idx_product_brand_name", columnList = "name"),
+        @Index(name = "idx_product_brand_slug", columnList = "slug"),
+        @Index(name = "idx_product_brand_description", columnList = "description"),
+        @Index(name = "idx_product_brand_status", columnList = "status"),
+        @Index(name = "idx_product_brand_created_at", columnList = "createdAt"),
+        @Index(name = "idx_product_brand_updated_at", columnList = "updatedAt"),
 })
-@Data
-@NoArgsConstructor
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
-public class ProductStock {
+public class ProductBrand {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(nullable = false)
-    private Integer quantity;
+    private String name;
+
+    @Column(nullable = false, unique = true)
+    private String slug;
 
     @Column(nullable = false)
-    private Integer reservedQuantity;
+    private String description;
+
+    @Column(nullable = false)
+    private Status status;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)

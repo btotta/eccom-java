@@ -53,9 +53,7 @@ public class ProductRespDTO {
         this.length = p.getLength();
         this.grossWeight = p.getGrossWeight();
         this.wholesaleQuantity = p.getWholesaleQuantity();
-        this.palletBallastHeight = p.getPalletBallastHeight();
         this.ean = p.getEan();
-        this.lockCode = p.getLockCode();
         this.description = p.getDescription();
         this.sku = p.getSku();
         this.createdAt = p.getCreatedAt();

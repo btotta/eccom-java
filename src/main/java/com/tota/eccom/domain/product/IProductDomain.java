@@ -30,4 +30,6 @@ public interface IProductDomain {
     Product getProductBySlug(String slug);
 
     Page<Product> searchProductsByTerm(String term, Pageable pageable);
+
+    Product addProductCategoryToProduct(Long id, Long categoryId);
 }

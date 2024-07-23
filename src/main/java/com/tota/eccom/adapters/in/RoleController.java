@@ -38,7 +38,7 @@ public class RoleController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<List<UserRoleRespDTO>> getAllUserRoles() {
-        return new ResponseEntity<>(UserRoleRespDTO.fromUserRoles(roleService.getAllUserRoles()), HttpStatus.OK);
+        return new ResponseEntity<>(roleService.getAllUserRoles().stream().map(UserRoleRespDTO::new).toList(), HttpStatus.OK);
     }
 
     @PostMapping("")
@@ -51,7 +51,7 @@ public class RoleController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<UserRoleRespDTO> createUserRole(@RequestBody @Valid UserRoleCreateDTO userRoleCreateDTO) {
-        return new ResponseEntity<>(UserRoleRespDTO.fromUserRole(roleService.createUserRole(userRoleCreateDTO)), HttpStatus.CREATED);
+        return new ResponseEntity<>(new UserRoleRespDTO(roleService.createUserRole(userRoleCreateDTO)), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
@@ -64,7 +64,7 @@ public class RoleController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<UserRoleRespDTO> getUserRoleById(@Parameter(description = "ID of the user role to be fetched") @PathVariable Long id) {
-        return new ResponseEntity<>(UserRoleRespDTO.fromUserRole(roleService.getUserRoleById(id)), HttpStatus.OK);
+        return new ResponseEntity<>(new UserRoleRespDTO(roleService.getUserRoleById(id)), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
@@ -91,7 +91,7 @@ public class RoleController {
             @ApiResponse(responseCode = "404", description = "User role or user not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")})
     public ResponseEntity<UserRespDTO> associateUserRoleToUser(@Parameter(description = "ID of the user role to be associated") @PathVariable Long id, @Parameter(description = "ID of the user to be associated") @PathVariable Long userId) {
-        return new ResponseEntity<>(UserRespDTO.fromUser(roleService.associateUserRole(userId, id)), HttpStatus.CREATED);
+        return new ResponseEntity<>(new UserRespDTO(roleService.associateUserRole(userId, id)), HttpStatus.CREATED);
     }
 
 }
