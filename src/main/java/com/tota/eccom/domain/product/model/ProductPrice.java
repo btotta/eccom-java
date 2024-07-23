@@ -13,7 +13,10 @@ import java.util.Date;
 
 @Entity
 @Table(name = "product_price", indexes = {
-
+        @Index(name = "idx_product_price_price", columnList = "price"),
+        @Index(name = "idx_product_price_quantity", columnList = "quantity"),
+        @Index(name = "idx_product_price_created_at", columnList = "createdAt"),
+        @Index(name = "idx_product_price_updated_at", columnList = "updatedAt"),
 })
 @Getter
 @Setter
@@ -56,6 +59,4 @@ public class ProductPrice {
     public void preUpdate() {
         this.setUpdatedAt(new Date());
     }
-
-
 }

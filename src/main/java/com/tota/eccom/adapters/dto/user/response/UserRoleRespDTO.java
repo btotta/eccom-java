@@ -4,8 +4,6 @@ import com.tota.eccom.domain.enums.Status;
 import com.tota.eccom.domain.user.model.Role;
 import lombok.Data;
 
-import java.util.List;
-
 @Data
 public class UserRoleRespDTO {
 
@@ -19,11 +17,4 @@ public class UserRoleRespDTO {
         this.status = userRole.getStatus();
     }
 
-    public static List<UserRoleRespDTO> fromUserRoles(List<Role> userRoles) {
-        return userRoles.stream().map(UserRoleRespDTO::new).toList();
-    }
-
-    public static UserRoleRespDTO fromUserRole(Role userRole) {
-        return new UserRoleRespDTO(userRole);
-    }
 }

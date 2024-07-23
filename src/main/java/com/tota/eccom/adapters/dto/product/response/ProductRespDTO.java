@@ -36,6 +36,7 @@ public class ProductRespDTO {
     private Date createdAt;
     private Date updatedAt;
     private List<ProductPriceRespDTO> productPrices;
+    private ProductStockRespDTO productStock;
 
 
     public ProductRespDTO(Product p) {
@@ -52,14 +53,13 @@ public class ProductRespDTO {
         this.length = p.getLength();
         this.grossWeight = p.getGrossWeight();
         this.wholesaleQuantity = p.getWholesaleQuantity();
-        this.palletBallastHeight = p.getPalletBallastHeight();
         this.ean = p.getEan();
-        this.lockCode = p.getLockCode();
         this.description = p.getDescription();
         this.sku = p.getSku();
         this.createdAt = p.getCreatedAt();
         this.updatedAt = p.getUpdatedAt();
         this.productPrices = p.getProductPrices().stream().map(ProductPriceRespDTO::new).toList();
+        this.productStock = new ProductStockRespDTO(p.getProductStock());
     }
 
 }

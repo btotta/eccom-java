@@ -37,7 +37,7 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<UserRespDTO> createUser(@RequestBody @Valid UserCreateDTO userCreateDTO) {
-        return new ResponseEntity<>(UserRespDTO.fromUser(userDomain.createUser(userCreateDTO)), HttpStatus.CREATED);
+        return new ResponseEntity<>(new UserRespDTO(userDomain.createUser(userCreateDTO)), HttpStatus.CREATED);
     }
 
     @GetMapping
@@ -49,7 +49,7 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<UserRespDTO> getUserLogged() {
-        return new ResponseEntity<>(UserRespDTO.fromUser(userDomain.getUserLogged()), HttpStatus.OK);
+        return new ResponseEntity<>(new UserRespDTO(userDomain.getUserLogged()), HttpStatus.OK);
     }
 
     @PutMapping
@@ -62,7 +62,7 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "Internal server error"),
     })
     public ResponseEntity<UserRespDTO> updateUserLogged(@RequestBody @Valid UserUpdateDTO userUpdateDTO) {
-        return new ResponseEntity<>(UserRespDTO.fromUser(userDomain.updateUserLogged(userUpdateDTO)), HttpStatus.OK);
+        return new ResponseEntity<>(new UserRespDTO(userDomain.updateUserLogged(userUpdateDTO)), HttpStatus.OK);
     }
 
     @DeleteMapping
@@ -90,7 +90,7 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "Internal server error"),
     })
     public ResponseEntity<UserRespDTO> getUserById(@Parameter(description = "ID of the user to be fetched") @PathVariable Long id) {
-        return new ResponseEntity<>(UserRespDTO.fromUser(userDomain.getUserById(id)), HttpStatus.OK);
+        return new ResponseEntity<>(new UserRespDTO(userDomain.getUserById(id)), HttpStatus.OK);
     }
 
     @PutMapping("/admin/{id}")
@@ -104,7 +104,7 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "Internal server error"),
     })
     public ResponseEntity<UserRespDTO> updateUserById(@Parameter(description = "ID of the user to be updated") @PathVariable Long id, @RequestBody @Valid UserUpdateDTO userUpdateDTO) {
-        return new ResponseEntity<>(UserRespDTO.fromUser(userDomain.updateUserById(id, userUpdateDTO)), HttpStatus.OK);
+        return new ResponseEntity<>(new UserRespDTO(userDomain.updateUserById(id, userUpdateDTO)), HttpStatus.OK);
     }
 
     @DeleteMapping("/admin/{id}")

@@ -6,13 +6,21 @@ import com.tota.eccom.adapters.dto.product.request.ProductStockDTO;
 import com.tota.eccom.domain.enums.Status;
 import com.tota.eccom.domain.product.IProductDomain;
 import com.tota.eccom.domain.product.model.Product;
+import com.tota.eccom.domain.product.model.ProductCategory;
+import com.tota.eccom.domain.product.repository.ProductCategoryRepository;
 import com.tota.eccom.domain.product.repository.ProductRepository;
-import com.tota.eccom.exceptions.product.ProductAlreadyExistsException;
-import com.tota.eccom.exceptions.product.ProductNotFoundException;
-import com.tota.eccom.exceptions.product.ProductPriceNotFoundException;
+import com.tota.eccom.domain.product.repository.spec.ProductSpecification;
+import com.tota.eccom.exceptions.generic.ResourceAlreadyExistsException;
+import com.tota.eccom.exceptions.generic.ResourceNotFoundException;
+import com.tota.eccom.util.SlugUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
 
 @Component
 @Slf4j
@@ -20,13 +28,18 @@ import org.springframework.stereotype.Component;
 public class ProductDomain implements IProductDomain {
 
     private final ProductRepository productRepository;
+    private final ProductCategoryRepository productCategoryRepository;
 
 
     @Override
     public Product createProduct(ProductDTO productDTO) {
 
-        if (findProductBySKU(productDTO.getSku()) != null) {
-            throw new ProductAlreadyExistsException("Product already exists with given plu: " + productDTO.getSku());
+        if (productDTO.getName() != null && findProductBySlug(SlugUtil.makeSlug(productDTO.getName())) != null) {
+            throw new ResourceAlreadyExistsException("Product with given slug already exists");
+        }
+
+        if (productDTO.getSku() != null && findProductBySKU(productDTO.getSku()) != null) {
+            throw new ResourceAlreadyExistsException("Product already exists with given plu: " + productDTO.getSku());
         }
 
         Product product = productDTO.toProduct();
@@ -38,7 +51,7 @@ public class ProductDomain implements IProductDomain {
 
     @Override
     public Product getProductById(Long id) {
-        return productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("Product not found with given id: " + id));
+        return productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product not found with given id: " + id));
     }
 
     @Override
@@ -54,6 +67,11 @@ public class ProductDomain implements IProductDomain {
 
     @Override
     public Product updateProductById(Long id, ProductDTO productDTO) {
+
+        if (productDTO.getName() != null) {
+            validateProductSlug(SlugUtil.makeSlug(productDTO.getName()), id);
+        }
+
         Product product = getProductById(id);
 
         Product updatedProduct = productDTO.toUpdatedProduct(product);
@@ -65,6 +83,10 @@ public class ProductDomain implements IProductDomain {
 
     @Override
     public Product patchProductById(Long id, ProductDTO productDTO) {
+
+        if (productDTO.getName() != null) {
+            validateProductSlug(SlugUtil.makeSlug(productDTO.getName()), id);
+        }
 
         Product product = getProductById(id);
 
@@ -95,7 +117,7 @@ public class ProductDomain implements IProductDomain {
         log.info("Deleting product price id {} from product: {}", priceId, product);
 
         if (product.getProductPrices().stream().noneMatch(pp -> pp.getId().equals(priceId))) {
-            throw new ProductPriceNotFoundException(String.format("Product price with id %s not found", priceId));
+            throw new ResourceNotFoundException(String.format("Product price with id %s not found", priceId));
         }
 
         product.getProductPrices().removeIf(pp -> pp.getId().equals(priceId));
@@ -115,8 +137,61 @@ public class ProductDomain implements IProductDomain {
         return productRepository.save(product);
     }
 
+    @Override
+    public Product getProductBySlug(String slug) {
+
+        log.info("Getting product by slug: {}", slug);
+
+        return productRepository.findBySlug(slug).orElseThrow(() -> new ResourceNotFoundException("Product not found with given slug: " + slug));
+    }
+
+    @Override
+    public Page<Product> searchProductsByTerm(String term, Pageable pageable) {
+
+        log.info("Searching products by term: {}", term);
+
+        Specification<Product> specification = ProductSpecification.searchProductsByTerm(term);
+
+        return productRepository.findAll(specification, pageable);
+    }
+
+    @Override
+    public Product addProductCategoryToProduct(Long id, Long categoryId) {
+
+        ProductCategory category = findCategoryById(categoryId);
+
+        Product product = getProductById(id);
+
+        if (product.getProductCategories() == null) {
+            product.setProductCategories(new ArrayList<>());
+        }
+
+        if (product.getProductCategories().stream().anyMatch(pc -> pc.getId().equals(categoryId))) {
+            throw new ResourceAlreadyExistsException("Product already has category with given id");
+        }
+
+        product.getProductCategories().add(category);
+
+        return productRepository.save(product);
+    }
+
+    private void validateProductSlug(String slug, Long id) {
+        Product existingProduct = findProductBySlug(slug);
+        if (existingProduct != null && !existingProduct.getId().equals(id)) {
+            throw new ResourceAlreadyExistsException("Product with given slug already exists");
+        }
+    }
+
+    private ProductCategory findCategoryById(Long id) {
+        return productCategoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product category not found with given id: " + id));
+    }
+
     private Product findProductBySKU(String sku) {
         return productRepository.findBySku(sku).orElse(null);
+    }
+
+    private Product findProductBySlug(String slug) {
+        return productRepository.findBySlug(slug).orElse(null);
     }
 
 

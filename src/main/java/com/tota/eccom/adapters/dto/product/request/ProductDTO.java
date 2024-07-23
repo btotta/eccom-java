@@ -24,9 +24,7 @@ public class ProductDTO {
     private Double length;
     private Double grossWeight;
     private Integer wholesaleQuantity;
-    private String palletBallastHeight;
     private String ean;
-    private Integer lockCode;
     private Status status;
 
     public Product toProduct() {
@@ -47,9 +45,7 @@ public class ProductDTO {
                 .length(length)
                 .grossWeight(grossWeight)
                 .wholesaleQuantity(wholesaleQuantity)
-                .palletBallastHeight(palletBallastHeight)
                 .ean(ean)
-                .lockCode(lockCode)
                 .status(Status.ACTIVE)
                 .build();
     }
@@ -70,10 +66,11 @@ public class ProductDTO {
         product.setLength(length);
         product.setGrossWeight(grossWeight);
         product.setWholesaleQuantity(wholesaleQuantity);
-        product.setPalletBallastHeight(palletBallastHeight);
         product.setEan(ean);
-        product.setLockCode(lockCode);
-        product.setStatus(Status.ACTIVE);
+
+        if (status != null) {
+            product.setStatus(status);
+        }
 
         return product;
     }
@@ -92,9 +89,7 @@ public class ProductDTO {
         setAttribute(length, product::setLength);
         setAttribute(grossWeight, product::setGrossWeight);
         setAttribute(wholesaleQuantity, product::setWholesaleQuantity);
-        setAttribute(palletBallastHeight, product::setPalletBallastHeight);
         setAttribute(ean, product::setEan);
-        setAttribute(lockCode, product::setLockCode);
 
         return product;
     }
