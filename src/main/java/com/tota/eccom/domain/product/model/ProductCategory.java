@@ -6,7 +6,9 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "product_category", indexes = {
@@ -21,6 +23,7 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 public class ProductCategory {
 
     @Id
@@ -49,6 +52,9 @@ public class ProductCategory {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updated_at", nullable = false)
     private Date updatedAt;
+
+    @ManyToMany(mappedBy = "productCategories")
+    private List<Product> products = new ArrayList<>();
 
     @PrePersist
     public void prePersist() {

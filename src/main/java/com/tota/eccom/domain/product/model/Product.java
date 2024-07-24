@@ -32,7 +32,6 @@ import java.util.List;
         @Index(name = "idx_product_created_at", columnList = "createdAt"),
         @Index(name = "idx_product_updated_at", columnList = "updatedAt"),
         @Index(name = "idx_product_slug", columnList = "slug"),
-
 })
 @Builder
 @AllArgsConstructor
@@ -45,7 +44,7 @@ public class Product {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, unique = true) //TODO: chegar se há duplicidades antes de salvar o produto no crud
+    @Column(nullable = false, unique = true)
     private String slug;
 
     @Column(nullable = false)
@@ -92,14 +91,17 @@ public class Product {
     private List<ProductPrice> productPrices = new ArrayList<>();
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    @JoinColumn(name = "product_id")
     private ProductStock productStock;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    @JoinColumn(name = "product_id")
+    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "product_category_mapping",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_category_id")
+    )
     private List<ProductCategory> productCategories = new ArrayList<>();
 
-    @OneToOne
+    @ManyToOne
     private ProductBrand productBrand;
 
     @CreationTimestamp

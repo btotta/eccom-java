@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BrandRespDTO {
 
+    private Long id;
     private String name;
     private String slug;
     private String description;
@@ -21,7 +22,7 @@ public class BrandRespDTO {
 
 
     public BrandRespDTO(ProductBrand brand) {
-
+        this.id = brand.getId();
         this.name = brand.getName();
         this.slug = brand.getSlug();
         this.description = brand.getDescription();

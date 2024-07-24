@@ -1,6 +1,8 @@
 package com.tota.eccom.adapters.dto.product.response;
 
 
+import com.tota.eccom.adapters.dto.brand.response.BrandRespDTO;
+import com.tota.eccom.adapters.dto.category.response.CategoryRespDTO;
 import com.tota.eccom.domain.product.model.Product;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,6 +39,8 @@ public class ProductRespDTO {
     private Date updatedAt;
     private List<ProductPriceRespDTO> productPrices;
     private ProductStockRespDTO productStock;
+    private BrandRespDTO productBrand;
+    private List<CategoryRespDTO> productCategories;
 
 
     public ProductRespDTO(Product p) {
@@ -60,6 +64,8 @@ public class ProductRespDTO {
         this.updatedAt = p.getUpdatedAt();
         this.productPrices = p.getProductPrices().stream().map(ProductPriceRespDTO::new).toList();
         this.productStock = new ProductStockRespDTO(p.getProductStock());
+        this.productBrand = new BrandRespDTO(p.getProductBrand());
+        this.productCategories = p.getProductCategories().stream().map(CategoryRespDTO::new).toList();
     }
 
 }

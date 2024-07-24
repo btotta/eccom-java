@@ -1,10 +1,8 @@
 package com.tota.eccom.domain.product.threads;
 
-import com.tota.eccom.util.enums.Status;
-import com.tota.eccom.domain.product.model.Product;
-import com.tota.eccom.domain.product.model.ProductPrice;
-import com.tota.eccom.domain.product.model.ProductStock;
+import com.tota.eccom.domain.product.model.*;
 import com.tota.eccom.util.SlugUtil;
+import com.tota.eccom.util.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -22,8 +20,8 @@ public class InitialProductsDTOS {
     public Product getCamiseta() {
 
         ProductStock productStock = ProductStock.builder()
-                .quantity(10)
-                .reservedQuantity(0)
+                .quantity(1000)
+                .reservedQuantity(10)
                 .build();
 
         ProductPrice productPrice1 = ProductPrice.builder()
@@ -65,8 +63,8 @@ public class InitialProductsDTOS {
     public Product getBermuda() {
 
         ProductStock productStock = ProductStock.builder()
-                .quantity(10)
-                .reservedQuantity(0)
+                .quantity(5000)
+                .reservedQuantity(50)
                 .build();
 
         ProductPrice productPrice1 = ProductPrice.builder()
@@ -100,6 +98,26 @@ public class InitialProductsDTOS {
                 .status(Status.ACTIVE)
                 .build();
     }
+
+    public ProductBrand getBrand() {
+        return ProductBrand.builder()
+                .name("Home Brand")
+                .description("Brand for things made by me")
+                .slug(SlugUtil.makeSlug("Home Brand"))
+                .status(Status.ACTIVE)
+                .build();
+    }
+
+    public ProductCategory getCategory() {
+        return ProductCategory.builder()
+                .name("Clothes Brand")
+                .description("Clothes made by me from home")
+                .slug(SlugUtil.makeSlug("Clothes Brand"))
+                .status(Status.ACTIVE)
+                .build();
+    }
+
+
 
 
 }

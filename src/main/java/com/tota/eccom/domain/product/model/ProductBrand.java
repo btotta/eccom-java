@@ -22,6 +22,7 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 public class ProductBrand {
 
     @Id
