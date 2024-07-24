@@ -2,6 +2,7 @@ package com.tota.eccom.adapters.in;
 
 import com.tota.eccom.adapters.dto.category.request.CategoryDTO;
 import com.tota.eccom.adapters.dto.category.response.CategoryRespDTO;
+import com.tota.eccom.adapters.dto.product.response.ProductRespDTO;
 import com.tota.eccom.domain.product.IProductCategoryDomain;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -10,6 +11,10 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.converters.models.PageableAsQueryParam;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -87,6 +92,21 @@ public class CategoryController {
         return new ResponseEntity<>(new CategoryRespDTO(categoryDomain.updateCategoryById(id, categoryDTO)), HttpStatus.OK);
     }
 
+
+    // Category n Product Operations
+    @GetMapping("/{slug}/products")
+    @Operation(
+            summary = "Get products by category",
+            description = "Retrieves the products with the specified category."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Products retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Category not found")
+    })
+    @PageableAsQueryParam
+    public ResponseEntity<Page<ProductRespDTO>> getProductsByCategory(@PathVariable String slug, @PageableDefault(size = 20, page = 0) Pageable pageable) {
+        return new ResponseEntity<>(categoryDomain.getProductsByCategory(slug, pageable).map(ProductRespDTO::new), HttpStatus.OK);
+    }
 
 
 

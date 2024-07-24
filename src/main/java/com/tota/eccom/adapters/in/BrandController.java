@@ -3,6 +3,7 @@ package com.tota.eccom.adapters.in;
 
 import com.tota.eccom.adapters.dto.brand.request.BrandDTO;
 import com.tota.eccom.adapters.dto.brand.response.BrandRespDTO;
+import com.tota.eccom.adapters.dto.product.response.ProductRespDTO;
 import com.tota.eccom.domain.product.IProductBrandDomain;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -11,6 +12,10 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.converters.models.PageableAsQueryParam;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -93,6 +98,21 @@ public class BrandController {
     })
     public ResponseEntity<BrandRespDTO> getBrandBySlug(@PathVariable String slug) {
         return new ResponseEntity<>(new BrandRespDTO(brandDomain.getBrandBySlug(slug)), HttpStatus.OK);
+    }
+
+    // Brand n Product Operations
+    @GetMapping("/{slug}/products")
+    @Operation(
+            summary = "Get products by brand",
+            description = "Retrieves the products with the specified brand."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Products retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Brand not found")
+    })
+    @PageableAsQueryParam
+    public ResponseEntity<Page<ProductRespDTO>> getProductsByBrand(@PathVariable String slug, @PageableDefault(size = 20, page = 0) Pageable pageable) {
+        return new ResponseEntity<>(brandDomain.getProductsByBrand(slug, pageable).map(ProductRespDTO::new), HttpStatus.OK);
     }
 
 

@@ -2,8 +2,10 @@ package com.tota.eccom.domain.product.business;
 
 import com.tota.eccom.adapters.dto.brand.request.BrandDTO;
 import com.tota.eccom.domain.product.IProductBrandDomain;
+import com.tota.eccom.domain.product.model.Product;
 import com.tota.eccom.domain.product.model.ProductBrand;
 import com.tota.eccom.domain.product.repository.ProductBrandRepository;
+import com.tota.eccom.domain.product.repository.ProductRepository;
 import com.tota.eccom.exceptions.generic.ResourceAlreadyExistsException;
 import com.tota.eccom.exceptions.generic.ResourceNotFoundException;
 import com.tota.eccom.util.SlugUtil;
@@ -11,6 +13,8 @@ import com.tota.eccom.util.enums.Status;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -20,6 +24,7 @@ public class ProductBrandDomain implements IProductBrandDomain {
 
 
     private final ProductBrandRepository productBrandRepository;
+    private final ProductRepository productRepository;
 
 
     @Override
@@ -75,6 +80,18 @@ public class ProductBrandDomain implements IProductBrandDomain {
     @Override
     public ProductBrand getBrandBySlug(String slug) {
         return productBrandRepository.findBySlug(slug).orElseThrow(() -> new ResourceNotFoundException("Brand not found with given slug: " + slug));
+    }
+
+    @Override
+    public Page<Product> getProductsByBrand(String slug, Pageable pageable) {
+
+        ProductBrand brand = getBrandBySlug(slug);
+
+        if (brand == null) {
+            throw new ResourceNotFoundException("Brand not found with given slug: " + slug);
+        }
+
+        return productRepository.findByProductsByBrandId(brand.getId(), pageable);
     }
 
     private void validateExistingSlug(String slug, Long id) {

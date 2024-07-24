@@ -36,7 +36,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private ResponseEntity<ErrorDetails> buildErrorResponse(Exception ex, WebRequest request, HttpStatus httpStatus) {
         ErrorDetails errorDetails = ErrorDetails.builder()
                 .timestamp(LocalDateTime.now())
-                .message(ex.getMessage())
+                .message(ex.getMessage() != null ? ex.getMessage() : "Internal error: " + ex.getClass().getName())
                 .details(request.getDescription(false).replace("uri=", ""))
                 .build();
 
