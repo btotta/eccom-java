@@ -4,7 +4,7 @@ import com.tota.eccom.adapters.dto.user.request.UserCreateDTO;
 import com.tota.eccom.adapters.dto.user.request.UserLoginDTO;
 import com.tota.eccom.adapters.dto.user.request.UserUpdateDTO;
 import com.tota.eccom.adapters.dto.user.response.UserLoginRespDTO;
-import com.tota.eccom.domain.enums.Status;
+import com.tota.eccom.util.enums.Status;
 import com.tota.eccom.domain.user.model.Role;
 import com.tota.eccom.domain.user.model.User;
 import com.tota.eccom.domain.user.repository.RoleRepository;

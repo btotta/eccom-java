@@ -181,9 +181,25 @@ public class ProductController {
         return new ResponseEntity<>(new ProductRespDTO(productDomain.addProductCategoryToProduct(id, categoryId)), HttpStatus.CREATED);
     }
 
+    // Product n Brand Operations
+    @PostMapping("/{id}/brand/{brandId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(
+            summary = "Add product brand to product",
+            description = "Adds a product brand to the product with the specified ID.",
+            security = @SecurityRequirement(name = "Authorization")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Product brand added successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "404", description = "Product not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
+    public ResponseEntity<ProductRespDTO> addProductBrandToProduct(@PathVariable Long id, @PathVariable Long brandId) {
+        return new ResponseEntity<>(new ProductRespDTO(productDomain.addProductBrandToProduct(id, brandId)), HttpStatus.CREATED);
+    }
 
     // Product Public Store Operations
-
     @GetMapping("{slug}")
     @Operation(
             summary = "Get product by slug",

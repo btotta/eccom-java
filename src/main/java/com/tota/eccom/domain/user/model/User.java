@@ -1,7 +1,7 @@
 package com.tota.eccom.domain.user.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.tota.eccom.domain.enums.Status;
+import com.tota.eccom.util.enums.Status;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;

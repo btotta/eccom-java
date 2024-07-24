@@ -1,7 +1,7 @@
 package com.tota.eccom.domain.product.business;
 
 import com.tota.eccom.adapters.dto.brand.request.BrandDTO;
-import com.tota.eccom.domain.enums.Status;
+import com.tota.eccom.util.enums.Status;
 import com.tota.eccom.domain.product.model.ProductBrand;
 import com.tota.eccom.domain.product.repository.ProductBrandRepository;
 import com.tota.eccom.exceptions.generic.ResourceAlreadyExistsException;

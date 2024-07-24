@@ -1,13 +1,13 @@
 package com.tota.eccom.domain.product.business;
 
 import com.tota.eccom.adapters.dto.brand.request.BrandDTO;
-import com.tota.eccom.domain.enums.Status;
 import com.tota.eccom.domain.product.IProductBrandDomain;
 import com.tota.eccom.domain.product.model.ProductBrand;
 import com.tota.eccom.domain.product.repository.ProductBrandRepository;
 import com.tota.eccom.exceptions.generic.ResourceAlreadyExistsException;
 import com.tota.eccom.exceptions.generic.ResourceNotFoundException;
 import com.tota.eccom.util.SlugUtil;
+import com.tota.eccom.util.enums.Status;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

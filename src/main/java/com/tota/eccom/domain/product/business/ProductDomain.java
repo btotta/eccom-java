@@ -3,16 +3,18 @@ package com.tota.eccom.domain.product.business;
 import com.tota.eccom.adapters.dto.product.request.ProductDTO;
 import com.tota.eccom.adapters.dto.product.request.ProductPriceDTO;
 import com.tota.eccom.adapters.dto.product.request.ProductStockDTO;
-import com.tota.eccom.domain.enums.Status;
 import com.tota.eccom.domain.product.IProductDomain;
 import com.tota.eccom.domain.product.model.Product;
+import com.tota.eccom.domain.product.model.ProductBrand;
 import com.tota.eccom.domain.product.model.ProductCategory;
+import com.tota.eccom.domain.product.repository.ProductBrandRepository;
 import com.tota.eccom.domain.product.repository.ProductCategoryRepository;
 import com.tota.eccom.domain.product.repository.ProductRepository;
 import com.tota.eccom.domain.product.repository.spec.ProductSpecification;
 import com.tota.eccom.exceptions.generic.ResourceAlreadyExistsException;
 import com.tota.eccom.exceptions.generic.ResourceNotFoundException;
 import com.tota.eccom.util.SlugUtil;
+import com.tota.eccom.util.enums.Status;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -29,6 +31,7 @@ public class ProductDomain implements IProductDomain {
 
     private final ProductRepository productRepository;
     private final ProductCategoryRepository productCategoryRepository;
+    private final ProductBrandRepository productBrandRepository;
 
 
     @Override
@@ -171,6 +174,18 @@ public class ProductDomain implements IProductDomain {
         }
 
         product.getProductCategories().add(category);
+
+        return productRepository.save(product);
+    }
+
+    @Override
+    public Product addProductBrandToProduct(Long id, Long brandId) {
+
+        ProductBrand brand = productBrandRepository.findById(brandId).orElseThrow(() -> new ResourceNotFoundException("Product brand not found with given id: " + brandId));
+
+        Product product = getProductById(id);
+
+        product.setProductBrand(brand);
 
         return productRepository.save(product);
     }

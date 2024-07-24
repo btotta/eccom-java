@@ -1,6 +1,6 @@
 package com.tota.eccom.domain.user.model;
 
-import com.tota.eccom.domain.enums.Status;
+import com.tota.eccom.util.enums.Status;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

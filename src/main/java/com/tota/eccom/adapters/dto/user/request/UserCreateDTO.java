@@ -1,6 +1,6 @@
 package com.tota.eccom.adapters.dto.user.request;
 
-import com.tota.eccom.domain.enums.Status;
+import com.tota.eccom.util.enums.Status;
 import com.tota.eccom.util.EmailValidationUtil;
 import com.tota.eccom.util.PasswordUtil;
 import com.tota.eccom.domain.user.model.User;

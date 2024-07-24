@@ -1,6 +1,6 @@
 package com.tota.eccom.domain.user.threads;
 
-import com.tota.eccom.domain.enums.Status;
+import com.tota.eccom.util.enums.Status;
 import com.tota.eccom.domain.user.model.Role;
 import com.tota.eccom.domain.user.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;

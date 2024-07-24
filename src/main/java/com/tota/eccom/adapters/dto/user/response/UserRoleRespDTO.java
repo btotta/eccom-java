@@ -1,6 +1,6 @@
 package com.tota.eccom.adapters.dto.user.response;
 
-import com.tota.eccom.domain.enums.Status;
+import com.tota.eccom.util.enums.Status;
 import com.tota.eccom.domain.user.model.Role;
 import lombok.Data;
 

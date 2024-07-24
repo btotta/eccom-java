@@ -32,4 +32,6 @@ public interface IProductDomain {
     Page<Product> searchProductsByTerm(String term, Pageable pageable);
 
     Product addProductCategoryToProduct(Long id, Long categoryId);
+
+    Product addProductBrandToProduct(Long id, Long brandId);
 }

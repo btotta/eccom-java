@@ -1,6 +1,6 @@
 package com.tota.eccom.domain.product.threads;
 
-import com.tota.eccom.domain.enums.Status;
+import com.tota.eccom.util.enums.Status;
 import com.tota.eccom.domain.product.model.Product;
 import com.tota.eccom.domain.product.model.ProductPrice;
 import com.tota.eccom.domain.product.model.ProductStock;

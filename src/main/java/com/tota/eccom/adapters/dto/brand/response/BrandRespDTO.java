@@ -1,7 +1,7 @@
 package com.tota.eccom.adapters.dto.brand.response;
 
 
-import com.tota.eccom.domain.enums.Status;
+import com.tota.eccom.util.enums.Status;
 import com.tota.eccom.domain.product.model.ProductBrand;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

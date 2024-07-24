@@ -1,7 +1,7 @@
 package com.tota.eccom.domain.product.business;
 
 import com.tota.eccom.adapters.dto.category.request.CategoryDTO;
-import com.tota.eccom.domain.enums.Status;
+import com.tota.eccom.util.enums.Status;
 import com.tota.eccom.domain.product.model.ProductCategory;
 import com.tota.eccom.domain.product.repository.ProductCategoryRepository;
 import com.tota.eccom.exceptions.generic.ResourceAlreadyExistsException;

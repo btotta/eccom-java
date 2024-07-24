@@ -1,7 +1,7 @@
 package com.tota.eccom.adapters.dto.category.request;
 
 
-import com.tota.eccom.domain.enums.Status;
+import com.tota.eccom.util.enums.Status;
 import com.tota.eccom.domain.product.model.ProductCategory;
 import com.tota.eccom.util.SlugUtil;
 import lombok.AllArgsConstructor;
