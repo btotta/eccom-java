@@ -12,10 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/cart")
@@ -25,24 +22,85 @@ public class CartController {
     private final ICartDomain cartDomain;
 
 
-    @PostMapping
+    // Cart n Cart Item Operations
+    @DeleteMapping("/{id}/item/{itemId}")
     @PreAuthorize("hasRole('USER')")
     @Operation(
-            summary = "Add product to cart",
-            description = "Adds a product to the cart with the provided details.",
+            summary = "Delete cart item by id",
+            description = "Deletes the cart item with the specified ID.",
             security = @SecurityRequirement(name = "Authorization")
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Product added to cart"),
-            @ApiResponse(responseCode = "400", description = "Invalid input"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "404", description = "Product not found"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
+            @ApiResponse(responseCode = "204", description = "Cart item deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Cart item not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
     })
-    public ResponseEntity<CartRespDTO> addProductToCart(@RequestBody @Valid CartItemReqDTO cartItemReqDTO) {
-        return new ResponseEntity<>(new CartRespDTO(cartDomain.addProductToCart(cartItemReqDTO)), HttpStatus.OK);
+    public ResponseEntity<Void> deleteCartItemById(@PathVariable Long id, @PathVariable Long itemId) {
+        cartDomain.deleteCartItemById(id, itemId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('USER')")
+    @Operation(
+            summary = "Update cart by id",
+            description = "Updates the cart with the specified ID.",
+            security = @SecurityRequirement(name = "Authorization")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Cart updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "404", description = "Cart not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
+    public ResponseEntity<CartRespDTO> updateCartById(@PathVariable Long id, @RequestBody @Valid CartItemReqDTO cartItemReqDTO) {
+        return new ResponseEntity<>(new CartRespDTO(cartDomain.updateCartById(id, cartItemReqDTO)), HttpStatus.OK);
+    }
+
+    // Cart Operations
+    @GetMapping
+    @PreAuthorize("hasRole('USER')")
+    @Operation(
+            summary = "Get cart by user",
+            description = "Retrieves the cart with the specified user.",
+            security = @SecurityRequirement(name = "Authorization")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Cart retrieved successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<CartRespDTO> getCartByUser() {
+        return new ResponseEntity<>(new CartRespDTO(cartDomain.getCartByUser()), HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('USER')")
+    @Operation(
+            summary = "Get cart by id",
+            description = "Retrieves the cart with the specified ID.",
+            security = @SecurityRequirement(name = "Authorization")
+    )
+    public ResponseEntity<CartRespDTO> getCartById(@PathVariable Long id) {
+        return new ResponseEntity<>(new CartRespDTO(cartDomain.getCartById(id)), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('USER')")
+    @Operation(
+            summary = "Delete cart by id",
+            description = "Deletes the cart with the specified ID.",
+            security = @SecurityRequirement(name = "Authorization")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Cart deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Cart not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
+    public ResponseEntity<Void> deleteCartById(@PathVariable Long id) {
+        cartDomain.deleteCartById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 
 
 }

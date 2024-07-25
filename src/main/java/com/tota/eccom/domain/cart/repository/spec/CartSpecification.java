@@ -11,7 +11,8 @@ public class CartSpecification {
         return Specification.where(hasUserId(userId))
                 .and(hasStatusActive())
                 .and(notOlderThan(7))
-                .and(orderByCreationDateDesc());
+                .and(orderByCreationDateDesc())
+                .and(isACart());
     }
 
     private static Specification<Cart> hasUserId(Long userId) {
@@ -27,7 +28,7 @@ public class CartSpecification {
 
     private static Specification<Cart> orderByCreationDateDesc() {
         return (root, query, criteriaBuilder) -> {
-            query.orderBy(criteriaBuilder.desc(root.get("createdAt")));
+            query.orderBy(criteriaBuilder.desc(root.get("updatedAt")));
             return criteriaBuilder.conjunction();
         };
     }
@@ -35,7 +36,7 @@ public class CartSpecification {
     private static Specification<Cart> notOlderThan(int days) {
         LocalDateTime dateThreshold = LocalDateTime.now().minusDays(days);
         return (root, query, criteriaBuilder) ->
-                criteriaBuilder.greaterThanOrEqualTo(root.get("createdAt"), dateThreshold);
+                criteriaBuilder.greaterThanOrEqualTo(root.get("updatedAt"), dateThreshold);
     }
 
     private static Specification<Cart> isACart() {

@@ -2,6 +2,7 @@ package com.tota.eccom.domain.cart.business;
 
 import com.tota.eccom.adapters.dto.cart.request.CartItemReqDTO;
 import com.tota.eccom.domain.cart.model.Cart;
+import com.tota.eccom.domain.cart.model.CartItem;
 import com.tota.eccom.domain.cart.repository.CartItemRepository;
 import com.tota.eccom.domain.cart.repository.CartRepository;
 import com.tota.eccom.domain.product.business.ProductDomain;
@@ -17,6 +18,7 @@ import com.tota.eccom.domain.user.model.User;
 import com.tota.eccom.domain.user.repository.RoleRepository;
 import com.tota.eccom.domain.user.repository.UserRepository;
 import com.tota.eccom.exceptions.generic.ResourceNotFoundException;
+import com.tota.eccom.exceptions.user.UserNotFoundException;
 import com.tota.eccom.util.JwtTokenUtil;
 import com.tota.eccom.util.SecurityUtil;
 import com.tota.eccom.util.enums.Status;
@@ -142,12 +144,116 @@ class CartDomainTest {
 
 
     @Nested
-    @DisplayName("Add Product to Cart")
-    class AddProductToCartTest {
+    @DisplayName("Get Cart by User")
+    class GetCartByUserTest {
 
         @Test
-        @DisplayName("Add product to cart, should add product to cart successfully")
-        void testAddProductToCart_shouldAddProductToCartSuccessfully() {
+        @DisplayName("Get cart by user, should return cart successfully")
+        void testGetCartByUser_shouldReturnCartSuccessfully() {
+
+            User user = setupUser();
+
+            when(securityUtil.getCurrentUsername()).thenReturn(user.getEmail());
+
+            Cart cart = cartDomain.getCartByUser();
+
+            assertNotNull(cart.getId());
+            assertEquals(user.getId(), cart.getUser().getId());
+        }
+
+        @Test
+        @DisplayName("Get cart by user, should throw exception when user not logged")
+        void testGetCartByUser_shouldThrowExceptionWhenUserNotLogged() {
+            assertThrows(UserNotFoundException.class, () -> cartDomain.getCartByUser());
+        }
+    }
+
+
+    @Nested
+    @DisplayName("Get Cart by Id")
+    class GetCartByIdTest {
+
+        @Test
+        @DisplayName("Get cart by id, should return cart successfully")
+        void testGetCartById_shouldReturnCartSuccessfully() {
+
+            User user = setupUser();
+
+            when(securityUtil.getCurrentUsername()).thenReturn(user.getEmail());
+
+            Cart cart = cartDomain.getCartByUser();
+
+            Cart foundCart = cartDomain.getCartById(cart.getId());
+
+            assertNotNull(foundCart.getId());
+            assertEquals(cart.getId(), foundCart.getId());
+            assertEquals(cart.getUser().getId(), foundCart.getUser().getId());
+        }
+
+        @Test
+        @DisplayName("Get cart by id, should throw exception when cart not found")
+        void testGetCartById_shouldThrowExceptionWhenCartNotFound() {
+            User user = setupUser();
+
+            when(securityUtil.getCurrentUsername()).thenReturn(user.getEmail());
+
+            assertThrows(ResourceNotFoundException.class, () -> cartDomain.getCartById(1L));
+        }
+
+        @Test
+        @DisplayName("Get cart by id, should throw exception when user not logged")
+        void testGetCartById_shouldThrowExceptionWhenUserNotLogged() {
+            assertThrows(UserNotFoundException.class, () -> cartDomain.getCartById(1L));
+        }
+
+    }
+
+    @Nested
+    @DisplayName("Delete Cart by Id")
+    class DeleteCartByIdTest {
+
+        @Test
+        @DisplayName("Delete cart by id, should delete cart successfully")
+        void testDeleteCartById_shouldDeleteCartSuccessfully() {
+
+            User user = setupUser();
+
+            when(securityUtil.getCurrentUsername()).thenReturn(user.getEmail());
+
+            Cart cart = cartDomain.getCartByUser();
+
+            cartDomain.deleteCartById(cart.getId());
+
+            Cart deletedCart = cartRepository.findById(cart.getId()).orElse(null);
+
+            assertNotNull(deletedCart);
+            assertEquals(Status.DELETED, deletedCart.getStatus());
+        }
+
+        @Test
+        @DisplayName("Delete cart by id, should throw exception when cart not found")
+        void testDeleteCartById_shouldThrowExceptionWhenCartNotFound() {
+            User user = setupUser();
+
+            when(securityUtil.getCurrentUsername()).thenReturn(user.getEmail());
+
+            assertThrows(ResourceNotFoundException.class, () -> cartDomain.deleteCartById(1L));
+        }
+
+        @Test
+        @DisplayName("Delete cart by id, should throw exception when user not logged")
+        void testDeleteCartById_shouldThrowExceptionWhenUserNotLogged() {
+            assertThrows(UserNotFoundException.class, () -> cartDomain.deleteCartById(1L));
+        }
+    }
+
+    @Nested
+    @DisplayName("Delete Cart Item by Id")
+    class DeleteCartItemByIdTest {
+
+        @Test
+        @DisplayName("Delete cart item by id, should delete cart item successfully")
+        void testDeleteCartItemById_shouldDeleteCartItemSuccessfully() {
 
             User user = setupUser();
 
@@ -158,34 +264,113 @@ class CartDomainTest {
             product.setProductPrices(List.of(getMockProductPrice()));
             productRepository.save(product);
 
+            Cart cart = cartDomain.getCartByUser();
+
+            Cart addedCartItem = cartDomain.updateCartById(cart.getId(), CartItemReqDTO.builder()
+                    .productId(product.getId())
+                    .quantity(1)
+                    .build());
+
+            cartDomain.deleteCartItemById(addedCartItem.getId(), addedCartItem.getItems().get(0).getId());
+
+            Cart deletedCartItem = cartRepository.findById(addedCartItem.getId()).orElse(null);
+
+            assertNotNull(deletedCartItem);
+            assertEquals(0, deletedCartItem.getItems().size());
+        }
+
+        @Test
+        @DisplayName("Delete cart item by id, should throw exception when cart not found")
+        void testDeleteCartItemById_shouldThrowExceptionWhenCartNotFound() {
+            User user = setupUser();
+
+            when(securityUtil.getCurrentUsername()).thenReturn(user.getEmail());
+
+            assertThrows(ResourceNotFoundException.class, () -> cartDomain.deleteCartItemById(1L, 1L));
+        }
+
+        @Test
+        @DisplayName("Delete cart item by id, should throw exception when user not logged")
+        void testDeleteCartItemById_shouldThrowExceptionWhenUserNotLogged() {
+            assertThrows(UserNotFoundException.class, () -> cartDomain.deleteCartItemById(1L, 1L));
+        }
+
+        @Test
+        @DisplayName("Delete cart item by id, should throw exception when cart item not found")
+        void testDeleteCartItemById_shouldThrowExceptionWhenCartItemNotFound() {
+            User user = setupUser();
+
+            when(securityUtil.getCurrentUsername()).thenReturn(user.getEmail());
+
+            Product product = getMockProduct();
+            product.setProductStock(getMockProductStock());
+            product.setProductPrices(List.of(getMockProductPrice()));
+            productRepository.save(product);
+
+            Cart cart = cartDomain.getCartByUser();
+
+            assertThrows(ResourceNotFoundException.class, () -> cartDomain.deleteCartItemById(cart.getId(), 1L));
+        }
+    }
+
+
+    @Nested
+    @DisplayName("Update Cart by Id")
+    class UpdateCartByIdTest {
+
+        @Test
+        @DisplayName("Update cart by id, should update cart successfully")
+        void testUpdateCartById_shouldUpdateCartSuccessfully() {
+            User user = setupUser();
+
+            when(securityUtil.getCurrentUsername()).thenReturn(user.getEmail());
+
+            Product product = getMockProduct();
+            product.setProductStock(getMockProductStock());
+            product.setProductPrices(List.of(getMockProductPrice()));
+            productRepository.save(product);
+
+            Cart cart = cartDomain.getCartByUser();
+
             CartItemReqDTO req = CartItemReqDTO.builder()
                     .productId(product.getId())
                     .quantity(1)
                     .build();
 
-            Cart cart = cartDomain.addProductToCart(req);
+            Cart updatedCart = cartDomain.updateCartById(cart.getId(), req);
 
-            assertNotNull(cart.getId());
-            assertEquals(1, cart.getItems().size());
-            assertEquals(product.getId(), cart.getItems().get(0).getProduct().getId());
+            assertNotNull(updatedCart.getId());
+            assertEquals(1, updatedCart.getItems().size());
+            assertEquals(product.getId(), updatedCart.getItems().get(0).getProduct().getId());
         }
 
         @Test
-        @DisplayName("Add product to cart, should throw exception when product not found")
-        void testAddProductToCart_shouldThrowExceptionWhenProductNotFound() {
-
+        @DisplayName("Update cart by id, should throw exception when cart not found")
+        void testUpdateCartById_shouldThrowExceptionWhenCartNotFound() {
             User user = setupUser();
 
             when(securityUtil.getCurrentUsername()).thenReturn(user.getEmail());
 
-            assertThrows(ResourceNotFoundException.class, () -> {
-                cartDomain.addProductToCart(CartItemReqDTO.builder()
-                        .productId(1L)
-                        .quantity(1)
-                        .build());
-            });
+            Product product = getMockProduct();
+            product.setProductStock(getMockProductStock());
+            product.setProductPrices(List.of(getMockProductPrice()));
+            productRepository.save(product);
+
+            assertThrows(ResourceNotFoundException.class, () -> cartDomain.updateCartById(2L, CartItemReqDTO.builder()
+                    .productId(product.getId())
+                    .quantity(1)
+                    .build()));
+        }
+
+        @Test
+        @DisplayName("Update cart by id, should throw exception when user not logged")
+        void testUpdateCartById_shouldThrowExceptionWhenUserNotLogged() {
+
+            assertThrows(UserNotFoundException.class, () -> cartDomain.updateCartById(1L, CartItemReqDTO.builder()
+                    .productId(1L)
+                    .quantity(1)
+                    .build()));
         }
     }
-
 
 }

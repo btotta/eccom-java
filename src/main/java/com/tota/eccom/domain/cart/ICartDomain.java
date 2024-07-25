@@ -7,6 +7,13 @@ import org.springframework.stereotype.Component;
 @Component
 public interface ICartDomain {
 
+    Cart getCartByUser();
 
-    Cart addProductToCart(CartItemReqDTO cartItemReqDTO);
+    Cart getCartById(Long id);
+
+    void deleteCartById(Long id);
+
+    void deleteCartItemById(Long id, Long itemId);
+
+    Cart updateCartById(Long id, CartItemReqDTO cartItemReqDTO);
 }

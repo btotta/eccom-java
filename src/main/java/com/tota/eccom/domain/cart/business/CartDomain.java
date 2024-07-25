@@ -13,6 +13,7 @@ import com.tota.eccom.domain.product.model.Product;
 import com.tota.eccom.domain.product.model.ProductPrice;
 import com.tota.eccom.domain.user.IUserService;
 import com.tota.eccom.domain.user.model.User;
+import com.tota.eccom.exceptions.generic.ResourceNotFoundException;
 import com.tota.eccom.util.enums.Status;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,9 +35,38 @@ public class CartDomain implements ICartDomain {
 
 
     @Override
-    public Cart addProductToCart(CartItemReqDTO cartItemReqDTO) {
+    public Cart getCartByUser() {
+        return getOrCreateCartByUserId(userDomain.getUserLogged());
+    }
 
-        Cart cart = getOrCreateCartByUserId(userDomain.getUserLogged());
+    @Override
+    public Cart getCartById(Long id) {
+        return cartRepository.findByIdAndCartStatusAndUserId(id, CartStatus.CART, userDomain.getUserLogged().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Cart not found with given id: " + id));
+    }
+
+    @Override
+    public void deleteCartById(Long id) {
+        Cart cart = getCartById(id);
+        cart.setStatus(Status.DELETED);
+        cartRepository.save(cart);
+    }
+
+    @Override
+    public void deleteCartItemById(Long id, Long itemId) {
+        Cart cart = getCartById(id);
+
+        if (cart.getItems() == null || cart.getItems().stream().noneMatch(ci -> ci.getId().equals(itemId))) {
+            throw new ResourceNotFoundException(String.format("Cart item with id %s not found", itemId));
+        }
+
+        cart.getItems().removeIf(ci -> ci.getId().equals(itemId));
+        cartRepository.save(cart);
+    }
+
+    @Override
+    public Cart updateCartById(Long id, CartItemReqDTO cartItemReqDTO) {
+        Cart cart = getCartById(id);
 
         processCartItem(cartItemReqDTO, cart);
         sumCartItems(cart);
@@ -99,6 +129,9 @@ public class CartDomain implements ICartDomain {
     }
 
     private void sumCartItems(Cart cart) {
+
+        cart.getItems().forEach(ci -> ci.setPrice(getProductPriceByQuantity(ci.getProduct(), ci.getQuantity()).getPrice()));
+
         cart.setItemsCount(cart.getItems().stream()
                 .map(CartItem::getQuantity)
                 .reduce(0, Integer::sum));
