@@ -15,6 +15,7 @@ import com.tota.eccom.domain.user.IUserService;
 import com.tota.eccom.domain.user.model.User;
 import com.tota.eccom.exceptions.generic.ResourceNotFoundException;
 import com.tota.eccom.util.enums.Status;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -35,6 +36,7 @@ public class CartDomain implements ICartDomain {
 
 
     @Override
+    @Transactional
     public Cart getCartByUser() {
         return getOrCreateCartByUserId(userDomain.getUserLogged());
     }
@@ -46,6 +48,7 @@ public class CartDomain implements ICartDomain {
     }
 
     @Override
+    @Transactional
     public void deleteCartById(Long id) {
         Cart cart = getCartById(id);
         cart.setStatus(Status.DELETED);
@@ -53,6 +56,7 @@ public class CartDomain implements ICartDomain {
     }
 
     @Override
+    @Transactional
     public void deleteCartItemById(Long id, Long itemId) {
         Cart cart = getCartById(id);
 
@@ -65,6 +69,7 @@ public class CartDomain implements ICartDomain {
     }
 
     @Override
+    @Transactional
     public Cart updateCartById(Long id, CartItemReqDTO cartItemReqDTO) {
         Cart cart = getCartById(id);
 

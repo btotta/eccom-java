@@ -27,6 +27,7 @@ public class ProductCategoryDomain implements IProductCategoryDomain {
 
 
     @Override
+    @Transactional
     public ProductCategory createCategory(CategoryDTO categoryDTO) {
 
         if (categoryDTO.getName() != null && findCategoryBySlug(SlugUtil.makeSlug(categoryDTO.getName())) != null) {
@@ -47,6 +48,7 @@ public class ProductCategoryDomain implements IProductCategoryDomain {
     }
 
     @Override
+    @Transactional
     public void deleteCategoryById(Long id) {
 
         ProductCategory category = getCategoryById(id);

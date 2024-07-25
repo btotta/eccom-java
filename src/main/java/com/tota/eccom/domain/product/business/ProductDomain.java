@@ -15,6 +15,7 @@ import com.tota.eccom.exceptions.generic.ResourceAlreadyExistsException;
 import com.tota.eccom.exceptions.generic.ResourceNotFoundException;
 import com.tota.eccom.util.SlugUtil;
 import com.tota.eccom.util.enums.Status;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -35,6 +36,7 @@ public class ProductDomain implements IProductDomain {
 
 
     @Override
+    @Transactional
     public Product createProduct(ProductDTO productDTO) {
 
         if (productDTO.getName() != null && findProductBySlug(SlugUtil.makeSlug(productDTO.getName())) != null) {
@@ -58,6 +60,7 @@ public class ProductDomain implements IProductDomain {
     }
 
     @Override
+    @Transactional
     public void deleteProductById(Long id) {
         Product product = getProductById(id);
 
@@ -69,6 +72,7 @@ public class ProductDomain implements IProductDomain {
     }
 
     @Override
+    @Transactional
     public Product updateProductById(Long id, ProductDTO productDTO) {
 
         if (productDTO.getName() != null) {
@@ -85,6 +89,7 @@ public class ProductDomain implements IProductDomain {
     }
 
     @Override
+    @Transactional
     public Product patchProductById(Long id, ProductDTO productDTO) {
 
         if (productDTO.getName() != null) {
@@ -101,6 +106,7 @@ public class ProductDomain implements IProductDomain {
     }
 
     @Override
+    @Transactional
     public Product addProductPriceToProduct(Long id, ProductPriceDTO productPriceDTO) {
 
         Product product = getProductById(id);
@@ -113,6 +119,7 @@ public class ProductDomain implements IProductDomain {
     }
 
     @Override
+    @Transactional
     public void deleteProductPriceFromProduct(Long id, Long priceId) {
 
         Product product = getProductById(id);
@@ -129,6 +136,7 @@ public class ProductDomain implements IProductDomain {
     }
 
     @Override
+    @Transactional
     public Product addProductStockToProduct(Long id, ProductStockDTO productStockDTO) {
 
         Product product = getProductById(id);
@@ -159,6 +167,7 @@ public class ProductDomain implements IProductDomain {
     }
 
     @Override
+    @Transactional
     public Product addProductCategoryToProduct(Long id, Long categoryId) {
 
         ProductCategory category = findCategoryById(categoryId);
@@ -179,6 +188,7 @@ public class ProductDomain implements IProductDomain {
     }
 
     @Override
+    @Transactional
     public Product addProductBrandToProduct(Long id, Long brandId) {
 
         ProductBrand brand = productBrandRepository.findById(brandId).orElseThrow(() -> new ResourceNotFoundException("Product brand not found with given id: " + brandId));
