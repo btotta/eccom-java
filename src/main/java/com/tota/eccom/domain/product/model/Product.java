@@ -122,4 +122,17 @@ public class Product {
     public void preUpdate() {
         this.setUpdatedAt(new Date());
     }
+
+    public ProductPrice getProductPriceByQuantity(Integer quantity) {
+        return getProductPrices().stream()
+                .filter(p -> p.getQuantity().equals(quantity))
+                .findFirst()
+                .or(() ->
+                        getProductPrices()
+                                .stream()
+                                .filter(p -> p.getQuantity().equals(1))
+                                .findFirst())
+                .orElse(null);
+    }
+
 }

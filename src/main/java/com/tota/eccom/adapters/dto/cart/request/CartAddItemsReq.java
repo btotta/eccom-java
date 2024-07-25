@@ -9,6 +9,6 @@ import java.util.List;
 @Builder
 public class CartAddItemsReq {
 
-    List<CartItemReq> items;
+    List<CartItemReqDTO> items;
 
 }

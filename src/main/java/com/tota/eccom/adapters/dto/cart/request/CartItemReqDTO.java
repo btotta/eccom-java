@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class CartItemReq {
+public class CartItemReqDTO {
 
     @NotNull(message = "Product ID is required")
     private Long productId;

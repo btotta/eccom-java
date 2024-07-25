@@ -7,10 +7,9 @@ import java.time.LocalDateTime;
 
 public class CartSpecification {
 
-    public static Specification<Cart> filterCarts(Long userId) {
+    public static Specification<Cart> findLastCarts(Long userId) {
         return Specification.where(hasUserId(userId))
-                .and(hasStatusNotDeleted())
-                .and(hasStatusNotInactive())
+                .and(hasStatusActive())
                 .and(notOlderThan(7))
                 .and(orderByCreationDateDesc());
     }
@@ -21,14 +20,9 @@ public class CartSpecification {
                         criteriaBuilder.equal(root.get("user").get("id"), userId);
     }
 
-    private static Specification<Cart> hasStatusNotDeleted() {
+    private static Specification<Cart> hasStatusActive() {
         return (root, query, criteriaBuilder) ->
-                criteriaBuilder.notEqual(root.get("status"), "DELETED");
-    }
-
-    private static Specification<Cart> hasStatusNotInactive() {
-        return (root, query, criteriaBuilder) ->
-                criteriaBuilder.notEqual(root.get("status"), "INACTIVE");
+                criteriaBuilder.equal(root.get("status"), "ACTIVE");
     }
 
     private static Specification<Cart> orderByCreationDateDesc() {
@@ -42,5 +36,10 @@ public class CartSpecification {
         LocalDateTime dateThreshold = LocalDateTime.now().minusDays(days);
         return (root, query, criteriaBuilder) ->
                 criteriaBuilder.greaterThanOrEqualTo(root.get("createdAt"), dateThreshold);
+    }
+
+    private static Specification<Cart> isACart() {
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("cartStatus"), "CART");
     }
 }

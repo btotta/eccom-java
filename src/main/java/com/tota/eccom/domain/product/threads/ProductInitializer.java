@@ -1,5 +1,7 @@
 package com.tota.eccom.domain.product.threads;
 
+import com.tota.eccom.domain.cart.repository.CartItemRepository;
+import com.tota.eccom.domain.cart.repository.CartRepository;
 import com.tota.eccom.domain.product.model.Product;
 import com.tota.eccom.domain.product.model.ProductBrand;
 import com.tota.eccom.domain.product.model.ProductCategory;
@@ -22,10 +24,14 @@ public class ProductInitializer {
     private final ProductRepository productRepository;
     private final ProductCategoryRepository productCategoryRepository;
     private final ProductBrandRepository productBrandRepository;
+    private final CartRepository cartRepository;
+    private final CartItemRepository cartItemRepository;
 
     @EventListener(ContextRefreshedEvent.class)
     public void initializeProducts() {
 
+        cartRepository.deleteAll();
+        cartItemRepository.deleteAll();
         productRepository.deleteAll();
         productCategoryRepository.deleteAll();
         productBrandRepository.deleteAll();
