@@ -151,9 +151,11 @@ public class UserService implements IUserService {
         }
 
         String token = jwtTokenUtil.generateToken(user);
+        String refreshToken = jwtTokenUtil.generateRefreshToken(user);
 
         return UserLoginRespDTO.builder()
                 .token(token)
+                .refreshToken(refreshToken)
                 .build();
     }
 
@@ -173,5 +175,28 @@ public class UserService implements IUserService {
         }
 
         InvalidJwtTokenUtil.addToken(token);
+    }
+
+    @Override
+    public UserLoginRespDTO refreshUserLogin(String refreshToken) {
+
+        String userEmail = jwtTokenUtil.getUsernameFromToken(refreshToken);
+
+        if (userEmail == null) {
+            throw new UserNotFoundException("User not found");
+        }
+
+        User user = userRepository.findByEmail(userEmail);
+
+        if (user == null) {
+            throw new UserNotFoundException("User not found");
+        }
+
+        String token = jwtTokenUtil.generateToken(user);
+
+        return UserLoginRespDTO.builder()
+                .token(token)
+                .refreshToken(refreshToken)
+                .build();
     }
 }

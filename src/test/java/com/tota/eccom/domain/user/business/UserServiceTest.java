@@ -14,6 +14,7 @@ import com.tota.eccom.exceptions.user.UserNotFoundException;
 import com.tota.eccom.util.InvalidJwtTokenUtil;
 import com.tota.eccom.util.JwtTokenUtil;
 import com.tota.eccom.util.SecurityUtil;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.junit.jupiter.api.*;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,9 @@ class UserServiceTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         jwtTokenUtil.setSecret("myRasfasafas1fsfasf13afase13alSe123crasfasfeta13sfasfJwasftasfSasecfasf133131ret");
+        jwtTokenUtil.setRefreshSecret("myRasfasafas1fsfasf13afase13alSe123crasfasfeta13sfasfJwasftasfSasecfasf133131ret");
+        jwtTokenUtil.setJwtTokenValidity(4 * 60 * 60);
+        jwtTokenUtil.setJwtRefreshTokenValidity(12 * 60 * 60);
         persistRoles();
     }
 
@@ -436,6 +440,7 @@ class UserServiceTest {
             UserLoginRespDTO loginRespDTO = userDomain.loginUser(loginDTO);
 
             assertNotNull(loginRespDTO.getToken());
+            assertNotNull(loginRespDTO.getRefreshToken());
         }
 
         @Test
@@ -489,6 +494,72 @@ class UserServiceTest {
             assertTrue(InvalidJwtTokenUtil.isTokenInvalid(token));
         }
 
+
+    }
+
+    @Nested
+    @DisplayName("Refresh User Login")
+    class RefreshUserLoginTest {
+
+        @Test
+        @DisplayName("Refresh user login, should refresh user login successfully")
+        void testRefreshUserLogin_shouldRefreshUserLoginSuccessfully() {
+
+            userDomain.createUser(mockUserCreateDTO());
+
+            UserLoginDTO loginDTO = new UserLoginDTO();
+            loginDTO.setEmail(mockUserCreateDTO().getEmail());
+            loginDTO.setPassword(mockUserCreateDTO().getPassword());
+
+            UserLoginRespDTO loginRespDTO = userDomain.loginUser(loginDTO);
+
+            assertNotNull(loginRespDTO.getToken());
+            assertNotNull(loginRespDTO.getRefreshToken());
+
+            UserLoginRespDTO refreshLoginRespDTO = userDomain.refreshUserLogin(loginRespDTO.getRefreshToken());
+
+            assertNotNull(refreshLoginRespDTO.getToken());
+            assertNotNull(refreshLoginRespDTO.getRefreshToken());
+        }
+
+        @Test
+        @DisplayName("Refresh user login, should throw exception when refresh token is expired")
+        void testRefreshUserLogin_shouldThrowExceptionWhenRefreshTokenIsExpired() {
+            jwtTokenUtil.setJwtTokenValidity(0);
+            jwtTokenUtil.setJwtRefreshTokenValidity(0);
+            userDomain.createUser(mockUserCreateDTO());
+
+            UserLoginDTO loginDTO = new UserLoginDTO();
+            loginDTO.setEmail(mockUserCreateDTO().getEmail());
+            loginDTO.setPassword(mockUserCreateDTO().getPassword());
+
+            UserLoginRespDTO loginRespDTO = userDomain.loginUser(loginDTO);
+
+            assertNotNull(loginRespDTO.getToken());
+            assertNotNull(loginRespDTO.getRefreshToken());
+
+            assertThrows(ExpiredJwtException.class, () -> userDomain.refreshUserLogin(loginRespDTO.getRefreshToken()));
+        }
+
+        @Test
+        @DisplayName("Refresh user login, should throw exception when not found user")
+        void testRefreshUserLogin_shouldThrowExceptionWhenNotFoundUser() {
+
+            userDomain.createUser(mockUserCreateDTO());
+
+            UserLoginDTO loginDTO = new UserLoginDTO();
+            loginDTO.setEmail(mockUserCreateDTO().getEmail());
+            loginDTO.setPassword(mockUserCreateDTO().getPassword());
+
+            UserLoginRespDTO loginRespDTO = userDomain.loginUser(loginDTO);
+
+            userRepository.deleteAll();
+
+            assertNotNull(loginRespDTO.getToken());
+            assertNotNull(loginRespDTO.getRefreshToken());
+
+            assertThrows(UserNotFoundException.class, () -> userDomain.refreshUserLogin(loginRespDTO.getRefreshToken()));
+        }
 
     }
 

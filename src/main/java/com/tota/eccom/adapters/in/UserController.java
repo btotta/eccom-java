@@ -135,6 +135,18 @@ public class UserController {
         return new ResponseEntity<>(userDomain.loginUser(userLoginDTO), HttpStatus.OK);
     }
 
+    @PostMapping("/login/refresh")
+    @Operation(summary = "Refresh user login", description = "Refreshes the user login with the provided credentials.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User logged in successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<UserLoginRespDTO> refreshUserLogin(@RequestHeader(name = "Refresh") String refreshToken) {
+        return new ResponseEntity<>(userDomain.refreshUserLogin(refreshToken), HttpStatus.OK);
+    }
+
     @PostMapping("/logout")
     @Operation(summary = "Logout user", description = "Logs out the user.", security = @SecurityRequirement(name = "Authorization"))
     @ApiResponses(value = {

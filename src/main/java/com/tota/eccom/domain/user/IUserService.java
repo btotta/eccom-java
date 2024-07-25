@@ -32,4 +32,6 @@ public interface IUserService {
     UserLoginRespDTO loginUser(UserLoginDTO userLoginDTO);
 
     void logoutUser();
+
+    UserLoginRespDTO refreshUserLogin(String refreshToken);
 }
