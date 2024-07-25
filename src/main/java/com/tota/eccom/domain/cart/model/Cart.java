@@ -1,6 +1,5 @@
 package com.tota.eccom.domain.cart.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.tota.eccom.domain.cart.model.enums.CartStatus;
 import com.tota.eccom.domain.user.model.User;
 import com.tota.eccom.util.enums.Status;
@@ -20,7 +19,16 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "cart")
+@Table(name = "cart", indexes = {
+        @Index(name = "idx_cart_user_id", columnList = "user_id"),
+        @Index(name = "idx_cart_cart_status", columnList = "cart_status"),
+        @Index(name = "idx_cart_total_items", columnList = "total_items"),
+        @Index(name = "idx_cart_items_count", columnList = "items_count"),
+        @Index(name = "idx_cart_total_order", columnList = "total_order"),
+        @Index(name = "idx_cart_created_at", columnList = "createdAt"),
+        @Index(name = "idx_cart_updated_at", columnList = "updatedAt"),
+        @Index(name = "idx_cart_status", columnList = "status"),
+})
 public class Cart {
 
     @Id
@@ -44,8 +52,8 @@ public class Cart {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal totalOrder;
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "cart_id")
     private List<CartItem> items;
 
     @CreationTimestamp

@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Optional;
 
 @Component
@@ -51,8 +52,14 @@ public class CartDomain implements ICartDomain {
 
         Product product = getProductById(cartItemReqDTO.getProductId());
 
-        if (cart.getItems().stream().noneMatch(ci -> ci.getProduct().getId().equals(product.getId()))) {
+        if (cart.getItems() == null || cart.getItems().stream().noneMatch(ci -> ci.getProduct().getId().equals(product.getId()))) {
             addItemToCart(product, cartItemReqDTO.getQuantity(), cart);
+            return;
+        }
+
+        if (cartItemReqDTO.getQuantity() == 0 || cartItemReqDTO.getQuantity() < 0) {
+            log.info("Removing cart item id {}, product id {}", cart.getId(), product.getId());
+            cart.getItems().removeIf(ci -> ci.getProduct().getId().equals(product.getId()));
             return;
         }
 
@@ -60,13 +67,6 @@ public class CartDomain implements ICartDomain {
                 .filter(ci -> ci.getProduct().getId().equals(product.getId()))
                 .findFirst()
                 .ifPresent(cartItem -> {
-
-                    if (cartItemReqDTO.getQuantity() == 0 || cartItemReqDTO.getQuantity() < 0) {
-                        log.info("Removing cart item id {}, product id {}", cartItem.getId(), product.getId());
-                        cartItemRepository.delete(cartItem);
-                        return;
-                    }
-
                     log.info("Updating cart item id {}, product id {}, quantity {}", cartItem.getId(), product.getId(), cartItemReqDTO.getQuantity());
                     cartItem.setQuantity(cartItemReqDTO.getQuantity());
                     cartItem.setPrice(getProductPriceByQuantity(product, cartItem.getQuantity()).getPrice());
@@ -84,12 +84,17 @@ public class CartDomain implements ICartDomain {
     private void addItemToCart(Product product, Integer quantity, Cart cart) {
 
         CartItem cartItem = CartItem.builder()
-                .cart(cart)
                 .product(product)
                 .quantity(quantity)
                 .price(getProductPriceByQuantity(product, quantity).getPrice())
                 .build();
+
         log.info("Adding item to cart id {}, product id {}, quantity {}", cartItem.getId(), product.getId(), quantity);
+
+        if (cart.getItems() == null) {
+            cart.setItems(new ArrayList<>());
+        }
+
         cart.getItems().add(cartItemRepository.save(cartItem));
     }
 
