@@ -1,6 +1,5 @@
 package com.tota.eccom.util;
 
-import com.tota.eccom.domain.user.model.Role;
 import com.tota.eccom.domain.user.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -22,11 +21,6 @@ import java.util.function.Function;
 @Setter
 @Component
 public class JwtTokenUtil {
-
-    @Getter
-    public enum TokenType {
-        ACCESS, REFRESH
-    }
 
     @Value("${JWT_SECRET}")
     private String secret;
@@ -72,11 +66,7 @@ public class JwtTokenUtil {
     }
 
     private Claims getAllClaimsFromToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        return Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody();
     }
 
     private Boolean isTokenExpired(String token) {
@@ -90,12 +80,16 @@ public class JwtTokenUtil {
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + (tokenType == TokenType.ACCESS ? jwtTokenValidity : jwtRefreshTokenValidity)))
-                .signWith(tokenType == TokenType.ACCESS ? getSigningKey() : getRefreshSigningKey(), SignatureAlgorithm.HS512)
-                .compact();
+                .signWith(tokenType == TokenType.ACCESS ? getSigningKey() : getRefreshSigningKey(), SignatureAlgorithm.HS512).compact();
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+
+    @Getter
+    private enum TokenType {
+        ACCESS, REFRESH
     }
 }
