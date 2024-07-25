@@ -1,5 +1,6 @@
 package com.tota.eccom.util;
 
+import com.tota.eccom.domain.user.model.Role;
 import com.tota.eccom.domain.user.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -33,10 +34,10 @@ public class JwtTokenUtil {
     @Value("${JWT_REFRESH_SECRET}")
     private String refreshSecret;
 
-    @Value("${JWT_REFRESH_TOKEN_VALIDITY:3600}")
+    @Value("${JWT_REFRESH_TOKEN_VALIDITY:3600000}")
     private long jwtRefreshTokenValidity;
 
-    @Value("${JWT_TOKEN_VALIDITY:600}")
+    @Value("${JWT_TOKEN_VALIDITY:1800000}")
     private long jwtTokenValidity;
 
     private Key getSigningKey() {

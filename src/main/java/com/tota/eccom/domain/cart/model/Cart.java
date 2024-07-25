@@ -55,7 +55,7 @@ public class Cart {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id")
-    private List<CartItem> items = new ArrayList<>();
+    private List<CartItem> items;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

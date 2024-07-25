@@ -30,8 +30,8 @@ public class ProductInitializer {
     @EventListener(ContextRefreshedEvent.class)
     public void initializeProducts() {
 
-        cartRepository.deleteAll();
         cartItemRepository.deleteAll();
+        cartRepository.deleteAll();
         productRepository.deleteAll();
         productCategoryRepository.deleteAll();
         productBrandRepository.deleteAll();
