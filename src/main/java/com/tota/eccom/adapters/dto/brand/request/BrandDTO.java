@@ -2,7 +2,7 @@ package com.tota.eccom.adapters.dto.brand.request;
 
 
 import com.tota.eccom.util.enums.Status;
-import com.tota.eccom.domain.product.model.ProductBrand;
+import com.tota.eccom.domain.brand.model.Brand;
 import com.tota.eccom.util.SlugUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,11 +21,11 @@ public class BrandDTO {
     private Status status;
 
 
-    public ProductBrand toBrand() {
+    public Brand toBrand() {
 
         validate();
 
-        return ProductBrand.builder()
+        return Brand.builder()
                 .name(name)
                 .description(description)
                 .status(Status.ACTIVE)
@@ -34,7 +34,7 @@ public class BrandDTO {
     }
 
 
-    public void toUpdatedBrand(ProductBrand brand) {
+    public void toUpdatedBrand(Brand brand) {
 
         validate();
 

@@ -1,5 +1,6 @@
-package com.tota.eccom.domain.product.model;
+package com.tota.eccom.domain.category.model;
 
+import com.tota.eccom.domain.product.model.Product;
 import com.tota.eccom.util.enums.Status;
 import jakarta.persistence.*;
 import lombok.*;
@@ -24,7 +25,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class ProductCategory {
+public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

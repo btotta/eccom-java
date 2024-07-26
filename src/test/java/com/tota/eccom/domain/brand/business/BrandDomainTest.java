@@ -1,11 +1,11 @@
-package com.tota.eccom.domain.product.business;
+package com.tota.eccom.domain.brand.business;
 
 import com.tota.eccom.adapters.dto.brand.request.BrandDTO;
-import com.tota.eccom.util.enums.Status;
-import com.tota.eccom.domain.product.model.ProductBrand;
-import com.tota.eccom.domain.product.repository.ProductBrandRepository;
+import com.tota.eccom.domain.brand.model.Brand;
+import com.tota.eccom.domain.brand.repository.BrandRepository;
 import com.tota.eccom.exceptions.generic.ResourceAlreadyExistsException;
 import com.tota.eccom.exceptions.generic.ResourceNotFoundException;
+import com.tota.eccom.util.enums.Status;
 import org.junit.jupiter.api.*;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,14 +15,14 @@ import org.springframework.context.annotation.Import;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-@Import({ProductBrandDomain.class})
-class ProductBrandDomainTest {
+@Import({BrandDomain.class})
+class BrandDomainTest {
 
     @Autowired
-    ProductBrandDomain productBrandDomain;
+    BrandDomain brandDomain;
 
     @Autowired
-    ProductBrandRepository productBrandRepository;
+    BrandRepository brandRepository;
 
     @BeforeEach
     void setUp() {
@@ -31,7 +31,7 @@ class ProductBrandDomainTest {
 
     @AfterEach
     void tearDown() {
-        productBrandRepository.deleteAll();
+        brandRepository.deleteAll();
     }
 
 
@@ -54,7 +54,7 @@ class ProductBrandDomainTest {
 
             BrandDTO brandDTO = getMockBrandCreate();
 
-            ProductBrand createdBrand = productBrandDomain.createBrand(brandDTO);
+            Brand createdBrand = brandDomain.createBrand(brandDTO);
 
             assertNotNull(createdBrand.getId());
             assertEquals(brandDTO.getName(), createdBrand.getName());
@@ -68,7 +68,7 @@ class ProductBrandDomainTest {
             BrandDTO brandDTO = getMockBrandCreate();
             brandDTO.setName(null);
 
-            assertThrows(IllegalArgumentException.class, () -> productBrandDomain.createBrand(brandDTO));
+            assertThrows(IllegalArgumentException.class, () -> brandDomain.createBrand(brandDTO));
 
         }
 
@@ -78,7 +78,7 @@ class ProductBrandDomainTest {
             BrandDTO brandDTO = getMockBrandCreate();
             brandDTO.setName("");
 
-            assertThrows(IllegalArgumentException.class, () -> productBrandDomain.createBrand(brandDTO));
+            assertThrows(IllegalArgumentException.class, () -> brandDomain.createBrand(brandDTO));
         }
 
         @Test
@@ -87,7 +87,7 @@ class ProductBrandDomainTest {
             BrandDTO brandDTO = getMockBrandCreate();
             brandDTO.setDescription(null);
 
-            assertThrows(IllegalArgumentException.class, () -> productBrandDomain.createBrand(brandDTO));
+            assertThrows(IllegalArgumentException.class, () -> brandDomain.createBrand(brandDTO));
         }
 
         @Test
@@ -96,16 +96,16 @@ class ProductBrandDomainTest {
             BrandDTO brandDTO = getMockBrandCreate();
             brandDTO.setDescription("");
 
-            assertThrows(IllegalArgumentException.class, () -> productBrandDomain.createBrand(brandDTO));
+            assertThrows(IllegalArgumentException.class, () -> brandDomain.createBrand(brandDTO));
         }
 
         @Test
         @DisplayName("Create brand, should throw exception when slug already exists")
         void testCreateBrand_shouldThrowExceptionWhenSlugAlreadyExists() {
             BrandDTO brandDTO = getMockBrandCreate();
-            productBrandDomain.createBrand(brandDTO);
+            brandDomain.createBrand(brandDTO);
 
-            assertThrows(ResourceAlreadyExistsException.class, () -> productBrandDomain.createBrand(brandDTO));
+            assertThrows(ResourceAlreadyExistsException.class, () -> brandDomain.createBrand(brandDTO));
         }
 
     }
@@ -118,9 +118,9 @@ class ProductBrandDomainTest {
         @DisplayName("Get brand by id, should return brand successfully")
         void testGetBrandById_shouldReturnBrandSuccessfully() {
 
-            ProductBrand createdBrand = productBrandDomain.createBrand(getMockBrandCreate());
+            Brand createdBrand = brandDomain.createBrand(getMockBrandCreate());
 
-            ProductBrand foundBrand = productBrandDomain.getBrandById(createdBrand.getId());
+            Brand foundBrand = brandDomain.getBrandById(createdBrand.getId());
 
             assertNotNull(foundBrand.getId());
             assertEquals(createdBrand.getId(), foundBrand.getId());
@@ -129,7 +129,7 @@ class ProductBrandDomainTest {
         @Test
         @DisplayName("Get brand by id, should throw exception when brand not found")
         void testGetBrandById_shouldThrowExceptionWhenBrandNotFound() {
-            assertThrows(ResourceNotFoundException.class, () -> productBrandDomain.getBrandById(1L));
+            assertThrows(ResourceNotFoundException.class, () -> brandDomain.getBrandById(1L));
         }
     }
 
@@ -143,12 +143,12 @@ class ProductBrandDomainTest {
             BrandDTO brandDTO = getMockBrandCreate();
             brandDTO.setStatus(Status.INACTIVE);
 
-            ProductBrand createdBrand = productBrandDomain.createBrand(brandDTO);
+            Brand createdBrand = brandDomain.createBrand(brandDTO);
 
             BrandDTO brandDTO2 = getMockBrandCreate();
             brandDTO2.setName("Test updated brand 123");
 
-            ProductBrand updatedBrand = productBrandDomain.updateBrandById(createdBrand.getId(), brandDTO2);
+            Brand updatedBrand = brandDomain.updateBrandById(createdBrand.getId(), brandDTO2);
 
             assertNotNull(updatedBrand.getId());
             assertEquals(brandDTO2.getName(), updatedBrand.getName());
@@ -158,7 +158,7 @@ class ProductBrandDomainTest {
         @Test
         @DisplayName("Update brand by id, should throw exception when brand not found")
         void testUpdateBrandById_shouldThrowExceptionWhenBrandNotFound() {
-            assertThrows(ResourceNotFoundException.class, () -> productBrandDomain.updateBrandById(1L, getMockBrandCreate()));
+            assertThrows(ResourceNotFoundException.class, () -> brandDomain.updateBrandById(1L, getMockBrandCreate()));
         }
 
         @Test
@@ -166,11 +166,11 @@ class ProductBrandDomainTest {
         void testUpdateBrandById_shouldThrowExceptionWhenNameIsNull() {
             BrandDTO brandDTO = getMockBrandCreate();
 
-            ProductBrand createdBrand = productBrandDomain.createBrand(brandDTO);
+            Brand createdBrand = brandDomain.createBrand(brandDTO);
 
             brandDTO.setName(null);
 
-            assertThrows(IllegalArgumentException.class, () -> productBrandDomain.updateBrandById(createdBrand.getId(), brandDTO));
+            assertThrows(IllegalArgumentException.class, () -> brandDomain.updateBrandById(createdBrand.getId(), brandDTO));
         }
 
         @Test
@@ -178,11 +178,11 @@ class ProductBrandDomainTest {
         void testUpdateBrandById_shouldThrowExceptionWhenNameIsEmpty() {
             BrandDTO brandDTO = getMockBrandCreate();
 
-            ProductBrand createdBrand = productBrandDomain.createBrand(brandDTO);
+            Brand createdBrand = brandDomain.createBrand(brandDTO);
 
             brandDTO.setName("");
 
-            assertThrows(IllegalArgumentException.class, () -> productBrandDomain.updateBrandById(createdBrand.getId(), brandDTO));
+            assertThrows(IllegalArgumentException.class, () -> brandDomain.updateBrandById(createdBrand.getId(), brandDTO));
         }
 
         @Test
@@ -190,11 +190,11 @@ class ProductBrandDomainTest {
         void testUpdateBrandById_shouldThrowExceptionWhenDescriptionIsNull() {
             BrandDTO brandDTO = getMockBrandCreate();
 
-            ProductBrand createdBrand = productBrandDomain.createBrand(brandDTO);
+            Brand createdBrand = brandDomain.createBrand(brandDTO);
 
             brandDTO.setDescription(null);
 
-            assertThrows(IllegalArgumentException.class, () -> productBrandDomain.updateBrandById(createdBrand.getId(), brandDTO));
+            assertThrows(IllegalArgumentException.class, () -> brandDomain.updateBrandById(createdBrand.getId(), brandDTO));
         }
 
         @Test
@@ -202,11 +202,11 @@ class ProductBrandDomainTest {
         void testUpdateBrandById_shouldThrowExceptionWhenDescriptionIsEmpty() {
             BrandDTO brandDTO = getMockBrandCreate();
 
-            ProductBrand createdBrand = productBrandDomain.createBrand(brandDTO);
+            Brand createdBrand = brandDomain.createBrand(brandDTO);
 
             brandDTO.setDescription("");
 
-            assertThrows(IllegalArgumentException.class, () -> productBrandDomain.updateBrandById(createdBrand.getId(), brandDTO));
+            assertThrows(IllegalArgumentException.class, () -> brandDomain.updateBrandById(createdBrand.getId(), brandDTO));
         }
 
 
@@ -221,9 +221,9 @@ class ProductBrandDomainTest {
         @DisplayName("Get brand by slug, should return brand successfully")
         void testGetBrandBySlug_shouldReturnBrandSuccessfully() {
 
-            ProductBrand createdBrand = productBrandDomain.createBrand(getMockBrandCreate());
+            Brand createdBrand = brandDomain.createBrand(getMockBrandCreate());
 
-            ProductBrand foundBrand = productBrandDomain.getBrandBySlug(createdBrand.getSlug());
+            Brand foundBrand = brandDomain.getBrandBySlug(createdBrand.getSlug());
 
             assertNotNull(foundBrand.getId());
             assertEquals(createdBrand.getId(), foundBrand.getId());
@@ -232,7 +232,7 @@ class ProductBrandDomainTest {
         @Test
         @DisplayName("Get brand by slug, should throw exception when brand not found")
         void testGetBrandBySlug_shouldThrowExceptionWhenBrandNotFound() {
-            assertThrows(ResourceNotFoundException.class, () -> productBrandDomain.getBrandBySlug("test-slug"));
+            assertThrows(ResourceNotFoundException.class, () -> brandDomain.getBrandBySlug("test-slug"));
         }
     }
 
@@ -244,10 +244,10 @@ class ProductBrandDomainTest {
         @DisplayName("Delete brand by id, should delete brand successfully")
         void testDeleteBrandById_shouldDeleteBrandSuccessfully() {
 
-            ProductBrand createdBrand = productBrandDomain.createBrand(getMockBrandCreate());
-            productBrandDomain.deleteBrandById(createdBrand.getId());
+            Brand createdBrand = brandDomain.createBrand(getMockBrandCreate());
+            brandDomain.deleteBrandById(createdBrand.getId());
 
-            ProductBrand deletedBrand = productBrandRepository.findById(createdBrand.getId()).orElse(null);
+            Brand deletedBrand = brandRepository.findById(createdBrand.getId()).orElse(null);
 
             assertNotNull(deletedBrand);
             assertEquals(Status.DELETED, deletedBrand.getStatus());
@@ -256,7 +256,7 @@ class ProductBrandDomainTest {
         @Test
         @DisplayName("Delete brand by id, should throw exception when brand not found")
         void testDeleteBrandById_shouldThrowExceptionWhenBrandNotFound() {
-            assertThrows(ResourceNotFoundException.class, () -> productBrandDomain.deleteBrandById(1L));
+            assertThrows(ResourceNotFoundException.class, () -> brandDomain.deleteBrandById(1L));
         }
 
     }

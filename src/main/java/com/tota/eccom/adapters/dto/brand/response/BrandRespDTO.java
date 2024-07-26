@@ -2,7 +2,7 @@ package com.tota.eccom.adapters.dto.brand.response;
 
 
 import com.tota.eccom.util.enums.Status;
-import com.tota.eccom.domain.product.model.ProductBrand;
+import com.tota.eccom.domain.brand.model.Brand;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,7 +21,7 @@ public class BrandRespDTO {
     private Status status;
 
 
-    public BrandRespDTO(ProductBrand brand) {
+    public BrandRespDTO(Brand brand) {
         this.id = brand.getId();
         this.name = brand.getName();
         this.slug = brand.getSlug();

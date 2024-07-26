@@ -1,5 +1,7 @@
 package com.tota.eccom.domain.product.threads;
 
+import com.tota.eccom.domain.brand.model.Brand;
+import com.tota.eccom.domain.category.model.Category;
 import com.tota.eccom.domain.product.model.*;
 import com.tota.eccom.util.SlugUtil;
 import com.tota.eccom.util.enums.Status;
@@ -99,8 +101,8 @@ public class InitialProductsDTOS {
                 .build();
     }
 
-    public ProductBrand getBrand() {
-        return ProductBrand.builder()
+    public Brand getBrand() {
+        return Brand.builder()
                 .name("Home Brand")
                 .description("Brand for things made by me")
                 .slug(SlugUtil.makeSlug("Home Brand"))
@@ -108,8 +110,8 @@ public class InitialProductsDTOS {
                 .build();
     }
 
-    public ProductCategory getCategory() {
-        return ProductCategory.builder()
+    public Category getCategory() {
+        return Category.builder()
                 .name("Clothes Brand")
                 .description("Clothes made by me from home")
                 .slug(SlugUtil.makeSlug("Clothes Brand"))

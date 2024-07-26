@@ -3,12 +3,12 @@ package com.tota.eccom.domain.product.business;
 import com.tota.eccom.adapters.dto.product.request.ProductDTO;
 import com.tota.eccom.adapters.dto.product.request.ProductPriceDTO;
 import com.tota.eccom.adapters.dto.product.request.ProductStockDTO;
-import com.tota.eccom.domain.product.model.ProductBrand;
-import com.tota.eccom.domain.product.repository.ProductBrandRepository;
+import com.tota.eccom.domain.brand.model.Brand;
+import com.tota.eccom.domain.brand.repository.BrandRepository;
 import com.tota.eccom.util.enums.Status;
 import com.tota.eccom.domain.product.model.Product;
-import com.tota.eccom.domain.product.model.ProductCategory;
-import com.tota.eccom.domain.product.repository.ProductCategoryRepository;
+import com.tota.eccom.domain.category.model.Category;
+import com.tota.eccom.domain.category.repository.CategoryRepository;
 import com.tota.eccom.domain.product.repository.ProductRepository;
 import com.tota.eccom.exceptions.generic.ResourceAlreadyExistsException;
 import com.tota.eccom.exceptions.generic.ResourceNotFoundException;
@@ -36,10 +36,10 @@ class ProductDomainTest {
     ProductRepository productRepository;
 
     @Autowired
-    ProductCategoryRepository productCategoryRepository;
+    CategoryRepository categoryRepository;
 
     @Autowired
-    ProductBrandRepository productBrandRepository;
+    BrandRepository brandRepository;
 
     @Autowired
     ProductDomain productDomain;
@@ -86,8 +86,8 @@ class ProductDomainTest {
                 .build();
     }
 
-    private ProductCategory getMockProductCategoryCreate() {
-        return ProductCategory.builder()
+    private Category getMockProductCategoryCreate() {
+        return Category.builder()
                 .name("Test Category")
                 .description("Test Category Description")
                 .slug(SlugUtil.makeSlug("Test Category"))
@@ -95,8 +95,8 @@ class ProductDomainTest {
                 .build();
     }
 
-    private ProductBrand getMockProductBrandCreate() {
-        return ProductBrand.builder()
+    private Brand getMockProductBrandCreate() {
+        return Brand.builder()
                 .name("Test Brand")
                 .description("Test Brand Description")
                 .slug(SlugUtil.makeSlug("Test Brand"))
@@ -767,29 +767,29 @@ class ProductDomainTest {
 
     @Nested
     @DisplayName("Add Product Category to Product by Id")
-    class AddProductCategoryToProductByIdTest {
+    class AddProductCategoryToByIdTest {
 
         @Test
         @DisplayName("Add product category to product, should add product category successfully")
         void testAddProductCategoryToProductById_shouldAddProductCategorySuccessfully() {
 
             Product createdProduct = productDomain.createProduct(getMockProductCreate());
-            ProductCategory productCategory = productCategoryRepository.save(getMockProductCategoryCreate());
+            Category category = categoryRepository.save(getMockProductCategoryCreate());
 
-            productDomain.addProductCategoryToProduct(createdProduct.getId(), productCategory.getId());
+            productDomain.addProductCategoryToProduct(createdProduct.getId(), category.getId());
 
             assertNotNull(createdProduct.getId());
             assertEquals(1, createdProduct.getProductCategories().size());
-            assertEquals(productCategory.getId(), createdProduct.getProductCategories().iterator().next().getId());
+            assertEquals(category.getId(), createdProduct.getProductCategories().iterator().next().getId());
         }
 
         @Test
         @DisplayName("Add product category to product, should throw exception when product not found")
         void testAddProductCategoryToProductById_shouldThrowExceptionWhenProductNotFound() {
 
-            ProductCategory productCategory = productCategoryRepository.save(getMockProductCategoryCreate());
+            Category category = categoryRepository.save(getMockProductCategoryCreate());
 
-            assertThrows(ResourceNotFoundException.class, () -> productDomain.addProductCategoryToProduct(1L, productCategory.getId()));
+            assertThrows(ResourceNotFoundException.class, () -> productDomain.addProductCategoryToProduct(1L, category.getId()));
         }
 
         @Test
@@ -803,40 +803,40 @@ class ProductDomainTest {
         @DisplayName("Add product category to product, should throw exception when product already has category")
         void testAddProductCategoryToProductById_shouldThrowExceptionWhenProductAlreadyHasCategory() {
             Product createdProduct = productDomain.createProduct(getMockProductCreate());
-            ProductCategory productCategory = productCategoryRepository.save(getMockProductCategoryCreate());
+            Category category = categoryRepository.save(getMockProductCategoryCreate());
 
-            productDomain.addProductCategoryToProduct(createdProduct.getId(), productCategory.getId());
+            productDomain.addProductCategoryToProduct(createdProduct.getId(), category.getId());
 
-            assertThrows(ResourceAlreadyExistsException.class, () -> productDomain.addProductCategoryToProduct(createdProduct.getId(), productCategory.getId()));
+            assertThrows(ResourceAlreadyExistsException.class, () -> productDomain.addProductCategoryToProduct(createdProduct.getId(), category.getId()));
         }
 
     }
 
     @Nested
     @DisplayName("Add Product Brand to Product by Id")
-    class AddProductBrandToProductByIdTest {
+    class AddProductBrandToByIdTest {
 
         @Test
         @DisplayName("Add product brand to product, should add product brand successfully")
         void testAddProductBrandToProductById_shouldAddProductBrandSuccessfully() {
 
             Product createdProduct = productDomain.createProduct(getMockProductCreate());
-            ProductBrand productBrand = productBrandRepository.save(getMockProductBrandCreate());
+            Brand brand = brandRepository.save(getMockProductBrandCreate());
 
-            productDomain.addProductBrandToProduct(createdProduct.getId(), productBrand.getId());
+            productDomain.addProductBrandToProduct(createdProduct.getId(), brand.getId());
 
             assertNotNull(createdProduct.getId());
-            assertEquals(productBrand.getId(), createdProduct.getProductBrand().getId());
-            assertEquals(productBrand.getName(), createdProduct.getProductBrand().getName());
+            assertEquals(brand.getId(), createdProduct.getBrand().getId());
+            assertEquals(brand.getName(), createdProduct.getBrand().getName());
         }
 
         @Test
         @DisplayName("Add product brand to product, should throw exception when product not found")
         void testAddProductBrandToProductById_shouldThrowExceptionWhenProductNotFound() {
 
-            ProductBrand productBrand = productBrandRepository.save(getMockProductBrandCreate());
+            Brand brand = brandRepository.save(getMockProductBrandCreate());
 
-            assertThrows(ResourceNotFoundException.class, () -> productDomain.addProductBrandToProduct(1L, productBrand.getId()));
+            assertThrows(ResourceNotFoundException.class, () -> productDomain.addProductBrandToProduct(1L, brand.getId()));
         }
 
         @Test
@@ -850,13 +850,13 @@ class ProductDomainTest {
         @DisplayName("Add product brand to product, should not thow exception when product brand already exists")
         void testAddProductBrandToProductById_shouldNotThrowExceptionWhenProductBrandAlreadyExists() {
             Product createdProduct = productDomain.createProduct(getMockProductCreate());
-            ProductBrand productBrand = productBrandRepository.save(getMockProductBrandCreate());
+            Brand brand = brandRepository.save(getMockProductBrandCreate());
 
-            productDomain.addProductBrandToProduct(createdProduct.getId(), productBrand.getId());
+            productDomain.addProductBrandToProduct(createdProduct.getId(), brand.getId());
 
             assertNotNull(createdProduct.getId());
-            assertEquals(productBrand.getId(), createdProduct.getProductBrand().getId());
-            assertEquals(productBrand.getName(), createdProduct.getProductBrand().getName());
+            assertEquals(brand.getId(), createdProduct.getBrand().getId());
+            assertEquals(brand.getName(), createdProduct.getBrand().getName());
         }
 
     }

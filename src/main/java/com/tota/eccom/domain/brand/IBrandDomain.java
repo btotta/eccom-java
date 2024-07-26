@@ -1,27 +1,25 @@
-package com.tota.eccom.domain.product;
+package com.tota.eccom.domain.brand;
 
 import com.tota.eccom.adapters.dto.brand.request.BrandDTO;
 import com.tota.eccom.domain.product.model.Product;
-import com.tota.eccom.domain.product.model.ProductBrand;
+import com.tota.eccom.domain.brand.model.Brand;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
-
 @Component
-public interface IProductBrandDomain {
+public interface IBrandDomain {
 
 
-    ProductBrand createBrand(BrandDTO brandDTO);
+    Brand createBrand(BrandDTO brandDTO);
 
-    ProductBrand getBrandById(Long id);
+    Brand getBrandById(Long id);
 
     void deleteBrandById(Long id);
 
-    ProductBrand updateBrandById(Long id, BrandDTO brandDTO);
+    Brand updateBrandById(Long id, BrandDTO brandDTO);
 
-    ProductBrand getBrandBySlug(String slug);
+    Brand getBrandBySlug(String slug);
 
     Page<Product> getProductsByBrand(String slug, Pageable pageable);
 }

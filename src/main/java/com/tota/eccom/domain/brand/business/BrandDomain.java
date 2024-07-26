@@ -1,10 +1,10 @@
-package com.tota.eccom.domain.product.business;
+package com.tota.eccom.domain.brand.business;
 
 import com.tota.eccom.adapters.dto.brand.request.BrandDTO;
-import com.tota.eccom.domain.product.IProductBrandDomain;
+import com.tota.eccom.domain.brand.IBrandDomain;
 import com.tota.eccom.domain.product.model.Product;
-import com.tota.eccom.domain.product.model.ProductBrand;
-import com.tota.eccom.domain.product.repository.ProductBrandRepository;
+import com.tota.eccom.domain.brand.model.Brand;
+import com.tota.eccom.domain.brand.repository.BrandRepository;
 import com.tota.eccom.domain.product.repository.ProductRepository;
 import com.tota.eccom.exceptions.generic.ResourceAlreadyExistsException;
 import com.tota.eccom.exceptions.generic.ResourceNotFoundException;
@@ -20,51 +20,51 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class ProductBrandDomain implements IProductBrandDomain {
+public class BrandDomain implements IBrandDomain {
 
 
-    private final ProductBrandRepository productBrandRepository;
+    private final BrandRepository brandRepository;
     private final ProductRepository productRepository;
 
 
     @Override
     @Transactional
-    public ProductBrand createBrand(BrandDTO brandDTO) {
+    public Brand createBrand(BrandDTO brandDTO) {
 
         if (brandDTO.getName() != null && findBrandBySlug(SlugUtil.makeSlug(brandDTO.getName())) != null) {
             throw new ResourceAlreadyExistsException("Brand with given slug already exists");
         }
 
-        ProductBrand productBrand = brandDTO.toBrand();
+        Brand brand = brandDTO.toBrand();
 
-        log.info("Creating brand: {}", productBrand);
+        log.info("Creating brand: {}", brand);
 
-        return productBrandRepository.save(productBrand);
+        return brandRepository.save(brand);
     }
 
     @Override
-    public ProductBrand getBrandById(Long id) {
-        return productBrandRepository.findById(id)
+    public Brand getBrandById(Long id) {
+        return brandRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Brand not found with given id: " + id));
     }
 
     @Override
     @Transactional
     public void deleteBrandById(Long id) {
-        ProductBrand brand = getBrandById(id);
+        Brand brand = getBrandById(id);
 
         log.info("Deleting brand by id: {}", id);
 
         brand.setStatus(Status.DELETED);
 
-        productBrandRepository.save(brand);
+        brandRepository.save(brand);
     }
 
     @Override
     @Transactional
-    public ProductBrand updateBrandById(Long id, BrandDTO brandDTO) {
+    public Brand updateBrandById(Long id, BrandDTO brandDTO) {
 
-        ProductBrand brand = getBrandById(id);
+        Brand brand = getBrandById(id);
 
         if (brandDTO.getName() != null) {
             validateExistingSlug(SlugUtil.makeSlug(brandDTO.getName()), id);
@@ -74,18 +74,18 @@ public class ProductBrandDomain implements IProductBrandDomain {
 
         log.info("Updating brand: {}", brand);
 
-        return productBrandRepository.save(brand);
+        return brandRepository.save(brand);
     }
 
     @Override
-    public ProductBrand getBrandBySlug(String slug) {
-        return productBrandRepository.findBySlug(slug).orElseThrow(() -> new ResourceNotFoundException("Brand not found with given slug: " + slug));
+    public Brand getBrandBySlug(String slug) {
+        return brandRepository.findBySlug(slug).orElseThrow(() -> new ResourceNotFoundException("Brand not found with given slug: " + slug));
     }
 
     @Override
     public Page<Product> getProductsByBrand(String slug, Pageable pageable) {
 
-        ProductBrand brand = getBrandBySlug(slug);
+        Brand brand = getBrandBySlug(slug);
 
         if (brand == null) {
             throw new ResourceNotFoundException("Brand not found with given slug: " + slug);
@@ -95,18 +95,18 @@ public class ProductBrandDomain implements IProductBrandDomain {
     }
 
     private void validateExistingSlug(String slug, Long id) {
-        ProductBrand existingBrand = findBrandBySlug(slug);
+        Brand existingBrand = findBrandBySlug(slug);
         if (existingBrand != null && !existingBrand.getId().equals(id)) {
             throw new ResourceAlreadyExistsException("Brand with given slug already exists");
         }
     }
 
-    private ProductBrand findBrandBySlug(String slug) {
-        return productBrandRepository.findBySlug(slug).orElse(null);
+    private Brand findBrandBySlug(String slug) {
+        return brandRepository.findBySlug(slug).orElse(null);
     }
 
-    private ProductBrand findBrandById(Long id) {
-        return productBrandRepository.findById(id).orElse(null);
+    private Brand findBrandById(Long id) {
+        return brandRepository.findById(id).orElse(null);
     }
 
 }

@@ -17,7 +17,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
 
     Optional<Product> findBySlug(String slug);
 
-    @Query("SELECT p FROM Product p WHERE p.productBrand.id = :id")
+    @Query("SELECT p FROM Product p WHERE p.brand.id = :id")
     Page<Product> findByProductsByBrandId(Long id, Pageable pageable);
 
     @Query("SELECT p FROM Product p JOIN p.productCategories pc WHERE pc.id = :id")

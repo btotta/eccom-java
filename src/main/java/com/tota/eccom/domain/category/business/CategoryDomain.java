@@ -1,10 +1,10 @@
-package com.tota.eccom.domain.product.business;
+package com.tota.eccom.domain.category.business;
 
 import com.tota.eccom.adapters.dto.category.request.CategoryDTO;
-import com.tota.eccom.domain.product.IProductCategoryDomain;
+import com.tota.eccom.domain.category.ICategoryDomain;
 import com.tota.eccom.domain.product.model.Product;
-import com.tota.eccom.domain.product.model.ProductCategory;
-import com.tota.eccom.domain.product.repository.ProductCategoryRepository;
+import com.tota.eccom.domain.category.model.Category;
+import com.tota.eccom.domain.category.repository.CategoryRepository;
 import com.tota.eccom.domain.product.repository.ProductRepository;
 import com.tota.eccom.exceptions.generic.ResourceAlreadyExistsException;
 import com.tota.eccom.exceptions.generic.ResourceNotFoundException;
@@ -20,51 +20,51 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class ProductCategoryDomain implements IProductCategoryDomain {
+public class CategoryDomain implements ICategoryDomain {
 
-    private final ProductCategoryRepository productCategoryRepository;
+    private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
 
 
     @Override
     @Transactional
-    public ProductCategory createCategory(CategoryDTO categoryDTO) {
+    public Category createCategory(CategoryDTO categoryDTO) {
 
         if (categoryDTO.getName() != null && findCategoryBySlug(SlugUtil.makeSlug(categoryDTO.getName())) != null) {
             throw new ResourceAlreadyExistsException("Category with given slug already exists");
         }
 
-        ProductCategory productCategory = categoryDTO.toCategory();
+        Category category = categoryDTO.toCategory();
 
-        log.info("Creating category: {}", productCategory);
+        log.info("Creating category: {}", category);
 
-        return productCategoryRepository.save(productCategory);
+        return categoryRepository.save(category);
     }
 
     @Override
-    public ProductCategory getCategoryById(Long id) {
+    public Category getCategoryById(Long id) {
 
-        return productCategoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Category not found with given id: " + id));
+        return categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Category not found with given id: " + id));
     }
 
     @Override
     @Transactional
     public void deleteCategoryById(Long id) {
 
-        ProductCategory category = getCategoryById(id);
+        Category category = getCategoryById(id);
 
         log.info("Deleting category by id: {}", id);
 
         category.setStatus(Status.DELETED);
 
-        productCategoryRepository.save(category);
+        categoryRepository.save(category);
     }
 
     @Override
     @Transactional
-    public ProductCategory updateCategoryById(Long id, CategoryDTO categoryDTO) {
+    public Category updateCategoryById(Long id, CategoryDTO categoryDTO) {
 
-        ProductCategory category = getCategoryById(id);
+        Category category = getCategoryById(id);
 
         if (categoryDTO.getName() != null) {
             validateExistingSlug(SlugUtil.makeSlug(categoryDTO.getName()), id);
@@ -74,13 +74,13 @@ public class ProductCategoryDomain implements IProductCategoryDomain {
 
         log.info("Updating category: {}", category);
 
-        return productCategoryRepository.save(category);
+        return categoryRepository.save(category);
     }
 
     @Override
     public Page<Product> getProductsByCategory(String slug, Pageable pageable) {
 
-        ProductCategory category = findCategoryBySlug(slug);
+        Category category = findCategoryBySlug(slug);
 
         if (category == null) {
             throw new ResourceNotFoundException("Category not found with given slug: " + slug);
@@ -91,14 +91,14 @@ public class ProductCategoryDomain implements IProductCategoryDomain {
 
     private void validateExistingSlug(String slug, Long id) {
 
-        ProductCategory existingCategory = findCategoryBySlug(slug);
+        Category existingCategory = findCategoryBySlug(slug);
         if (existingCategory != null && !existingCategory.getId().equals(id)) {
             throw new ResourceAlreadyExistsException("Category with given slug already exists");
         }
 
     }
 
-    private ProductCategory findCategoryBySlug(String slug) {
-        return productCategoryRepository.findBySlug(slug).orElse(null);
+    private Category findCategoryBySlug(String slug) {
+        return categoryRepository.findBySlug(slug).orElse(null);
     }
 }

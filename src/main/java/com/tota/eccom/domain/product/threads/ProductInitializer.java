@@ -3,10 +3,10 @@ package com.tota.eccom.domain.product.threads;
 import com.tota.eccom.domain.cart.repository.CartItemRepository;
 import com.tota.eccom.domain.cart.repository.CartRepository;
 import com.tota.eccom.domain.product.model.Product;
-import com.tota.eccom.domain.product.model.ProductBrand;
-import com.tota.eccom.domain.product.model.ProductCategory;
-import com.tota.eccom.domain.product.repository.ProductBrandRepository;
-import com.tota.eccom.domain.product.repository.ProductCategoryRepository;
+import com.tota.eccom.domain.brand.model.Brand;
+import com.tota.eccom.domain.category.model.Category;
+import com.tota.eccom.domain.brand.repository.BrandRepository;
+import com.tota.eccom.domain.category.repository.CategoryRepository;
 import com.tota.eccom.domain.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,8 +22,8 @@ import java.util.List;
 public class ProductInitializer {
 
     private final ProductRepository productRepository;
-    private final ProductCategoryRepository productCategoryRepository;
-    private final ProductBrandRepository productBrandRepository;
+    private final CategoryRepository categoryRepository;
+    private final BrandRepository brandRepository;
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
 
@@ -33,22 +33,22 @@ public class ProductInitializer {
         cartItemRepository.deleteAll();
         cartRepository.deleteAll();
         productRepository.deleteAll();
-        productCategoryRepository.deleteAll();
-        productBrandRepository.deleteAll();
+        categoryRepository.deleteAll();
+        brandRepository.deleteAll();
 
-        ProductBrand brand = productBrandRepository.save(new InitialProductsDTOS().getBrand());
+        Brand brand = brandRepository.save(new InitialProductsDTOS().getBrand());
         log.info("Brand created on initialize products: {}", brand);
-        ProductCategory category = productCategoryRepository.save(new InitialProductsDTOS().getCategory());
+        Category category = categoryRepository.save(new InitialProductsDTOS().getCategory());
         log.info("Category created on initialize products: {}", category);
 
         Product camiseta = new InitialProductsDTOS().getCamiseta();
-        camiseta.setProductBrand(brand);
+        camiseta.setBrand(brand);
         camiseta.setProductCategories(List.of(category));
         productRepository.save(camiseta);
         log.info("Product camiseta created on initialize products: {}", camiseta);
 
         Product bermuda = new InitialProductsDTOS().getBermuda();
-        bermuda.setProductBrand(brand);
+        bermuda.setBrand(brand);
         bermuda.setProductCategories(List.of(category));
         productRepository.save(bermuda);
         log.info("Product bermuda created on initialize products: {}", bermuda);

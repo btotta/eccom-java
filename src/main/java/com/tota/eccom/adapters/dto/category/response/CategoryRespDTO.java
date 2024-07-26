@@ -1,7 +1,7 @@
 package com.tota.eccom.adapters.dto.category.response;
 
 
-import com.tota.eccom.domain.product.model.ProductCategory;
+import com.tota.eccom.domain.category.model.Category;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,7 +23,7 @@ public class CategoryRespDTO {
     private Date updatedAt;
 
 
-    public CategoryRespDTO(ProductCategory category) {
+    public CategoryRespDTO(Category category) {
         this.id = category.getId();
         this.name = category.getName();
         this.description = category.getDescription();

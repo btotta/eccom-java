@@ -64,7 +64,7 @@ public class ProductRespDTO {
         this.updatedAt = p.getUpdatedAt();
         this.productPrices = p.getProductPrices().stream().map(ProductPriceRespDTO::new).toList();
         this.productStock = new ProductStockRespDTO(p.getProductStock());
-        this.productBrand = new BrandRespDTO(p.getProductBrand());
+        this.productBrand = new BrandRespDTO(p.getBrand());
         this.productCategories = p.getProductCategories().stream().map(CategoryRespDTO::new).toList();
     }
 

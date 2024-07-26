@@ -1,9 +1,9 @@
-package com.tota.eccom.domain.product.business;
+package com.tota.eccom.domain.category.business;
 
 import com.tota.eccom.adapters.dto.category.request.CategoryDTO;
 import com.tota.eccom.util.enums.Status;
-import com.tota.eccom.domain.product.model.ProductCategory;
-import com.tota.eccom.domain.product.repository.ProductCategoryRepository;
+import com.tota.eccom.domain.category.model.Category;
+import com.tota.eccom.domain.category.repository.CategoryRepository;
 import com.tota.eccom.exceptions.generic.ResourceAlreadyExistsException;
 import com.tota.eccom.exceptions.generic.ResourceNotFoundException;
 import org.junit.jupiter.api.*;
@@ -17,14 +17,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataJpaTest
-@Import({ProductCategoryDomain.class})
+@Import({CategoryDomain.class})
 class CategoryDomainTest {
 
     @Autowired
-    ProductCategoryRepository productCategoryRepository;
+    CategoryRepository categoryRepository;
 
     @Autowired
-    ProductCategoryDomain categoryDomain;
+    CategoryDomain categoryDomain;
 
 
     @BeforeEach
@@ -34,7 +34,7 @@ class CategoryDomainTest {
 
     @AfterEach
     void tearDown() {
-        productCategoryRepository.deleteAll();
+        categoryRepository.deleteAll();
     }
 
 
@@ -56,7 +56,7 @@ class CategoryDomainTest {
 
             CategoryDTO categoryDTO = getMockCategoryCreate();
 
-            ProductCategory createdCategory = categoryDomain.createCategory(categoryDTO);
+            Category createdCategory = categoryDomain.createCategory(categoryDTO);
 
             assertNotNull(createdCategory.getId());
             assertEquals(categoryDTO.getName(), createdCategory.getName());
@@ -121,9 +121,9 @@ class CategoryDomainTest {
         @DisplayName("Get category by id, should return category successfully")
         void testGetCategoryById_shouldReturnCategorySuccessfully() {
 
-            ProductCategory createdCategory = categoryDomain.createCategory(getMockCategoryCreate());
+            Category createdCategory = categoryDomain.createCategory(getMockCategoryCreate());
 
-            ProductCategory foundCategory = categoryDomain.getCategoryById(createdCategory.getId());
+            Category foundCategory = categoryDomain.getCategoryById(createdCategory.getId());
 
             assertNotNull(foundCategory.getId());
             assertEquals(createdCategory.getId(), foundCategory.getId());
@@ -144,10 +144,10 @@ class CategoryDomainTest {
         @DisplayName("Delete category by id, should delete category successfully")
         void testDeleteCategoryById_shouldDeleteCategorySuccessfully() {
 
-            ProductCategory createdCategory = categoryDomain.createCategory(getMockCategoryCreate());
+            Category createdCategory = categoryDomain.createCategory(getMockCategoryCreate());
             categoryDomain.deleteCategoryById(createdCategory.getId());
 
-            ProductCategory deletedCategory = productCategoryRepository.findById(createdCategory.getId()).orElse(null);
+            Category deletedCategory = categoryRepository.findById(createdCategory.getId()).orElse(null);
 
             assertNotNull(deletedCategory);
             assertEquals(Status.DELETED, deletedCategory.getStatus());
@@ -171,11 +171,11 @@ class CategoryDomainTest {
             CategoryDTO categoryDTO = getMockCategoryCreate();
             categoryDTO.setStatus(Status.INACTIVE);
 
-            ProductCategory createdCategory = categoryDomain.createCategory(categoryDTO);
+            Category createdCategory = categoryDomain.createCategory(categoryDTO);
 
             categoryDTO.setName("Test updated category");
 
-            ProductCategory updatedCategory = categoryDomain.updateCategoryById(createdCategory.getId(), categoryDTO);
+            Category updatedCategory = categoryDomain.updateCategoryById(createdCategory.getId(), categoryDTO);
 
             assertNotNull(updatedCategory.getId());
             assertEquals(categoryDTO.getName(), updatedCategory.getName());
@@ -192,7 +192,7 @@ class CategoryDomainTest {
         @DisplayName("Update category by id, should throw exception when name is null")
         void testUpdateCategoryById_shouldThrowExceptionWhenNameIsNull() {
 
-            ProductCategory createdCategory = categoryDomain.createCategory(getMockCategoryCreate());
+            Category createdCategory = categoryDomain.createCategory(getMockCategoryCreate());
 
             CategoryDTO categoryDTO = getMockCategoryCreate();
             categoryDTO.setName(null);
@@ -203,7 +203,7 @@ class CategoryDomainTest {
         @Test
         @DisplayName("Update category by id, should throw exception when name is empty")
         void testUpdateCategoryById_shouldThrowExceptionWhenNameIsEmpty() {
-            ProductCategory createdCategory = categoryDomain.createCategory(getMockCategoryCreate());
+            Category createdCategory = categoryDomain.createCategory(getMockCategoryCreate());
 
             CategoryDTO categoryDTO = getMockCategoryCreate();
             categoryDTO.setName("");
@@ -215,7 +215,7 @@ class CategoryDomainTest {
         @Test
         @DisplayName("Update category by id, should throw exception when description is null")
         void testUpdateCategoryById_shouldThrowExceptionWhenDescriptionIsNull() {
-            ProductCategory createdCategory = categoryDomain.createCategory(getMockCategoryCreate());
+            Category createdCategory = categoryDomain.createCategory(getMockCategoryCreate());
 
             CategoryDTO categoryDTO = getMockCategoryCreate();
             categoryDTO.setDescription(null);
@@ -226,7 +226,7 @@ class CategoryDomainTest {
         @Test
         @DisplayName("Update category by id, should throw exception when description is empty")
         void testUpdateCategoryById_shouldThrowExceptionWhenDescriptionIsEmpty() {
-            ProductCategory createdCategory = categoryDomain.createCategory(getMockCategoryCreate());
+            Category createdCategory = categoryDomain.createCategory(getMockCategoryCreate());
 
             CategoryDTO categoryDTO = getMockCategoryCreate();
             categoryDTO.setDescription("");
@@ -237,7 +237,7 @@ class CategoryDomainTest {
         @Test
         @DisplayName("Update category by id, should throw exception when slug already exists")
         void testUpdateCategoryById_shouldThrowExceptionWhenSlugAlreadyExists() {
-            ProductCategory cat1 = categoryDomain.createCategory(getMockCategoryCreate());
+            Category cat1 = categoryDomain.createCategory(getMockCategoryCreate());
 
             CategoryDTO cat2 = getMockCategoryCreate();
             cat2.setName("Test updated category");

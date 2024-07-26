@@ -1,4 +1,4 @@
-package com.tota.eccom.domain.product.model;
+package com.tota.eccom.domain.brand.model;
 
 import com.tota.eccom.util.enums.Status;
 import jakarta.persistence.*;
@@ -23,7 +23,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class ProductBrand {
+public class Brand {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

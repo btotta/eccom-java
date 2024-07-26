@@ -2,15 +2,14 @@ package com.tota.eccom.domain.cart.business;
 
 import com.tota.eccom.adapters.dto.cart.request.CartItemReqDTO;
 import com.tota.eccom.domain.cart.model.Cart;
-import com.tota.eccom.domain.cart.model.CartItem;
 import com.tota.eccom.domain.cart.repository.CartItemRepository;
 import com.tota.eccom.domain.cart.repository.CartRepository;
 import com.tota.eccom.domain.product.business.ProductDomain;
 import com.tota.eccom.domain.product.model.Product;
 import com.tota.eccom.domain.product.model.ProductPrice;
 import com.tota.eccom.domain.product.model.ProductStock;
-import com.tota.eccom.domain.product.repository.ProductBrandRepository;
-import com.tota.eccom.domain.product.repository.ProductCategoryRepository;
+import com.tota.eccom.domain.brand.repository.BrandRepository;
+import com.tota.eccom.domain.category.repository.CategoryRepository;
 import com.tota.eccom.domain.product.repository.ProductRepository;
 import com.tota.eccom.domain.user.business.UserService;
 import com.tota.eccom.domain.user.model.Role;
@@ -59,10 +58,10 @@ class CartDomainTest {
     ProductRepository productRepository;
 
     @Autowired
-    ProductCategoryRepository productCategoryRepository;
+    CategoryRepository categoryRepository;
 
     @Autowired
-    ProductBrandRepository productBrandRepository;
+    BrandRepository brandRepository;
 
     @Autowired
     RoleRepository roleRepository;
@@ -81,8 +80,8 @@ class CartDomainTest {
         cartRepository.deleteAll();
         cartItemRepository.deleteAll();
         productRepository.deleteAll();
-        productCategoryRepository.deleteAll();
-        productBrandRepository.deleteAll();
+        categoryRepository.deleteAll();
+        brandRepository.deleteAll();
     }
 
 

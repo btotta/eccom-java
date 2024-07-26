@@ -1,5 +1,7 @@
 package com.tota.eccom.domain.product.model;
 
+import com.tota.eccom.domain.brand.model.Brand;
+import com.tota.eccom.domain.category.model.Category;
 import com.tota.eccom.util.enums.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -99,10 +101,10 @@ public class Product {
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "product_category_id")
     )
-    private List<ProductCategory> productCategories = new ArrayList<>();
+    private List<Category> productCategories = new ArrayList<>();
 
     @ManyToOne
-    private ProductBrand productBrand;
+    private Brand brand;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

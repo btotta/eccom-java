@@ -5,10 +5,10 @@ import com.tota.eccom.adapters.dto.product.request.ProductPriceDTO;
 import com.tota.eccom.adapters.dto.product.request.ProductStockDTO;
 import com.tota.eccom.domain.product.IProductDomain;
 import com.tota.eccom.domain.product.model.Product;
-import com.tota.eccom.domain.product.model.ProductBrand;
-import com.tota.eccom.domain.product.model.ProductCategory;
-import com.tota.eccom.domain.product.repository.ProductBrandRepository;
-import com.tota.eccom.domain.product.repository.ProductCategoryRepository;
+import com.tota.eccom.domain.brand.model.Brand;
+import com.tota.eccom.domain.category.model.Category;
+import com.tota.eccom.domain.brand.repository.BrandRepository;
+import com.tota.eccom.domain.category.repository.CategoryRepository;
 import com.tota.eccom.domain.product.repository.ProductRepository;
 import com.tota.eccom.domain.product.repository.spec.ProductSpecification;
 import com.tota.eccom.exceptions.generic.ResourceAlreadyExistsException;
@@ -31,8 +31,8 @@ import java.util.ArrayList;
 public class ProductDomain implements IProductDomain {
 
     private final ProductRepository productRepository;
-    private final ProductCategoryRepository productCategoryRepository;
-    private final ProductBrandRepository productBrandRepository;
+    private final CategoryRepository categoryRepository;
+    private final BrandRepository brandRepository;
 
 
     @Override
@@ -170,7 +170,7 @@ public class ProductDomain implements IProductDomain {
     @Transactional
     public Product addProductCategoryToProduct(Long id, Long categoryId) {
 
-        ProductCategory category = findCategoryById(categoryId);
+        Category category = findCategoryById(categoryId);
 
         Product product = getProductById(id);
 
@@ -191,11 +191,11 @@ public class ProductDomain implements IProductDomain {
     @Transactional
     public Product addProductBrandToProduct(Long id, Long brandId) {
 
-        ProductBrand brand = productBrandRepository.findById(brandId).orElseThrow(() -> new ResourceNotFoundException("Product brand not found with given id: " + brandId));
+        Brand brand = brandRepository.findById(brandId).orElseThrow(() -> new ResourceNotFoundException("Product brand not found with given id: " + brandId));
 
         Product product = getProductById(id);
 
-        product.setProductBrand(brand);
+        product.setBrand(brand);
 
         return productRepository.save(product);
     }
@@ -207,8 +207,8 @@ public class ProductDomain implements IProductDomain {
         }
     }
 
-    private ProductCategory findCategoryById(Long id) {
-        return productCategoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product category not found with given id: " + id));
+    private Category findCategoryById(Long id) {
+        return categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product category not found with given id: " + id));
     }
 
     private Product findProductBySKU(String sku) {

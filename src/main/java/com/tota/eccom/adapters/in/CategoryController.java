@@ -3,7 +3,7 @@ package com.tota.eccom.adapters.in;
 import com.tota.eccom.adapters.dto.category.request.CategoryDTO;
 import com.tota.eccom.adapters.dto.category.response.CategoryRespDTO;
 import com.tota.eccom.adapters.dto.product.response.ProductRespDTO;
-import com.tota.eccom.domain.product.IProductCategoryDomain;
+import com.tota.eccom.domain.category.ICategoryDomain;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
 public class CategoryController {
 
 
-    private final IProductCategoryDomain categoryDomain;
+    private final ICategoryDomain categoryDomain;
 
 
     @PostMapping

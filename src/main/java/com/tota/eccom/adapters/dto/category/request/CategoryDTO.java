@@ -2,7 +2,7 @@ package com.tota.eccom.adapters.dto.category.request;
 
 
 import com.tota.eccom.util.enums.Status;
-import com.tota.eccom.domain.product.model.ProductCategory;
+import com.tota.eccom.domain.category.model.Category;
 import com.tota.eccom.util.SlugUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,11 +21,11 @@ public class CategoryDTO {
     private Status status;
 
 
-    public ProductCategory toCategory() {
+    public Category toCategory() {
 
         validate();
 
-        return ProductCategory.builder()
+        return Category.builder()
                 .name(name)
                 .description(description)
                 .slug(SlugUtil.makeSlug(name))
@@ -34,7 +34,7 @@ public class CategoryDTO {
     }
 
 
-    public void toUpdatedCategory(ProductCategory category) {
+    public void toUpdatedCategory(Category category) {
 
         validate();
 
