@@ -4,7 +4,7 @@ import com.tota.eccom.adapters.dto.product.request.ProductDTO;
 import com.tota.eccom.adapters.dto.product.request.ProductPriceDTO;
 import com.tota.eccom.adapters.dto.product.request.ProductStockDTO;
 import com.tota.eccom.adapters.dto.product.response.ProductRespDTO;
-import com.tota.eccom.domain.product.IProductDomain;
+import com.tota.eccom.domain.product.IProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Product", description = "Endpoints for product management")
 public class ProductController {
 
-    private final IProductDomain productDomain;
+    private final IProductService productDomain;
 
     // Product Admin Operations
     @PostMapping

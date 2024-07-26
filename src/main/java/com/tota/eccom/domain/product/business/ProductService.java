@@ -3,7 +3,7 @@ package com.tota.eccom.domain.product.business;
 import com.tota.eccom.adapters.dto.product.request.ProductDTO;
 import com.tota.eccom.adapters.dto.product.request.ProductPriceDTO;
 import com.tota.eccom.adapters.dto.product.request.ProductStockDTO;
-import com.tota.eccom.domain.product.IProductDomain;
+import com.tota.eccom.domain.product.IProductService;
 import com.tota.eccom.domain.product.model.Product;
 import com.tota.eccom.domain.brand.model.Brand;
 import com.tota.eccom.domain.category.model.Category;
@@ -28,7 +28,7 @@ import java.util.ArrayList;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class ProductDomain implements IProductDomain {
+public class ProductService implements IProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;

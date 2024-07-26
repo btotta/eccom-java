@@ -4,7 +4,7 @@ import com.tota.eccom.adapters.dto.cart.request.CartItemReqDTO;
 import com.tota.eccom.domain.cart.model.Cart;
 import com.tota.eccom.domain.cart.repository.CartItemRepository;
 import com.tota.eccom.domain.cart.repository.CartRepository;
-import com.tota.eccom.domain.product.business.ProductDomain;
+import com.tota.eccom.domain.product.business.ProductService;
 import com.tota.eccom.domain.product.model.Product;
 import com.tota.eccom.domain.product.model.ProductPrice;
 import com.tota.eccom.domain.product.model.ProductStock;
@@ -38,12 +38,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 @DataJpaTest
-@Import({CartDomain.class, UserService.class, ProductDomain.class, JwtTokenUtil.class, SecurityUtil.class})
-class CartDomainTest {
+@Import({CartService.class, UserService.class, ProductService.class, JwtTokenUtil.class, SecurityUtil.class})
+class CartServiceTest {
 
 
     @Autowired
-    CartDomain cartDomain;
+    CartService cartDomain;
 
     @Autowired
     CartRepository cartRepository;

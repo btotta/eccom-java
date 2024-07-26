@@ -1,14 +1,14 @@
 package com.tota.eccom.domain.cart.business;
 
 import com.tota.eccom.adapters.dto.cart.request.CartItemReqDTO;
-import com.tota.eccom.domain.cart.ICartDomain;
+import com.tota.eccom.domain.cart.ICartService;
 import com.tota.eccom.domain.cart.model.Cart;
 import com.tota.eccom.domain.cart.model.CartItem;
 import com.tota.eccom.domain.cart.model.enums.CartStatus;
 import com.tota.eccom.domain.cart.repository.CartItemRepository;
 import com.tota.eccom.domain.cart.repository.CartRepository;
 import com.tota.eccom.domain.cart.repository.spec.CartSpecification;
-import com.tota.eccom.domain.product.IProductDomain;
+import com.tota.eccom.domain.product.IProductService;
 import com.tota.eccom.domain.product.model.Product;
 import com.tota.eccom.domain.product.model.ProductPrice;
 import com.tota.eccom.domain.user.IUserService;
@@ -27,12 +27,12 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class CartDomain implements ICartDomain {
+public class CartService implements ICartService {
 
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final IUserService userDomain;
-    private final IProductDomain productDomain;
+    private final IProductService productDomain;
 
 
     @Override

@@ -17,14 +17,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataJpaTest
-@Import({CategoryDomain.class})
-class CategoryDomainTest {
+@Import({CategoryService.class})
+class CategoryServiceTest {
 
     @Autowired
     CategoryRepository categoryRepository;
 
     @Autowired
-    CategoryDomain categoryDomain;
+    CategoryService categoryDomain;
 
 
     @BeforeEach

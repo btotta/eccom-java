@@ -4,7 +4,7 @@ package com.tota.eccom.adapters.in;
 import com.tota.eccom.adapters.dto.brand.request.BrandDTO;
 import com.tota.eccom.adapters.dto.brand.response.BrandRespDTO;
 import com.tota.eccom.adapters.dto.product.response.ProductRespDTO;
-import com.tota.eccom.domain.brand.IBrandDomain;
+import com.tota.eccom.domain.brand.IBrandService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Brand", description = "Endpoints for brand management")
 public class BrandController {
 
-    private final IBrandDomain brandDomain;
+    private final IBrandService brandDomain;
 
 
     @PostMapping

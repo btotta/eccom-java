@@ -2,7 +2,7 @@ package com.tota.eccom.adapters.in;
 
 import com.tota.eccom.adapters.dto.cart.request.CartItemReqDTO;
 import com.tota.eccom.adapters.dto.cart.response.CartRespDTO;
-import com.tota.eccom.domain.cart.ICartDomain;
+import com.tota.eccom.domain.cart.ICartService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class CartController {
 
-    private final ICartDomain cartDomain;
+    private final ICartService cartDomain;
 
 
     // Cart n Cart Item Operations

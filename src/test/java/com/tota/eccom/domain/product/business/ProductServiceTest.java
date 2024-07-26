@@ -29,8 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataJpaTest
-@Import({ProductDomain.class})
-class ProductDomainTest {
+@Import({ProductService.class})
+class ProductServiceTest {
 
     @Autowired
     ProductRepository productRepository;
@@ -42,7 +42,7 @@ class ProductDomainTest {
     BrandRepository brandRepository;
 
     @Autowired
-    ProductDomain productDomain;
+    ProductService productService;
 
 
     @BeforeEach
@@ -113,7 +113,7 @@ class ProductDomainTest {
         @DisplayName("Create product, should create product successfully")
         void testCreateProduct_shouldCreateProductSuccessfully() {
 
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
 
             assertNotNull(createdProduct.getId());
             assertEquals(getMockProductCreate().getName(), createdProduct.getName());
@@ -141,7 +141,7 @@ class ProductDomainTest {
             ProductDTO productDTO = getMockProductCreate();
             productDTO.setName(null);
 
-            assertThrows(IllegalArgumentException.class, () -> productDomain.createProduct(productDTO));
+            assertThrows(IllegalArgumentException.class, () -> productService.createProduct(productDTO));
         }
 
         @Test
@@ -150,7 +150,7 @@ class ProductDomainTest {
             ProductDTO productDTO = getMockProductCreate();
             productDTO.setName("");
 
-            assertThrows(IllegalArgumentException.class, () -> productDomain.createProduct(productDTO));
+            assertThrows(IllegalArgumentException.class, () -> productService.createProduct(productDTO));
         }
 
         @Test
@@ -159,7 +159,7 @@ class ProductDomainTest {
             ProductDTO productDTO = getMockProductCreate();
             productDTO.setSku(null);
 
-            assertThrows(IllegalArgumentException.class, () -> productDomain.createProduct(productDTO));
+            assertThrows(IllegalArgumentException.class, () -> productService.createProduct(productDTO));
         }
 
         @Test
@@ -168,7 +168,7 @@ class ProductDomainTest {
             ProductDTO productDTO = getMockProductCreate();
             productDTO.setSku("");
 
-            assertThrows(IllegalArgumentException.class, () -> productDomain.createProduct(productDTO));
+            assertThrows(IllegalArgumentException.class, () -> productService.createProduct(productDTO));
         }
 
         @Test
@@ -177,7 +177,7 @@ class ProductDomainTest {
             ProductDTO productDTO = getMockProductCreate();
             productDTO.setDescription(null);
 
-            assertThrows(IllegalArgumentException.class, () -> productDomain.createProduct(productDTO));
+            assertThrows(IllegalArgumentException.class, () -> productService.createProduct(productDTO));
         }
 
         @Test
@@ -186,7 +186,7 @@ class ProductDomainTest {
             ProductDTO productDTO = getMockProductCreate();
             productDTO.setDescription("");
 
-            assertThrows(IllegalArgumentException.class, () -> productDomain.createProduct(productDTO));
+            assertThrows(IllegalArgumentException.class, () -> productService.createProduct(productDTO));
         }
 
         @Test
@@ -195,7 +195,7 @@ class ProductDomainTest {
             ProductDTO productDTO = getMockProductCreate();
             productDTO.setPackageType(null);
 
-            assertThrows(IllegalArgumentException.class, () -> productDomain.createProduct(productDTO));
+            assertThrows(IllegalArgumentException.class, () -> productService.createProduct(productDTO));
         }
 
         @Test
@@ -204,7 +204,7 @@ class ProductDomainTest {
             ProductDTO productDTO = getMockProductCreate();
             productDTO.setPackageType("");
 
-            assertThrows(IllegalArgumentException.class, () -> productDomain.createProduct(productDTO));
+            assertThrows(IllegalArgumentException.class, () -> productService.createProduct(productDTO));
         }
 
         // Unique fields
@@ -215,9 +215,9 @@ class ProductDomainTest {
             ProductDTO productDTO = getMockProductCreate();
             productDTO.setSku("TEST-SKU");
 
-            productDomain.createProduct(productDTO);
+            productService.createProduct(productDTO);
 
-            assertThrows(ResourceAlreadyExistsException.class, () -> productDomain.createProduct(productDTO));
+            assertThrows(ResourceAlreadyExistsException.class, () -> productService.createProduct(productDTO));
         }
     }
 
@@ -229,9 +229,9 @@ class ProductDomainTest {
         @DisplayName("Get product by id, should return product successfully")
         void testGetProductById_shouldReturnProductSuccessfully() {
 
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
 
-            Product foundProduct = productDomain.getProductById(createdProduct.getId());
+            Product foundProduct = productService.getProductById(createdProduct.getId());
 
             assertNotNull(foundProduct.getId());
             assertEquals(createdProduct.getId(), foundProduct.getId());
@@ -240,7 +240,7 @@ class ProductDomainTest {
         @Test
         @DisplayName("Get product by id, should throw exception when product not found")
         void testGetProductById_shouldThrowExceptionWhenProductNotFound() {
-            assertThrows(ResourceNotFoundException.class, () -> productDomain.getProductById(1L));
+            assertThrows(ResourceNotFoundException.class, () -> productService.getProductById(1L));
         }
     }
 
@@ -252,8 +252,8 @@ class ProductDomainTest {
         @DisplayName("Delete product by id, should delete product successfully")
         void testDeleteProductById_shouldDeleteProductSuccessfully() {
 
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
-            productDomain.deleteProductById(createdProduct.getId());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
+            productService.deleteProductById(createdProduct.getId());
 
             Product deletedProduct = productRepository.findById(createdProduct.getId()).orElse(null);
 
@@ -264,7 +264,7 @@ class ProductDomainTest {
         @Test
         @DisplayName("Delete product by id, should throw exception when product not found")
         void testDeleteProductById_shouldThrowExceptionWhenProductNotFound() {
-            assertThrows(ResourceNotFoundException.class, () -> productDomain.deleteProductById(1L));
+            assertThrows(ResourceNotFoundException.class, () -> productService.deleteProductById(1L));
         }
 
     }
@@ -279,11 +279,11 @@ class ProductDomainTest {
             ProductDTO productDTO = getMockProductCreate();
             productDTO.setStatus(Status.INACTIVE);
 
-            Product createdProduct = productDomain.createProduct(productDTO);
+            Product createdProduct = productService.createProduct(productDTO);
 
             productDTO.setName("Test updated product");
 
-            Product updatedProduct = productDomain.updateProductById(createdProduct.getId(), productDTO);
+            Product updatedProduct = productService.updateProductById(createdProduct.getId(), productDTO);
 
             assertNotNull(updatedProduct.getId());
             assertEquals(productDTO.getName(), updatedProduct.getName());
@@ -293,75 +293,75 @@ class ProductDomainTest {
         @Test
         @DisplayName("Update product by id, should throw exception when product not found")
         void testUpdateProductById_shouldThrowExceptionWhenProductNotFound() {
-            assertThrows(ResourceNotFoundException.class, () -> productDomain.updateProductById(1L, getMockProductCreate()));
+            assertThrows(ResourceNotFoundException.class, () -> productService.updateProductById(1L, getMockProductCreate()));
         }
 
         @Test
         @DisplayName("Update product by id, should throw exception when name is null")
         void testUpdateProductById_shouldThrowExceptionWhenNameIsNull() {
 
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
 
             ProductDTO productDTO = getMockProductCreate();
             productDTO.setName(null);
 
-            assertThrows(IllegalArgumentException.class, () -> productDomain.updateProductById(createdProduct.getId(), productDTO));
+            assertThrows(IllegalArgumentException.class, () -> productService.updateProductById(createdProduct.getId(), productDTO));
         }
 
         @Test
         @DisplayName("Update product by id, should throw exception when name is empty")
         void testUpdateProductById_shouldThrowExceptionWhenNameIsEmpty() {
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
 
             ProductDTO productDTO = getMockProductCreate();
             productDTO.setName("");
 
-            assertThrows(IllegalArgumentException.class, () -> productDomain.updateProductById(createdProduct.getId(), productDTO));
+            assertThrows(IllegalArgumentException.class, () -> productService.updateProductById(createdProduct.getId(), productDTO));
 
         }
 
         @Test
         @DisplayName("Update product by id, should throw exception when description is null")
         void testUpdateProductById_shouldThrowExceptionWhenDescriptionIsNull() {
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
 
             ProductDTO productDTO = getMockProductCreate();
             productDTO.setDescription(null);
 
-            assertThrows(IllegalArgumentException.class, () -> productDomain.updateProductById(createdProduct.getId(), productDTO));
+            assertThrows(IllegalArgumentException.class, () -> productService.updateProductById(createdProduct.getId(), productDTO));
         }
 
         @Test
         @DisplayName("Update product by id, should throw exception when description is empty")
         void testUpdateProductById_shouldThrowExceptionWhenDescriptionIsEmpty() {
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
 
             ProductDTO productDTO = getMockProductCreate();
             productDTO.setDescription("");
 
-            assertThrows(IllegalArgumentException.class, () -> productDomain.updateProductById(createdProduct.getId(), productDTO));
+            assertThrows(IllegalArgumentException.class, () -> productService.updateProductById(createdProduct.getId(), productDTO));
         }
 
         @Test
         @DisplayName("Update product by id, should throw exception when package type is null")
         void testUpdateProductById_shouldThrowExceptionWhenPackageTypeIsNull() {
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
 
             ProductDTO productDTO = getMockProductCreate();
             productDTO.setPackageType(null);
 
-            assertThrows(IllegalArgumentException.class, () -> productDomain.updateProductById(createdProduct.getId(), productDTO));
+            assertThrows(IllegalArgumentException.class, () -> productService.updateProductById(createdProduct.getId(), productDTO));
         }
 
         @Test
         @DisplayName("Update product by id, should throw exception when package type is empty")
         void testUpdateProductById_shouldThrowExceptionWhenPackageTypeIsEmpty() {
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
 
             ProductDTO productDTO = getMockProductCreate();
             productDTO.setPackageType("");
 
-            assertThrows(IllegalArgumentException.class, () -> productDomain.updateProductById(createdProduct.getId(), productDTO));
+            assertThrows(IllegalArgumentException.class, () -> productService.updateProductById(createdProduct.getId(), productDTO));
         }
 
     }
@@ -374,11 +374,11 @@ class ProductDomainTest {
         @DisplayName("Patch product by id, should patch product successfully")
         void testPatchProductById_shouldPatchProductSuccessfully() {
 
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
             ProductDTO productDTO = getMockProductCreate();
             productDTO.setName("Test patched product");
 
-            Product patchedProduct = productDomain.patchProductById(createdProduct.getId(), productDTO);
+            Product patchedProduct = productService.patchProductById(createdProduct.getId(), productDTO);
 
             assertNotNull(patchedProduct.getId());
             assertEquals(productDTO.getName(), patchedProduct.getName());
@@ -388,17 +388,17 @@ class ProductDomainTest {
         @Test
         @DisplayName("Patch product by id, should throw exception when product not found")
         void testPatchProductById_shouldThrowExceptionWhenProductNotFound() {
-            assertThrows(ResourceNotFoundException.class, () -> productDomain.patchProductById(1L, getMockProductCreate()));
+            assertThrows(ResourceNotFoundException.class, () -> productService.patchProductById(1L, getMockProductCreate()));
         }
 
         @Test
         @DisplayName("Patch product by id, should not update name when name is null")
         void testPatchProductById_shouldNotUpdateNameWhenNameIsNull() {
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
             ProductDTO productDTO = getMockProductCreate();
             productDTO.setName(null);
 
-            Product patchedProduct = productDomain.patchProductById(createdProduct.getId(), productDTO);
+            Product patchedProduct = productService.patchProductById(createdProduct.getId(), productDTO);
 
             assertEquals(getMockProductCreate().getName(), patchedProduct.getName());
         }
@@ -406,11 +406,11 @@ class ProductDomainTest {
         @Test
         @DisplayName("Patch product by id, should not update name when name is empty")
         void testPatchProductById_shouldNotUpdateNameWhenNameIsEmpty() {
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
             ProductDTO productDTO = getMockProductCreate();
             productDTO.setName("");
 
-            Product patchedProduct = productDomain.patchProductById(createdProduct.getId(), productDTO);
+            Product patchedProduct = productService.patchProductById(createdProduct.getId(), productDTO);
 
             assertEquals(getMockProductCreate().getName(), patchedProduct.getName());
         }
@@ -418,11 +418,11 @@ class ProductDomainTest {
         @Test
         @DisplayName("Patch product by id, should not update description when description is null")
         void testPatchProductById_shouldNotUpdateDescriptionWhenDescriptionIsNull() {
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
             ProductDTO productDTO = getMockProductCreate();
             productDTO.setDescription(null);
 
-            Product patchedProduct = productDomain.patchProductById(createdProduct.getId(), productDTO);
+            Product patchedProduct = productService.patchProductById(createdProduct.getId(), productDTO);
 
             assertEquals(getMockProductCreate().getDescription(), patchedProduct.getDescription());
         }
@@ -430,11 +430,11 @@ class ProductDomainTest {
         @Test
         @DisplayName("Patch product by id, should not update description when description is empty")
         void testPatchProductById_shouldNotUpdateDescriptionWhenDescriptionIsEmpty() {
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
             ProductDTO productDTO = getMockProductCreate();
             productDTO.setDescription("");
 
-            Product patchedProduct = productDomain.patchProductById(createdProduct.getId(), productDTO);
+            Product patchedProduct = productService.patchProductById(createdProduct.getId(), productDTO);
 
             assertEquals(getMockProductCreate().getDescription(), patchedProduct.getDescription());
         }
@@ -442,11 +442,11 @@ class ProductDomainTest {
         @Test
         @DisplayName("Patch product by id, should not update sku when sku is null")
         void testPatchProductById_shouldNotUpdateSkuWhenSkuIsNull() {
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
             ProductDTO productDTO = getMockProductCreate();
             productDTO.setSku(null);
 
-            Product patchedProduct = productDomain.patchProductById(createdProduct.getId(), productDTO);
+            Product patchedProduct = productService.patchProductById(createdProduct.getId(), productDTO);
 
             assertEquals(getMockProductCreate().getSku(), patchedProduct.getSku());
         }
@@ -454,11 +454,11 @@ class ProductDomainTest {
         @Test
         @DisplayName("Patch product by id, should not update sku when sku is empty")
         void testPatchProductById_shouldNotUpdateSkuWhenSkuIsEmpty() {
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
             ProductDTO productDTO = getMockProductCreate();
             productDTO.setSku("");
 
-            Product patchedProduct = productDomain.patchProductById(createdProduct.getId(), productDTO);
+            Product patchedProduct = productService.patchProductById(createdProduct.getId(), productDTO);
 
             assertEquals(getMockProductCreate().getSku(), patchedProduct.getSku());
         }
@@ -466,11 +466,11 @@ class ProductDomainTest {
         @Test
         @DisplayName("Patch product by id, should not update family code when family code is null")
         void testPatchProductById_shouldNotUpdateFamilyCodeWhenFamilyCodeIsNull() {
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
             ProductDTO productDTO = getMockProductCreate();
             productDTO.setFamilyCode(null);
 
-            Product patchedProduct = productDomain.patchProductById(createdProduct.getId(), productDTO);
+            Product patchedProduct = productService.patchProductById(createdProduct.getId(), productDTO);
 
             assertEquals(getMockProductCreate().getFamilyCode(), patchedProduct.getFamilyCode());
         }
@@ -478,11 +478,11 @@ class ProductDomainTest {
         @Test
         @DisplayName("Patch product by id, should not update family code when family code is empty")
         void testPatchProductById_shouldNotUpdateFamilyCodeWhenFamilyCodeIsEmpty() {
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
             ProductDTO productDTO = getMockProductCreate();
             productDTO.setFamilyCode("");
 
-            Product patchedProduct = productDomain.patchProductById(createdProduct.getId(), productDTO);
+            Product patchedProduct = productService.patchProductById(createdProduct.getId(), productDTO);
 
             assertEquals(getMockProductCreate().getFamilyCode(), patchedProduct.getFamilyCode());
         }
@@ -497,10 +497,10 @@ class ProductDomainTest {
         @DisplayName("Add product price to product, should add product price successfully")
         void testAddProductPriceToProductById_shouldAddProductPriceSuccessfully() {
 
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
             ProductPriceDTO productPriceDTO = getMockProductPriceCreate();
 
-            Product addedProductPrice = productDomain.addProductPriceToProduct(createdProduct.getId(), productPriceDTO);
+            Product addedProductPrice = productService.addProductPriceToProduct(createdProduct.getId(), productPriceDTO);
 
             assertNotNull(addedProductPrice.getId());
             assertEquals(BigDecimal.valueOf(productPriceDTO.getPrice()), addedProductPrice.getProductPrices().iterator().next().getPrice());
@@ -510,59 +510,59 @@ class ProductDomainTest {
         @Test
         @DisplayName("Add product price to product, should throw exception when product not found")
         void testAddProductPriceToProductById_shouldThrowExceptionWhenProductNotFound() {
-            assertThrows(ResourceNotFoundException.class, () -> productDomain.addProductPriceToProduct(1L, getMockProductPriceCreate()));
+            assertThrows(ResourceNotFoundException.class, () -> productService.addProductPriceToProduct(1L, getMockProductPriceCreate()));
         }
 
         @Test
         @DisplayName("Add product price to product, should throw exception when price is null")
         void testAddProductPriceToProductById_shouldThrowExceptionWhenPriceIsNull() {
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
             ProductPriceDTO productPriceDTO = getMockProductPriceCreate();
             productPriceDTO.setPrice(null);
 
-            assertThrows(IllegalArgumentException.class, () -> productDomain.addProductPriceToProduct(createdProduct.getId(), productPriceDTO));
+            assertThrows(IllegalArgumentException.class, () -> productService.addProductPriceToProduct(createdProduct.getId(), productPriceDTO));
         }
 
         @Test
         @DisplayName("Add product price to product, should throw exception when quantity is null")
         void testAddProductPriceToProductById_shouldThrowExceptionWhenQuantityIsNull() {
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
             ProductPriceDTO productPriceDTO = getMockProductPriceCreate();
             productPriceDTO.setQuantity(null);
 
-            assertThrows(IllegalArgumentException.class, () -> productDomain.addProductPriceToProduct(createdProduct.getId(), productPriceDTO));
+            assertThrows(IllegalArgumentException.class, () -> productService.addProductPriceToProduct(createdProduct.getId(), productPriceDTO));
         }
 
         @Test
         @DisplayName("Add product price to product, should throw exception when quantity is negative")
         void testAddProductPriceToProductById_shouldThrowExceptionWhenQuantityIsNegative() {
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
             ProductPriceDTO productPriceDTO = getMockProductPriceCreate();
             productPriceDTO.setQuantity(-1);
 
-            assertThrows(IllegalArgumentException.class, () -> productDomain.addProductPriceToProduct(createdProduct.getId(), productPriceDTO));
+            assertThrows(IllegalArgumentException.class, () -> productService.addProductPriceToProduct(createdProduct.getId(), productPriceDTO));
         }
 
         @Test
         @DisplayName("Add product price to product, should throw exception when price is negative")
         void testAddProductPriceToProductById_shouldThrowExceptionWhenPriceIsNegative() {
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
             ProductPriceDTO productPriceDTO = getMockProductPriceCreate();
             productPriceDTO.setPrice(-1.0);
 
-            assertThrows(IllegalArgumentException.class, () -> productDomain.addProductPriceToProduct(createdProduct.getId(), productPriceDTO));
+            assertThrows(IllegalArgumentException.class, () -> productService.addProductPriceToProduct(createdProduct.getId(), productPriceDTO));
         }
 
         @Test
         @DisplayName("Add product price to product, should throw exception when quantity already exists")
         void testAddProductPriceToProductById_shouldThrowExceptionWhenQuantityAlreadyExists() {
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
             ProductPriceDTO productPriceDTO = getMockProductPriceCreate();
             productPriceDTO.setQuantity(1);
 
-            productDomain.addProductPriceToProduct(createdProduct.getId(), productPriceDTO);
+            productService.addProductPriceToProduct(createdProduct.getId(), productPriceDTO);
 
-            assertThrows(IllegalArgumentException.class, () -> productDomain.addProductPriceToProduct(createdProduct.getId(), productPriceDTO));
+            assertThrows(IllegalArgumentException.class, () -> productService.addProductPriceToProduct(createdProduct.getId(), productPriceDTO));
         }
     }
 
@@ -574,13 +574,13 @@ class ProductDomainTest {
         @DisplayName("Delete product price from product, should delete product price successfully")
         void testDeleteProductPriceFromProductById_shouldDeleteProductPriceSuccessfully() {
 
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
 
             ProductPriceDTO productPriceDTO = getMockProductPriceCreate();
             productPriceDTO.setQuantity(1);
-            Product addedProductPrice = productDomain.addProductPriceToProduct(createdProduct.getId(), productPriceDTO);
+            Product addedProductPrice = productService.addProductPriceToProduct(createdProduct.getId(), productPriceDTO);
 
-            productDomain.deleteProductPriceFromProduct(addedProductPrice.getId(), addedProductPrice.getProductPrices().iterator().next().getId());
+            productService.deleteProductPriceFromProduct(addedProductPrice.getId(), addedProductPrice.getProductPrices().iterator().next().getId());
 
             Product deletedProduct = productRepository.findById(createdProduct.getId()).orElse(null);
 
@@ -591,19 +591,19 @@ class ProductDomainTest {
         @Test
         @DisplayName("Delete product price from product, should throw exception when product not found")
         void testDeleteProductPriceFromProductById_shouldThrowExceptionWhenProductNotFound() {
-            assertThrows(ResourceNotFoundException.class, () -> productDomain.deleteProductPriceFromProduct(1L, 1L));
+            assertThrows(ResourceNotFoundException.class, () -> productService.deleteProductPriceFromProduct(1L, 1L));
         }
 
         @Test
         @DisplayName("Delete product price from product, should throw exception when price not found")
         void testDeleteProductPriceFromProductById_shouldThrowExceptionWhenPriceNotFound() {
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
             ProductPriceDTO productPriceDTO = getMockProductPriceCreate();
             productPriceDTO.setQuantity(1);
 
-            productDomain.addProductPriceToProduct(createdProduct.getId(), productPriceDTO);
+            productService.addProductPriceToProduct(createdProduct.getId(), productPriceDTO);
 
-            assertThrows(ResourceNotFoundException.class, () -> productDomain.deleteProductPriceFromProduct(createdProduct.getId(), 2L));
+            assertThrows(ResourceNotFoundException.class, () -> productService.deleteProductPriceFromProduct(createdProduct.getId(), 2L));
         }
     }
 
@@ -615,10 +615,10 @@ class ProductDomainTest {
         @DisplayName("Add product stock to product, should add product stock successfully")
         void testAddProductStockToProductById_shouldAddProductStockSuccessfully() {
 
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
             ProductStockDTO productStockDTO = getMockProductStockCreate();
 
-            Product addedProductStock = productDomain.addProductStockToProduct(createdProduct.getId(), productStockDTO);
+            Product addedProductStock = productService.addProductStockToProduct(createdProduct.getId(), productStockDTO);
 
             assertNotNull(addedProductStock.getId());
             assertEquals(productStockDTO.getQuantity(), addedProductStock.getProductStock().getQuantity());
@@ -628,38 +628,38 @@ class ProductDomainTest {
         @Test
         @DisplayName("Add product stock to product, should throw exception when product not found")
         void testAddProductStockToProductById_shouldThrowExceptionWhenProductNotFound() {
-            assertThrows(ResourceNotFoundException.class, () -> productDomain.addProductStockToProduct(1L, getMockProductStockCreate()));
+            assertThrows(ResourceNotFoundException.class, () -> productService.addProductStockToProduct(1L, getMockProductStockCreate()));
         }
 
         @Test
         @DisplayName("Add product stock to product, should throw exception when quantity is null")
         void testAddProductStockToProductById_shouldThrowExceptionWhenQuantityIsNull() {
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
             ProductStockDTO productStockDTO = getMockProductStockCreate();
             productStockDTO.setQuantity(null);
 
-            assertThrows(IllegalArgumentException.class, () -> productDomain.addProductStockToProduct(createdProduct.getId(), productStockDTO));
+            assertThrows(IllegalArgumentException.class, () -> productService.addProductStockToProduct(createdProduct.getId(), productStockDTO));
         }
 
         @Test
         @DisplayName("Add product stock to product, should throw exception when quantity is negative")
         void testAddProductStockToProductById_shouldThrowExceptionWhenQuantityIsNegative() {
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
             ProductStockDTO productStockDTO = getMockProductStockCreate();
             productStockDTO.setQuantity(-1);
 
-            assertThrows(IllegalArgumentException.class, () -> productDomain.addProductStockToProduct(createdProduct.getId(), productStockDTO));
+            assertThrows(IllegalArgumentException.class, () -> productService.addProductStockToProduct(createdProduct.getId(), productStockDTO));
         }
 
         @Test
         @DisplayName("Add product stock to product, should add product stock successfully when quantity is zero")
         void testAddProductStockToProductById_shouldAddProductStockSuccessfullyWhenQuantityIsZero() {
 
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
             ProductStockDTO productStockDTO = getMockProductStockCreate();
             productStockDTO.setQuantity(0);
 
-            Product addedProductStock = productDomain.addProductStockToProduct(createdProduct.getId(), productStockDTO);
+            Product addedProductStock = productService.addProductStockToProduct(createdProduct.getId(), productStockDTO);
 
             assertNotNull(addedProductStock.getId());
             assertEquals(productStockDTO.getQuantity(), addedProductStock.getProductStock().getQuantity());
@@ -676,9 +676,9 @@ class ProductDomainTest {
         @DisplayName("Get product by slug, should return product successfully")
         void testGetProductBySlug_shouldReturnProductSuccessfully() {
 
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
 
-            Product foundProduct = productDomain.getProductBySlug(createdProduct.getSlug());
+            Product foundProduct = productService.getProductBySlug(createdProduct.getSlug());
 
             assertNotNull(foundProduct.getId());
             assertEquals(createdProduct.getId(), foundProduct.getId());
@@ -687,7 +687,7 @@ class ProductDomainTest {
         @Test
         @DisplayName("Get product by slug, should throw exception when product not found")
         void testGetProductBySlug_shouldThrowExceptionWhenProductNotFound() {
-            assertThrows(ResourceNotFoundException.class, () -> productDomain.getProductBySlug("test-slug"));
+            assertThrows(ResourceNotFoundException.class, () -> productService.getProductBySlug("test-slug"));
         }
     }
 
@@ -699,11 +699,11 @@ class ProductDomainTest {
         @DisplayName("Search products by term, should return products successfully")
         void testSearchProductsByTerm_shouldReturnProductsSuccessfully() {
 
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
-            productDomain.addProductPriceToProduct(createdProduct.getId(), getMockProductPriceCreate());
-            productDomain.addProductStockToProduct(createdProduct.getId(), getMockProductStockCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
+            productService.addProductPriceToProduct(createdProduct.getId(), getMockProductPriceCreate());
+            productService.addProductStockToProduct(createdProduct.getId(), getMockProductStockCreate());
 
-            Page<Product> foundProducts = productDomain.searchProductsByTerm(getMockProductCreate().getName(), PageRequest.of(0, 10));
+            Page<Product> foundProducts = productService.searchProductsByTerm(getMockProductCreate().getName(), PageRequest.of(0, 10));
 
             assertNotNull(foundProducts.getContent());
             assertEquals(1, foundProducts.getContent().size());
@@ -713,12 +713,12 @@ class ProductDomainTest {
         @Test
         @DisplayName("Search products by term, should not return deleted products")
         void testSearchProductsByTerm_shouldNotReturnDeletedProducts() {
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
-            productDomain.addProductPriceToProduct(createdProduct.getId(), getMockProductPriceCreate());
-            productDomain.addProductStockToProduct(createdProduct.getId(), getMockProductStockCreate());
-            productDomain.deleteProductById(createdProduct.getId());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
+            productService.addProductPriceToProduct(createdProduct.getId(), getMockProductPriceCreate());
+            productService.addProductStockToProduct(createdProduct.getId(), getMockProductStockCreate());
+            productService.deleteProductById(createdProduct.getId());
 
-            Page<Product> foundProducts = productDomain.searchProductsByTerm(getMockProductCreate().getName(), PageRequest.of(0, 10));
+            Page<Product> foundProducts = productService.searchProductsByTerm(getMockProductCreate().getName(), PageRequest.of(0, 10));
 
             assertNotNull(foundProducts.getContent());
             assertEquals(0, foundProducts.getContent().size());
@@ -727,14 +727,14 @@ class ProductDomainTest {
         @Test
         @DisplayName("Search products by term, should not return inactive products")
         void testSearchProductsByTerm_shouldNotReturnInactiveProducts() {
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
-            productDomain.addProductPriceToProduct(createdProduct.getId(), getMockProductPriceCreate());
-            productDomain.addProductStockToProduct(createdProduct.getId(), getMockProductStockCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
+            productService.addProductPriceToProduct(createdProduct.getId(), getMockProductPriceCreate());
+            productService.addProductStockToProduct(createdProduct.getId(), getMockProductStockCreate());
             ProductDTO productDTO = getMockProductCreate();
             productDTO.setStatus(Status.INACTIVE);
-            productDomain.updateProductById(createdProduct.getId(), productDTO);
+            productService.updateProductById(createdProduct.getId(), productDTO);
 
-            Page<Product> foundProducts = productDomain.searchProductsByTerm(getMockProductCreate().getName(), PageRequest.of(0, 10));
+            Page<Product> foundProducts = productService.searchProductsByTerm(getMockProductCreate().getName(), PageRequest.of(0, 10));
 
             assertNotNull(foundProducts.getContent());
             assertEquals(0, foundProducts.getContent().size());
@@ -743,10 +743,10 @@ class ProductDomainTest {
         @Test
         @DisplayName("Search products by term, should not return products without price")
         void testSearchProductsByTerm_shouldNotReturnProductsWithoutPrice() {
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
-            productDomain.addProductStockToProduct(createdProduct.getId(), getMockProductStockCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
+            productService.addProductStockToProduct(createdProduct.getId(), getMockProductStockCreate());
 
-            Page<Product> foundProducts = productDomain.searchProductsByTerm(getMockProductCreate().getName(), PageRequest.of(0, 10));
+            Page<Product> foundProducts = productService.searchProductsByTerm(getMockProductCreate().getName(), PageRequest.of(0, 10));
 
             assertNotNull(foundProducts.getContent());
             assertEquals(0, foundProducts.getContent().size());
@@ -755,10 +755,10 @@ class ProductDomainTest {
         @Test
         @DisplayName("Search products by term, should not return products without stock")
         void testSearchProductsByTerm_shouldNotReturnProductsWithoutStock() {
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
-            productDomain.addProductPriceToProduct(createdProduct.getId(), getMockProductPriceCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
+            productService.addProductPriceToProduct(createdProduct.getId(), getMockProductPriceCreate());
 
-            Page<Product> foundProducts = productDomain.searchProductsByTerm(getMockProductCreate().getName(), PageRequest.of(0, 10));
+            Page<Product> foundProducts = productService.searchProductsByTerm(getMockProductCreate().getName(), PageRequest.of(0, 10));
 
             assertNotNull(foundProducts.getContent());
             assertEquals(0, foundProducts.getContent().size());
@@ -773,10 +773,10 @@ class ProductDomainTest {
         @DisplayName("Add product category to product, should add product category successfully")
         void testAddProductCategoryToProductById_shouldAddProductCategorySuccessfully() {
 
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
             Category category = categoryRepository.save(getMockProductCategoryCreate());
 
-            productDomain.addProductCategoryToProduct(createdProduct.getId(), category.getId());
+            productService.addProductCategoryToProduct(createdProduct.getId(), category.getId());
 
             assertNotNull(createdProduct.getId());
             assertEquals(1, createdProduct.getProductCategories().size());
@@ -789,25 +789,25 @@ class ProductDomainTest {
 
             Category category = categoryRepository.save(getMockProductCategoryCreate());
 
-            assertThrows(ResourceNotFoundException.class, () -> productDomain.addProductCategoryToProduct(1L, category.getId()));
+            assertThrows(ResourceNotFoundException.class, () -> productService.addProductCategoryToProduct(1L, category.getId()));
         }
 
         @Test
         @DisplayName("Add product category to product, should throw exception when category not found")
         void testAddProductCategoryToProductById_shouldThrowExceptionWhenCategoryNotFound() {
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
-            assertThrows(ResourceNotFoundException.class, () -> productDomain.addProductCategoryToProduct(createdProduct.getId(), 1L));
+            Product createdProduct = productService.createProduct(getMockProductCreate());
+            assertThrows(ResourceNotFoundException.class, () -> productService.addProductCategoryToProduct(createdProduct.getId(), 1L));
         }
 
         @Test
         @DisplayName("Add product category to product, should throw exception when product already has category")
         void testAddProductCategoryToProductById_shouldThrowExceptionWhenProductAlreadyHasCategory() {
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
             Category category = categoryRepository.save(getMockProductCategoryCreate());
 
-            productDomain.addProductCategoryToProduct(createdProduct.getId(), category.getId());
+            productService.addProductCategoryToProduct(createdProduct.getId(), category.getId());
 
-            assertThrows(ResourceAlreadyExistsException.class, () -> productDomain.addProductCategoryToProduct(createdProduct.getId(), category.getId()));
+            assertThrows(ResourceAlreadyExistsException.class, () -> productService.addProductCategoryToProduct(createdProduct.getId(), category.getId()));
         }
 
     }
@@ -820,10 +820,10 @@ class ProductDomainTest {
         @DisplayName("Add product brand to product, should add product brand successfully")
         void testAddProductBrandToProductById_shouldAddProductBrandSuccessfully() {
 
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
             Brand brand = brandRepository.save(getMockProductBrandCreate());
 
-            productDomain.addProductBrandToProduct(createdProduct.getId(), brand.getId());
+            productService.addProductBrandToProduct(createdProduct.getId(), brand.getId());
 
             assertNotNull(createdProduct.getId());
             assertEquals(brand.getId(), createdProduct.getBrand().getId());
@@ -836,23 +836,23 @@ class ProductDomainTest {
 
             Brand brand = brandRepository.save(getMockProductBrandCreate());
 
-            assertThrows(ResourceNotFoundException.class, () -> productDomain.addProductBrandToProduct(1L, brand.getId()));
+            assertThrows(ResourceNotFoundException.class, () -> productService.addProductBrandToProduct(1L, brand.getId()));
         }
 
         @Test
         @DisplayName("Add product brand to product, should throw exception when brand not found")
         void testAddProductBrandToProductById_shouldThrowExceptionWhenBrandNotFound() {
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
-            assertThrows(ResourceNotFoundException.class, () -> productDomain.addProductBrandToProduct(createdProduct.getId(), 1L));
+            Product createdProduct = productService.createProduct(getMockProductCreate());
+            assertThrows(ResourceNotFoundException.class, () -> productService.addProductBrandToProduct(createdProduct.getId(), 1L));
         }
 
         @Test
         @DisplayName("Add product brand to product, should not thow exception when product brand already exists")
         void testAddProductBrandToProductById_shouldNotThrowExceptionWhenProductBrandAlreadyExists() {
-            Product createdProduct = productDomain.createProduct(getMockProductCreate());
+            Product createdProduct = productService.createProduct(getMockProductCreate());
             Brand brand = brandRepository.save(getMockProductBrandCreate());
 
-            productDomain.addProductBrandToProduct(createdProduct.getId(), brand.getId());
+            productService.addProductBrandToProduct(createdProduct.getId(), brand.getId());
 
             assertNotNull(createdProduct.getId());
             assertEquals(brand.getId(), createdProduct.getBrand().getId());

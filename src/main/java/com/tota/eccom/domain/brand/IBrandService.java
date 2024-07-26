@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 @Component
-public interface IBrandDomain {
+public interface IBrandService {
 
 
     Brand createBrand(BrandDTO brandDTO);

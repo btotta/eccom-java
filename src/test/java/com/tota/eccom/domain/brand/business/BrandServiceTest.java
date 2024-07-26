@@ -15,11 +15,11 @@ import org.springframework.context.annotation.Import;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-@Import({BrandDomain.class})
-class BrandDomainTest {
+@Import({BrandService.class})
+class BrandServiceTest {
 
     @Autowired
-    BrandDomain brandDomain;
+    BrandService brandDomain;
 
     @Autowired
     BrandRepository brandRepository;

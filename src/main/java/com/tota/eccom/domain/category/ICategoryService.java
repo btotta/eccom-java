@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 @Component
-public interface ICategoryDomain {
+public interface ICategoryService {
     Category createCategory(CategoryDTO categoryDTO);
 
     Category getCategoryById(Long id);

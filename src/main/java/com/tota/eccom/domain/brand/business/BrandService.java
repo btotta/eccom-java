@@ -1,7 +1,7 @@
 package com.tota.eccom.domain.brand.business;
 
 import com.tota.eccom.adapters.dto.brand.request.BrandDTO;
-import com.tota.eccom.domain.brand.IBrandDomain;
+import com.tota.eccom.domain.brand.IBrandService;
 import com.tota.eccom.domain.product.model.Product;
 import com.tota.eccom.domain.brand.model.Brand;
 import com.tota.eccom.domain.brand.repository.BrandRepository;
@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class BrandDomain implements IBrandDomain {
+public class BrandService implements IBrandService {
 
 
     private final BrandRepository brandRepository;

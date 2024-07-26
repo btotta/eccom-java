@@ -1,7 +1,7 @@
 package com.tota.eccom.domain.category.business;
 
 import com.tota.eccom.adapters.dto.category.request.CategoryDTO;
-import com.tota.eccom.domain.category.ICategoryDomain;
+import com.tota.eccom.domain.category.ICategoryService;
 import com.tota.eccom.domain.product.model.Product;
 import com.tota.eccom.domain.category.model.Category;
 import com.tota.eccom.domain.category.repository.CategoryRepository;
@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class CategoryDomain implements ICategoryDomain {
+public class CategoryService implements ICategoryService {
 
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
