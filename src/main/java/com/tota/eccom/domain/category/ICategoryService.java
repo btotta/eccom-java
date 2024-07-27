@@ -18,4 +18,8 @@ public interface ICategoryService {
     Category updateCategoryById(Long id, CategoryDTO categoryDTO);
 
     Page<Product> getProductsByCategory(String slug, Pageable pageable);
+
+    Category setParentCategoryById(Long id, Long parentId);
+
+    void removeParentCategoryById(Long id);
 }

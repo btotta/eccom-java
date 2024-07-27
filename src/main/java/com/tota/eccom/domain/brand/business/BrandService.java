@@ -2,9 +2,9 @@ package com.tota.eccom.domain.brand.business;
 
 import com.tota.eccom.adapters.dto.brand.request.BrandDTO;
 import com.tota.eccom.domain.brand.IBrandService;
-import com.tota.eccom.domain.product.model.Product;
 import com.tota.eccom.domain.brand.model.Brand;
 import com.tota.eccom.domain.brand.repository.BrandRepository;
+import com.tota.eccom.domain.product.model.Product;
 import com.tota.eccom.domain.product.repository.ProductRepository;
 import com.tota.eccom.exceptions.generic.ResourceAlreadyExistsException;
 import com.tota.eccom.exceptions.generic.ResourceNotFoundException;
@@ -16,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -31,7 +33,7 @@ public class BrandService implements IBrandService {
     @Transactional
     public Brand createBrand(BrandDTO brandDTO) {
 
-        if (brandDTO.getName() != null && findBrandBySlug(SlugUtil.makeSlug(brandDTO.getName())) != null) {
+        if (brandDTO.getName() != null && findBrandBySlug(SlugUtil.makeSlug(brandDTO.getName())).isPresent()) {
             throw new ResourceAlreadyExistsException("Brand with given slug already exists");
         }
 
@@ -87,26 +89,24 @@ public class BrandService implements IBrandService {
 
         Brand brand = getBrandBySlug(slug);
 
-        if (brand == null) {
-            throw new ResourceNotFoundException("Brand not found with given slug: " + slug);
-        }
-
         return productRepository.findByProductsByBrandId(brand.getId(), pageable);
     }
 
     private void validateExistingSlug(String slug, Long id) {
-        Brand existingBrand = findBrandBySlug(slug);
-        if (existingBrand != null && !existingBrand.getId().equals(id)) {
+
+        Optional<Brand> existingBrand = findBrandBySlug(slug);
+
+        if (existingBrand.isPresent() && !existingBrand.get().getId().equals(id)) {
             throw new ResourceAlreadyExistsException("Brand with given slug already exists");
         }
     }
 
-    private Brand findBrandBySlug(String slug) {
-        return brandRepository.findBySlug(slug).orElse(null);
+    private Optional<Brand> findBrandBySlug(String slug) {
+        return brandRepository.findBySlug(slug);
     }
 
-    private Brand findBrandById(Long id) {
-        return brandRepository.findById(id).orElse(null);
+    private Optional<Brand> findBrandById(Long id) {
+        return brandRepository.findById(id);
     }
 
 }

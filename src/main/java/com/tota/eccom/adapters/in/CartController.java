@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/cart")
 @RequiredArgsConstructor
+@Tag(name = "Cart", description = "Endpoints for cart management")
 public class CartController {
 
     private final ICartService cartDomain;
@@ -56,6 +58,7 @@ public class CartController {
     public ResponseEntity<CartRespDTO> updateCartById(@PathVariable Long id, @RequestBody @Valid CartItemReqDTO cartItemReqDTO) {
         return new ResponseEntity<>(new CartRespDTO(cartDomain.updateCartById(id, cartItemReqDTO)), HttpStatus.OK);
     }
+
 
     // Cart Operations
     @GetMapping

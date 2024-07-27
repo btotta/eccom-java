@@ -2,9 +2,9 @@ package com.tota.eccom.domain.category.business;
 
 import com.tota.eccom.adapters.dto.category.request.CategoryDTO;
 import com.tota.eccom.domain.category.ICategoryService;
-import com.tota.eccom.domain.product.model.Product;
 import com.tota.eccom.domain.category.model.Category;
 import com.tota.eccom.domain.category.repository.CategoryRepository;
+import com.tota.eccom.domain.product.model.Product;
 import com.tota.eccom.domain.product.repository.ProductRepository;
 import com.tota.eccom.exceptions.generic.ResourceAlreadyExistsException;
 import com.tota.eccom.exceptions.generic.ResourceNotFoundException;
@@ -16,6 +16,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+
+import java.util.Objects;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -30,7 +33,7 @@ public class CategoryService implements ICategoryService {
     @Transactional
     public Category createCategory(CategoryDTO categoryDTO) {
 
-        if (categoryDTO.getName() != null && findCategoryBySlug(SlugUtil.makeSlug(categoryDTO.getName())) != null) {
+        if (categoryDTO.getName() != null && findCategoryBySlug(SlugUtil.makeSlug(categoryDTO.getName())).isPresent()) {
             throw new ResourceAlreadyExistsException("Category with given slug already exists");
         }
 
@@ -80,25 +83,52 @@ public class CategoryService implements ICategoryService {
     @Override
     public Page<Product> getProductsByCategory(String slug, Pageable pageable) {
 
-        Category category = findCategoryBySlug(slug);
+        Optional<Category> category = findCategoryBySlug(slug);
 
-        if (category == null) {
+        if (category.isEmpty()) {
             throw new ResourceNotFoundException("Category not found with given slug: " + slug);
         }
 
-        return productRepository.findProductsByCategoryId(category.getId(), pageable);
+        return productRepository.findProductsByCategoryId(category.get().getId(), pageable);
+    }
+
+    @Override
+    public Category setParentCategoryById(Long id, Long parentId) {
+
+        if (Objects.equals(id, parentId)) {
+            throw new ResourceAlreadyExistsException("Category cannot have itself as parent category");
+        }
+
+        Category category = getCategoryById(id);
+        Category parentCategory = getCategoryById(parentId);
+
+        log.info("Setting parent category id {} to category id {}", parentId, id);
+        category.setParentCategory(parentCategory);
+
+        return categoryRepository.save(category);
+    }
+
+    @Override
+    public void removeParentCategoryById(Long id) {
+        Category category = getCategoryById(id);
+
+        log.info("Removing parent category from category id {}", id);
+        category.setParentCategory(null);
+
+        categoryRepository.save(category);
     }
 
     private void validateExistingSlug(String slug, Long id) {
 
-        Category existingCategory = findCategoryBySlug(slug);
-        if (existingCategory != null && !existingCategory.getId().equals(id)) {
+        Optional<Category> existingCategory = findCategoryBySlug(slug);
+
+        if (existingCategory.isPresent() && !existingCategory.get().getId().equals(id)) {
             throw new ResourceAlreadyExistsException("Category with given slug already exists");
         }
 
     }
 
-    private Category findCategoryBySlug(String slug) {
-        return categoryRepository.findBySlug(slug).orElse(null);
+    private Optional<Category> findCategoryBySlug(String slug) {
+        return categoryRepository.findBySlug(slug);
     }
 }

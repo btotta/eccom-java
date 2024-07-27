@@ -4,8 +4,6 @@ import com.tota.eccom.domain.product.model.Product;
 import com.tota.eccom.util.enums.Status;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,7 +22,6 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 public class Category {
 
     @Id
@@ -44,18 +41,20 @@ public class Category {
     @Column(nullable = false)
     private Status status;
 
-    @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false, updatable = false)
     private Date createdAt;
 
-    @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updated_at", nullable = false)
     private Date updatedAt;
 
-    @ManyToMany(mappedBy = "productCategories")
+    @ManyToMany(mappedBy = "productCategories", fetch = FetchType.LAZY)
     private List<Product> products = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_category_id")
+    private Category parentCategory;
 
     @PrePersist
     public void prePersist() {

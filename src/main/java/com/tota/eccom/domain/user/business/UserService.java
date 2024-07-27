@@ -4,7 +4,6 @@ import com.tota.eccom.adapters.dto.user.request.UserCreateDTO;
 import com.tota.eccom.adapters.dto.user.request.UserLoginDTO;
 import com.tota.eccom.adapters.dto.user.request.UserUpdateDTO;
 import com.tota.eccom.adapters.dto.user.response.UserLoginRespDTO;
-import com.tota.eccom.util.enums.Status;
 import com.tota.eccom.domain.user.IUserService;
 import com.tota.eccom.domain.user.model.Role;
 import com.tota.eccom.domain.user.model.User;
@@ -17,10 +16,13 @@ import com.tota.eccom.util.InvalidJwtTokenUtil;
 import com.tota.eccom.util.JwtTokenUtil;
 import com.tota.eccom.util.PasswordUtil;
 import com.tota.eccom.util.SecurityUtil;
+import com.tota.eccom.util.enums.Status;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -35,7 +37,7 @@ public class UserService implements IUserService {
     @Transactional
     @Override
     public User createUser(UserCreateDTO userCreateDTO) {
-        if (getUserByEmail(userCreateDTO.getEmail()) != null) {
+        if (getUserByEmail(userCreateDTO.getEmail()).isPresent()) {
             throw new UserEmailExistsException("User already exists with given email.");
         }
 
@@ -49,7 +51,7 @@ public class UserService implements IUserService {
         return userRepository.save(user);
     }
 
-    private User getUserByEmail(String email) {
+    private Optional<User> getUserByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
@@ -76,8 +78,9 @@ public class UserService implements IUserService {
     public User updateUserById(Long id, UserUpdateDTO userUpdateDTO) {
         User user = getUserById(id);
 
-        User existingUser = getUserByEmail(userUpdateDTO.getEmail());
-        if (existingUser != null && !existingUser.getId().equals(id)) {
+        Optional<User> existingUser = getUserByEmail(userUpdateDTO.getEmail());
+
+        if (existingUser.isPresent() && !existingUser.get().getId().equals(id)) {
             throw new UserEmailExistsException("User already exists with given email.");
         }
 
@@ -97,13 +100,8 @@ public class UserService implements IUserService {
             throw new UserNotFoundException("User not logged");
         }
 
-        User user = userRepository.findByEmail(username);
-
-        if (user == null) {
-            throw new UserNotFoundException("User not found");
-        }
-
-        return user;
+        return userRepository.findByEmail(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
     @Transactional
@@ -144,14 +142,14 @@ public class UserService implements IUserService {
 
     @Override
     public UserLoginRespDTO loginUser(UserLoginDTO userLoginDTO) {
-        User user = userRepository.findByEmail(userLoginDTO.getEmail());
+        Optional<User> user = userRepository.findByEmail(userLoginDTO.getEmail());
 
-        if (user == null || !PasswordUtil.validatePassword(userLoginDTO.getPassword(), user.getPassword())) {
+        if (user.isEmpty() || !PasswordUtil.validatePassword(userLoginDTO.getPassword(), user.get().getPassword())) {
             throw new UserNotFoundException("User not found with given email and password");
         }
 
-        String token = jwtTokenUtil.generateToken(user);
-        String refreshToken = jwtTokenUtil.generateRefreshToken(user);
+        String token = jwtTokenUtil.generateToken(user.get());
+        String refreshToken = jwtTokenUtil.generateRefreshToken(user.get());
 
         return UserLoginRespDTO.builder()
                 .token(token)
@@ -168,12 +166,6 @@ public class UserService implements IUserService {
             return;
         }
 
-        User user = userRepository.findByEmail(jwtTokenUtil.getUsernameFromToken(token));
-
-        if (user == null) {
-            throw new UserNotFoundException("User not found");
-        }
-
         InvalidJwtTokenUtil.addToken(token);
     }
 
@@ -186,11 +178,7 @@ public class UserService implements IUserService {
             throw new UserNotFoundException("User not found");
         }
 
-        User user = userRepository.findByEmail(userEmail);
-
-        if (user == null) {
-            throw new UserNotFoundException("User not found");
-        }
+        User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new UserNotFoundException("User not found"));
 
         String token = jwtTokenUtil.generateToken(user);
 

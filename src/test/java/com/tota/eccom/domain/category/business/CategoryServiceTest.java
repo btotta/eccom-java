@@ -1,17 +1,18 @@
 package com.tota.eccom.domain.category.business;
 
 import com.tota.eccom.adapters.dto.category.request.CategoryDTO;
-import com.tota.eccom.util.enums.Status;
 import com.tota.eccom.domain.category.model.Category;
 import com.tota.eccom.domain.category.repository.CategoryRepository;
 import com.tota.eccom.exceptions.generic.ResourceAlreadyExistsException;
 import com.tota.eccom.exceptions.generic.ResourceNotFoundException;
+import com.tota.eccom.util.enums.Status;
 import org.junit.jupiter.api.*;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -247,6 +248,87 @@ class CategoryServiceTest {
             cat3.setName(cat2.getName());
 
             assertThrows(ResourceAlreadyExistsException.class, () -> categoryDomain.updateCategoryById(cat1.getId(), cat3));
+        }
+
+    }
+
+    @Nested
+    @DisplayName("Set Parent Category by Id")
+    class SetParentCategoryByIdTest {
+
+        @Test
+        @DisplayName("Set parent category, should set parent category successfully")
+        void testSetParentCategoryById_shouldSetParentCategorySuccessfully() {
+
+            Category createdCategory = categoryDomain.createCategory(getMockCategoryCreate());
+
+            CategoryDTO parentDTO = getMockCategoryCreate();
+            parentDTO.setName("Parent Category");
+            Category parentCategory = categoryDomain.createCategory(parentDTO);
+
+            categoryDomain.setParentCategoryById(createdCategory.getId(), parentCategory.getId());
+
+            assertNotNull(createdCategory.getId());
+            assertEquals(parentCategory.getId(), createdCategory.getParentCategory().getId());
+        }
+
+        @Test
+        @DisplayName("Set parent category, should throw exception when category not found")
+        void testSetParentCategoryById_shouldThrowExceptionWhenCategoryNotFound() {
+            assertThrows(ResourceNotFoundException.class, () -> categoryDomain.setParentCategoryById(1L, 2L));
+        }
+
+        @Test
+        @DisplayName("Set parent category, should throw exception when parent category not found")
+        void testSetParentCategoryById_shouldThrowExceptionWhenParentCategoryNotFound() {
+            Category createdCategory = categoryDomain.createCategory(getMockCategoryCreate());
+            assertThrows(ResourceNotFoundException.class, () -> categoryDomain.setParentCategoryById(createdCategory.getId(), 2L));
+        }
+
+        @Test
+        @DisplayName("Set parent category, should throw exception when trying to set category as parent")
+        void testSetParentCategoryById_shouldThrowExceptionWhenTryingToSetCategoryAsParent() {
+            Category createdCategory = categoryDomain.createCategory(getMockCategoryCreate());
+            assertThrows(ResourceAlreadyExistsException.class, () -> categoryDomain.setParentCategoryById(createdCategory.getId(), createdCategory.getId()));
+        }
+
+    }
+
+
+    @Nested
+    @DisplayName("Remove Parent Category by Id")
+    class RemoveParentCategoryByIdTest {
+
+        @Test
+        @DisplayName("Remove parent category, should remove parent category successfully")
+        void testRemoveParentCategoryById_shouldRemoveParentCategorySuccessfully() {
+            Category createdCategory = categoryDomain.createCategory(getMockCategoryCreate());
+            CategoryDTO parentDTO = getMockCategoryCreate();
+            parentDTO.setName("Parent Category");
+            Category parentCategory = categoryDomain.createCategory(parentDTO);
+            categoryDomain.setParentCategoryById(createdCategory.getId(), parentCategory.getId());
+
+            assertNotNull(createdCategory.getId());
+            assertEquals(parentCategory.getId(), createdCategory.getParentCategory().getId());
+
+            categoryDomain.removeParentCategoryById(createdCategory.getId());
+
+            assertNull(createdCategory.getParentCategory());
+        }
+
+        @Test
+        @DisplayName("Remove parent category, should throw exception when category not found")
+        void testRemoveParentCategoryById_shouldThrowExceptionWhenCategoryNotFound() {
+            assertThrows(ResourceNotFoundException.class, () -> categoryDomain.removeParentCategoryById(1L));
+        }
+
+        @Test
+        @DisplayName("Remove parent category, should do nothing when category has no parent")
+        void testRemoveParentCategoryById_shouldDoNothingWhenCategoryHasNoParent() {
+            Category createdCategory = categoryDomain.createCategory(getMockCategoryCreate());
+            categoryDomain.removeParentCategoryById(createdCategory.getId());
+
+            assertNull(createdCategory.getParentCategory());
         }
 
     }

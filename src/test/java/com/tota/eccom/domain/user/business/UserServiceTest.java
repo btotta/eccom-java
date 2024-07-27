@@ -23,6 +23,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -365,10 +366,11 @@ class UserServiceTest {
 
             userDomain.deleteUserLogged();
 
-            User deletedUser = userRepository.findByEmail(savedUser.getEmail());
+            Optional<User> deletedUser = userRepository.findByEmail(savedUser.getEmail());
 
+            assertTrue(deletedUser.isPresent());
             assertNotNull(deletedUser);
-            assertEquals(Status.DELETED, deletedUser.getStatus());
+            assertEquals(Status.DELETED, deletedUser.get().getStatus());
         }
 
         @Test

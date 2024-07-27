@@ -24,6 +24,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 @Component
 @Slf4j
@@ -39,11 +40,11 @@ public class ProductService implements IProductService {
     @Transactional
     public Product createProduct(ProductDTO productDTO) {
 
-        if (productDTO.getName() != null && findProductBySlug(SlugUtil.makeSlug(productDTO.getName())) != null) {
+        if (productDTO.getName() != null && findProductBySlug(SlugUtil.makeSlug(productDTO.getName())).isPresent()) {
             throw new ResourceAlreadyExistsException("Product with given slug already exists");
         }
 
-        if (productDTO.getSku() != null && findProductBySKU(productDTO.getSku()) != null) {
+        if (productDTO.getSku() != null && findProductBySKU(productDTO.getSku()).isPresent()) {
             throw new ResourceAlreadyExistsException("Product already exists with given plu: " + productDTO.getSku());
         }
 
@@ -201,8 +202,9 @@ public class ProductService implements IProductService {
     }
 
     private void validateProductSlug(String slug, Long id) {
-        Product existingProduct = findProductBySlug(slug);
-        if (existingProduct != null && !existingProduct.getId().equals(id)) {
+        Optional<Product> existingProduct = findProductBySlug(slug);
+
+        if (existingProduct.isPresent() && !existingProduct.get().getId().equals(id)) {
             throw new ResourceAlreadyExistsException("Product with given slug already exists");
         }
     }
@@ -211,12 +213,12 @@ public class ProductService implements IProductService {
         return categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product category not found with given id: " + id));
     }
 
-    private Product findProductBySKU(String sku) {
-        return productRepository.findBySku(sku).orElse(null);
+    private Optional<Product> findProductBySKU(String sku) {
+        return productRepository.findBySku(sku);
     }
 
-    private Product findProductBySlug(String slug) {
-        return productRepository.findBySlug(slug).orElse(null);
+    private Optional<Product> findProductBySlug(String slug) {
+        return productRepository.findBySlug(slug);
     }
 
 

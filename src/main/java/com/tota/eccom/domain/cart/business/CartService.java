@@ -38,7 +38,8 @@ public class CartService implements ICartService {
     @Override
     @Transactional
     public Cart getCartByUser() {
-        return getOrCreateCartByUserId(userDomain.getUserLogged());
+        return getOrCreateCartByUserId(userDomain.getUserLogged())
+                .orElseThrow(() -> new ResourceNotFoundException("Unable to get cart"));
     }
 
     @Override
@@ -146,23 +147,22 @@ public class CartService implements ICartService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add));
     }
 
-    private Cart getOrCreateCartByUserId(User user) {
+    private Optional<Cart> getOrCreateCartByUserId(User user) {
 
-        Cart cart = cartRepository.findAll(
+        Optional<Cart> cart = cartRepository.findAll(
                         CartSpecification.findLastCarts(user.getId())).stream()
-                .findFirst()
-                .orElse(null);
+                .findFirst();
 
-        if (cart == null) {
-            cart = Cart.builder()
+        if (cart.isEmpty()) {
+            cart = Optional.of(Cart.builder()
                     .user(user)
                     .cartStatus(CartStatus.CART)
                     .totalItems(BigDecimal.ZERO)
                     .totalOrder(BigDecimal.ZERO)
                     .status(Status.ACTIVE)
-                    .build();
+                    .build());
 
-            cartRepository.save(cart);
+            cartRepository.save(cart.get());
         }
 
         return cart;

@@ -92,6 +92,36 @@ public class CategoryController {
         return new ResponseEntity<>(new CategoryRespDTO(categoryDomain.updateCategoryById(id, categoryDTO)), HttpStatus.OK);
     }
 
+    @PostMapping("/{id}/parent/{parentId}")
+    @Operation(
+            summary = "Set parent category",
+            description = "Sets the parent category of the specified category."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Category updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "404", description = "Category not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
+    public ResponseEntity<CategoryRespDTO> setParentCategoryById(@PathVariable Long id, @PathVariable Long parentId) {
+        return new ResponseEntity<>(new CategoryRespDTO(categoryDomain.setParentCategoryById(id, parentId)), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}/parent")
+    @Operation(
+            summary = "Remove parent category",
+            description = "Removes the parent category of the specified category."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Category updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "404", description = "Category not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
+    public ResponseEntity<Void> removeParentCategoryById(@PathVariable Long id) {
+        categoryDomain.removeParentCategoryById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 
     // Category n Product Operations
     @GetMapping("/{slug}/products")

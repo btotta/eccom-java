@@ -19,6 +19,7 @@ public class CategoryRespDTO {
     private String name;
     private String description;
     private String slug;
+    private CategoryRespDTO parentCategory;
     private Date createdAt;
     private Date updatedAt;
 
@@ -30,6 +31,10 @@ public class CategoryRespDTO {
         this.slug = category.getSlug();
         this.createdAt = category.getCreatedAt();
         this.updatedAt = category.getUpdatedAt();
+
+        if (category.getParentCategory() != null) {
+            this.parentCategory = new CategoryRespDTO(category.getParentCategory());
+        }
     }
 
 }
