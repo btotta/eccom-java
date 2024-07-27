@@ -93,9 +93,11 @@ public class CategoryController {
     }
 
     @PostMapping("/{id}/parent/{parentId}")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(
             summary = "Set parent category",
-            description = "Sets the parent category of the specified category."
+            description = "Sets the parent category of the specified category.",
+            security = @SecurityRequirement(name = "Authorization")
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Category updated successfully"),
@@ -108,9 +110,11 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{id}/parent")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(
             summary = "Remove parent category",
-            description = "Removes the parent category of the specified category."
+            description = "Removes the parent category of the specified category.",
+            security = @SecurityRequirement(name = "Authorization")
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Category updated successfully"),
